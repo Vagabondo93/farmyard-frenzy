@@ -17,7 +17,7 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 | `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online su claude.ai. |
 | `tools/test-firebase.js`, `tools/mock-firebase.js` | Test del sito pubblico con un Firebase simulato. |
 | `firebase-config.js`, `firestore.rules`, `firebase.json` | Configurazione di Firebase per il sito pubblico. |
-| `.github/workflows/pubblica.yml` | Pubblicazione automatica su GitHub Pages. |
+| `.nojekyll` | Dice a GitHub Pages di pubblicare i file così come sono. |
 
 ## Giocare in locale
 

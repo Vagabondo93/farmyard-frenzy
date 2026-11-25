@@ -2,8 +2,8 @@
 
 Due servizi gratuiti:
 
-- **GitHub Pages** ospita il sito. Ogni aggiornamento inviato al repository viene pubblicato da solo
-  in un paio di minuti (workflow `.github/workflows/pubblica.yml`).
+- **GitHub Pages** ospita il sito, pubblicando direttamente i file del ramo `main`: ogni aggiornamento
+  inviato al repository va online da solo in un paio di minuti.
 - **Firebase** (piano gratuito "Spark") gestisce accesso con account e database: profili, classifiche, stanze.
 
 ## 1. Repository GitHub
@@ -11,7 +11,8 @@ Due servizi gratuiti:
 1. Su https://github.com/new crea un repository vuoto, per esempio `farmyard-frenzy` (pubblico: GitHub Pages
    gratuito richiede un repository pubblico sui piani gratuiti). Non aggiungere README o licenza.
 2. Dì a Claude il nome del repository: lo collega alla sessione e ci carica il progetto.
-3. Nel repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. Nel repository: **Settings → Pages → Build and deployment → Source: Deploy from a branch**,
+   ramo **main**, cartella **/ (root)**, poi **Save**.
 4. Il sito sarà su `https://<tuo-utente>.github.io/farmyard-frenzy/`.
 
 ## 2. Progetto Firebase
