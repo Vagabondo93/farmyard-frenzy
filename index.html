@@ -34,7 +34,7 @@
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
   background-image:radial-gradient(color-mix(in srgb,var(--accent) 14%,transparent) 1px,transparent 1.6px);background-size:24px 24px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 48px}
-.wrap{max-width:1280px;margin:0 auto;display:grid;gap:16px}
+.wrap{max-width:1880px;margin:0 auto;display:grid;gap:16px}
 h1,h2,h3{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;margin:0;text-wrap:balance}
 button,select{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
@@ -82,7 +82,7 @@ canvas.drag{touch-action:none}
 .c0{color:var(--blue);font-weight:800}.c1{color:var(--red);font-weight:800}
 .shopbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
 .shopbar .l{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:14px}
 .card{position:relative;text-align:left;border:1px solid var(--line);border-top:5px solid var(--t1);background:var(--panel);border-radius:14px;padding:10px 12px 12px;
   display:flex;flex-direction:column;gap:4px;min-width:0;box-shadow:var(--shadow);transition:transform .12s,box-shadow .12s}
 .card.t2{border-top-color:var(--t2)}.card.t3{border-top-color:var(--t3)}
@@ -98,7 +98,7 @@ canvas.drag{touch-action:none}
 .cost{position:absolute;top:10px;right:10px;background:var(--gold);color:#241800;border-radius:999px;min-width:28px;height:28px;display:grid;place-items:center;font-weight:900;font-size:14px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .tier{font-size:11px;color:var(--gold-ink);font-weight:800}
 .merge{font-size:12px;font-weight:800;color:var(--accent)}
-.ords{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:6px}
+.ords{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:8px;margin-top:6px}
 .ord.cur{border-style:solid;border-color:var(--accent)}
 .ord{border:2px dashed var(--line);background:color-mix(in srgb,var(--chip) 45%,transparent);border-radius:14px;padding:10px 12px;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;position:relative;min-width:0}
 .ord:hover:not(:disabled){border-color:var(--gold)}
@@ -106,7 +106,7 @@ canvas.drag{touch-action:none}
 .ord .ic{font-size:24px;grid-row:span 2;align-self:center}
 .ord .nm{font-weight:800;padding-right:34px}
 .ord .ds{font-size:13.5px;color:var(--ink)}
-.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;align-items:stretch}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;align-items:stretch}
 .bu{min-width:0}
 .bu.sel .tcg{outline:4px solid var(--blue);outline-offset:3px}
 .bu .ic{font-size:26px}
@@ -256,6 +256,12 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcg.dense .ttext{font-size:13px;line-height:1.4}
 .tcg.dense .tvs{font-size:12px;line-height:1.4}
 .tcg.dense .tpow{font-size:12px;padding:5px 8px}
+/* uso della larghezza: illustrazione ad altezza fissa, così carte più larghe diventano più basse */
+.tcg .tart{aspect-ratio:auto;height:clamp(100px,8vw,128px)}
+.tcg .temo{font-size:clamp(70px,6vw,92px)}
+.tcg.compact .tart{height:86px}.tcg.compact .temo{font-size:62px}
+.cmbox .tcg .tart{height:150px}.cmbox .tcg .temo{font-size:100px}
+@media (min-width:1500px){.cards{grid-template-columns:repeat(5,minmax(0,1fr))}.main{grid-template-columns:minmax(0,1.7fr) minmax(340px,1fr)}}
 .hidden{display:none!important}
 </style>
 
@@ -1592,7 +1598,7 @@ function renderAll(){
     if(!t) return `<div class="tcgbtn sold" aria-hidden="true"></div>`;
     const d=UNITS[t],c=COST[d.t],n=p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
-    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,1,{dense:true,foot:`${hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
+    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,1,{foot:`${hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
   $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.';
   $('orders').innerHTML=Object.entries(ORDERS).map(([k,d])=>`<button class="ord${selU&&selU.order===k?' cur':''}" data-ord="${k}" ${!shop||p.gold<ORDER_COST||!selU?'disabled':''}>
       <span class="cost">${ORDER_COST}</span><span class="ic">${d.i}</span>
@@ -1600,7 +1606,7 @@ function renderAll(){
   const field=p.board.filter(b=>!b.bench),bench=p.board.filter(b=>b.bench);
   $('boardCount').textContent=`${field.length}/${MAXB} · tocca un'unità per darle un ordine`;
   $('benchCount').textContent=`${bench.length}/${MAXBENCH} · non scende in campo, ma conta per le copie ★★`;
-  const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+b.star+' stelle':''}">${tcgCard(b.type,b.star,{compact:true,dense:true,foot:
+  const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+b.star+' stelle':''}">${tcgCard(b.type,b.star,{compact:true,foot:
      `<span class="oc ${b.order?'':'none'}">${b.order?ORDERS[b.order].i+' '+ORDERS[b.order].n:'nessun ordine'}</span>
       <span class="acts"><button class="sell" data-card="${b.type}:${b.star}">Scheda</button>${shop?`<button class="sell" data-swap="${b.uid}">${b.bench?'↑ In campo':'↓ Panchina'}</button><button class="sell" data-sell="${b.uid}">Vendi (+1)</button>`:''}</span>`})}</div>`;
   let h=field.map(card).join('');
