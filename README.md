@@ -15,6 +15,7 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 | `tools/bilanciamento.js` | Simula migliaia di battaglie tra squadre casuali e stampa quanto vince ogni unità e ogni ordine. |
 | `tools/test-partite.js` | Gioca da solo partite contro il bot, Royal Rumble e partite online, e controlla che non ci siano errori. |
 | `tools/test-timer.js` | Controlla il tempo per il Pronto online: conto alla rovescia, partenza automatica, giocatore sparito. |
+| `tools/test-rumble-bot.js` | Royal Rumble online con 2 giocatori e 6 bot di riempimento: controlla che tutti vedano lo stesso risultato. |
 | `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online su claude.ai. |
 | `tools/test-firebase.js`, `tools/mock-firebase.js` | Test del sito pubblico con un Firebase simulato. |
 | `firebase-config.js`, `firestore.rules`, `firebase.json` | Configurazione di Firebase per il sito pubblico. |
@@ -62,7 +63,8 @@ npm test
 - **Classica**: 1 contro 1, prese per vincere a scelta (1–7).
 - **Nebbia**: 7 prese, 7 oro iniziali, ruscello centrale con due ponti nella nebbia; alcuni personaggi solo qui.
 - **Royal Rumble**: fino a 8 giocatori, 2 uova a testa (max 5), avversario casuale ogni round, fame dal round 8,
-  market condiviso con 19 copie per personaggio.
+  market condiviso con 19 copie per personaggio. Online si possono riempire i posti liberi con bot (l'Elo conta):
+  la loro bravura parte dall'Elo medio dei giocatori e si adatta durante la partita.
 
 Nelle partite online (1 contro 1 e Rumble) il round 1 non ha limiti di tempo; dal round 2, quando il primo
 giocatore preme Pronto, gli altri hanno 60 s (+5 s per round, massimo 2 minuti). Allo scadere la squadra parte così

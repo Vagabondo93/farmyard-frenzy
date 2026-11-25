@@ -339,6 +339,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
         <div style="display:flex;gap:10px;align-items:center"><span class="code" id="roomCode"></span><button class="btn" id="copyBtn">Copia</button></div>
         <span class="empty" id="roomWait">In attesa che entri… La partita parte da sola.</span>
         <div id="rumbleBox" class="hidden" style="display:grid;gap:6px"><ol class="rank" id="rumbleList"></ol>
+          <label class="hidden" id="rumbleFillRow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rumbleFill"> Riempi i posti liberi con bot (fino a 8, bravura adattiva, l'Elo conta)</label>
           <button class="btn primary hidden" id="rumbleStart">Avvia la Royal Rumble</button></div>
       </div>
       <p class="toast" id="lobbyMsg" aria-live="polite" style="margin:0"></p>
@@ -1015,13 +1016,13 @@ function startShop(){
 }
 
 // ---------- bot ----------
-function botTurn(p,rng,ec){
-  ec=ec||[];
+function botTurn(p,rng,ec,sk=.7){
+  ec=ec||[];const noise=Math.max(.6,1.6+(.7-sk)*6); // sk = bravura 0..1: meno è bravo, più sceglie a caso
   const cnt=tag=>ec.filter(b=>UNITS[b.type].tags.includes(tag)).length;
   const has=t=>ec.filter(b=>b.type===t).length;
   const A=cnt('Animale'),U=cnt('Umano'),L=cnt('Ladro'),Gd=cnt('Guardiano');
   const score=type=>{
-    const d=UNITS[type]; let s=d.t*1.1+rng()*1.6;
+    const d=UNITS[type]; let s=d.t*1.1+rng()*noise;
     const thieves=p.board.filter(b=>UNITS[b.type].role==='thief').length;
     const guards=p.board.filter(b=>['guard','scout'].includes(UNITS[b.type].role)).length;
     if(d.role==='thief') s+=thieves<1?6:thieves<2?3:thieves<3?0:-3;
@@ -1050,7 +1051,7 @@ function botTurn(p,rng,ec){
   for(let oi=0;oi<p.orders.length;oi++){
     const o=p.orders[oi]; if(!o||p.gold<ORDER_COST) continue;
     const u=p.board.find(b=>!b.order&&fits(o,UNITS[b.type].role).includes(UNITS[b.type].role));
-    if(u&&rng()<.8){u.order=o;p.orders[oi]=null;p.gold-=ORDER_COST}
+    if(u&&rng()<.35+.6*sk){u.order=o;p.orders[oi]=null;p.gold-=ORDER_COST}
   }
   let n={};
   for(const b of p.board){
@@ -2041,12 +2042,19 @@ $('renIn').addEventListener('keydown',e=>{if(e.key==='Enter')rename()});
 // chi resta a zero è fuori. Se i giocatori in gara sono dispari, uno affronta il "Bot ombra", che avanza per conto suo.
 const RMB={start:2,max:5,copies:19};
 const BOTN=['Bot Tacchino','Bot Faina','Bot Volpe','Bot Corvo','Bot Toro','Bot Oca','Bot Talpa'];
+// Bravura dei bot nella Rumble online: parte dall'Elo medio dei giocatori (800 → facile, 1400 → difficile)
+// e si adatta durante la partita: se gli umani hanno più uova dei bot, i bot migliorano; se sono in difficoltà, calano.
+function botSkill(R){
+  const H=R.P.filter(p=>!p.bot),B=R.P.filter(p=>p.bot&&!p.out),hl=H.reduce((a,p)=>a+(p.out?0:p.lives),0)/(H.length||1);
+  const bl=B.length?B.reduce((a,p)=>a+p.lives,0)/B.length:hl;
+  return clamp((R.botBase??.5)+.15*(hl-bl),0,1);
+}
 function initRumble(o){
   const P=o.players.map((x,i)=>Object.assign(mkPlayer(),{name:x.name,uid:x.uid||null,bot:!!x.bot,lives:RMB.start,out:false,place:0,lost:false,last:null,lastBoard:null,
     brng:mulberry(((G.seedBase||1)*131+i*7919+7)>>>0)}));
   G.rmb={P,me:o.meIdx||0,online:!!o.online,N:P.length,counts:Object.fromEntries(G.pool.map(k=>[k,RMB.copies])),
     ghost:Object.assign(mkPlayer(),{name:'Bot ombra',bot:true,ghost:true,lives:0,last:null,lastBoard:null,brng:mulberry(((G.seedBase||1)^0xbeef)>>>0)}),
-    pairs:[],opp:null,docs:[],noCount:false};
+    pairs:[],opp:null,docs:[],noCount:false,botBase:o.botBase};
   G.players=[P[G.rmb.me],G.rmb.ghost];G.me=0;
 }
 const pOf=i=>i==='ghost'?G.rmb.ghost:G.rmb.P[i];
@@ -2061,6 +2069,9 @@ function rumbleShop(){
   const gold=p=>Math.min(10,3+G.round)+(p.lost?1:0);
   const me=R.P[R.me];me.gold=gold(me);rollShop(me,G.rng,G.round);
   if(!R.online) for(const i of alive){const p=R.P[i];if(!p.bot)continue;p.gold=gold(p);rollShop(p,p.brng,G.round);botTurn(p,p.brng,p.last)}
+  else{const sk=botSkill(R);R.skill=sk;
+    // bot di riempimento: ogni client li fa giocare con gli stessi semi e lo stesso market, prima delle mosse umane
+    for(const i of alive){const p=R.P[i];if(!p.bot)continue;p.gold=gold(p)+(sk>.8?1:sk<.25?-1:0);rollShop(p,p.brng,G.round);botTurn(p,p.brng,p.last,sk)}}
   if(R.pairs.some(pr=>pr[1]==='ghost')){const g=R.ghost;R.noCount=true;g.gold=Math.min(10,3+G.round);rollShop(g,g.brng,G.round);botTurn(g,g.brng,g.last);R.noCount=false}
   const mp=R.pairs.findIndex(pr=>pr.includes(R.me)),[a,b]=R.pairs[mp];
   R.myPair=mp;R.opp=a===R.me?b:a;R.mySeed=((G.seedBase||1)*31+G.round*7919+mp*101)>>>0;
@@ -2136,10 +2147,10 @@ async function submitRumble(){
 function rumbleTry(){
   const R=G&&G.rmb;if(!R||G.phase!=='waiting')return;
   const by={};for(const d of R.docs) if(d.round===G.round) by[d.idx]=d;
-  const alive=R.P.map((p,i)=>i).filter(i=>!R.P[i].out),miss=alive.filter(i=>!by[i]);
+  const alive=R.P.map((p,i)=>i).filter(i=>!R.P[i].out),miss=alive.filter(i=>!R.P[i].bot&&!by[i]);
   if(miss.length){$('bText').textContent=`In attesa di: ${miss.map(i=>R.P[i].name).join(', ')}`;return}
   // squadre ufficiali del round: le stesse per tutti i client
-  for(const i of alive){const d=by[i],p=R.P[i];if(d.left){p.left=true;p.board=[]}else if(d.afk)p.ovr=[];else p.board=cleanFull(d.board,i*100)}
+  for(const i of alive){const d=by[i],p=R.P[i];if(p.bot)continue;if(d.left){p.left=true;p.board=[]}else if(d.afk)p.ovr=[];else p.board=cleanFull(d.board,i*100)}
   R.P[R.me].uidc=Math.max(R.P[R.me].uidc,R.me*100+50);
   const cp=[0,1,3,9];R.counts=Object.fromEntries(G.pool.map(k=>[k,RMB.copies]));
   for(const p of R.P) if(!p.out) for(const b of p.board) if(R.counts[b.type]!=null) R.counts[b.type]-=cp[b.star];
@@ -2173,19 +2184,28 @@ function watchRumbleRoom(code,host){
   if(roomUnsub) roomUnsub();
   roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
     const ps=d.players||[];
-    $('rumbleList').innerHTML=ps.map((p,i)=>`<li class="${p.uid===UID?'me':''}"><span class="pos">${i+1}</span><span>${esc(p.nick)}</span><span class="wl">Elo ${Math.round(+p.elo||1000)}</span><b></b></li>`).join('');
-    $('rumbleStart').classList.toggle('hidden',!(host&&d.status==='waiting'));$('rumbleStart').disabled=ps.length<2;
-    $('rumbleStart').onclick=async()=>{try{await DB.doc('rooms/'+code).update({status:'playing'})}catch(e){lobbyMsg('Avvio non riuscito.')}};
+    const fillN=d.status==='waiting'&&d.fill?8-ps.length:0;
+    $('rumbleList').innerHTML=ps.map((p,i)=>`<li class="${p.uid===UID?'me':''}"><span class="pos">${i+1}</span><span>${p.bot?'🤖 ':''}${esc(p.nick)}</span><span class="wl">${p.bot?'bot':'Elo '+Math.round(+p.elo||1000)}</span><b></b></li>`).join('')+
+      (fillN>0?`<li><span class="pos">+</span><span>🤖 ${fillN} bot di riempimento</span><span class="wl">bravura adattiva</span><b></b></li>`:'');
+    const waiting=d.status==='waiting';$('rumbleFillRow').classList.toggle('hidden',!waiting);
+    $('rumbleFill').checked=!!d.fill;$('rumbleFill').disabled=!host;
+    $('rumbleFill').onchange=async()=>{try{await DB.doc('rooms/'+code).update({fill:$('rumbleFill').checked})}catch(e){lobbyMsg('Non riesco a cambiare l\'opzione.')}};
+    $('rumbleStart').classList.toggle('hidden',!(host&&waiting));$('rumbleStart').disabled=ps.length<2;
+    $('rumbleStart').onclick=async()=>{try{const ref=DB.doc('rooms/'+code),cur=(await ref.get()).data(),hp=cur.players||[],up={status:'playing'};
+      if(cur.fill&&hp.length<8){const avg=hp.reduce((a,p)=>a+(+p.elo||1000),0)/hp.length;
+        up.players=[...hp,...BOTN.slice(0,8-hp.length).map(n=>({uid:null,nick:n,bot:true}))];up.botBase=clamp((avg-800)/600,0,1)}
+      await ref.update(up)}catch(e){lobbyMsg('Avvio non riuscito.')}};
     if(d.status==='playing'&&!G){const meIdx=ps.findIndex(p=>p.uid===UID);if(meIdx<0)return;startRumbleOnline(code,d,meIdx)}
   },()=>{});
 }
 function startRumbleOnline(code,d,meIdx){
-  newMatch({mode:'rumble',online:true,room:code,seed:+d.seed||1,players:d.players.map(p=>({name:String(p.nick||'Giocatore').slice(0,16),uid:p.uid})),meIdx});
+  newMatch({mode:'rumble',online:true,room:code,seed:+d.seed||1,botBase:d.botBase==null?.5:+d.botBase,players:d.players.map(p=>({name:String(p.nick||'Giocatore').slice(0,16),uid:p.uid||null,bot:!!p.bot})),meIdx});
   const un=DB.collection(`rooms/${code}/rr`).onSnapshot(s=>{if(!G||!G.rmb)return;G.rmb.docs=s.docs.map(x=>x.data());
     for(const d of G.rmb.docs) if(d.round===G.round&&!d.afk) setDeadline(d.at);
     rumbleTry()},()=>{});
   G.unsub.push(un);
-  toast(`Royal Rumble con ${d.players.length} giocatori. Ogni round affronti un avversario a caso.`);
+  const nb=d.players.filter(p=>p.bot).length;
+  toast(`Royal Rumble con ${d.players.length} giocatori${nb?` (di cui ${nb} bot)`:''}. Ogni round affronti un avversario a caso.`);
 }
 $('rumbleBot').onclick=()=>newMatch({mode:'rumble',players:[{name:PROFILE?PROFILE.nick:'Tu'},...BOTN.map(n=>({name:n,bot:true}))],meIdx:0});
 $('rumbleOnline').onclick=createRumble;
@@ -2235,7 +2255,7 @@ function mpTick(){
   if(G.phase==='waiting'&&G.deadline&&!G.afkSent&&now>G.deadline+15000){
     G.afkSent=true;
     if(G.mode==='pvp'){if(!G.oppDoc)sendAfk(`rooms/${G.room}/turns/r${G.round}s${1-G.me}`,{})}
-    else{const R=G.rmb;for(const i of R.P.map((p,k)=>k).filter(k=>!R.P[k].out))
+    else{const R=G.rmb;for(const i of R.P.map((p,k)=>k).filter(k=>!R.P[k].out&&!R.P[k].bot))
       if(!R.docs.some(d=>d.round===G.round&&d.idx===i))sendAfk(`rooms/${G.room}/rr/r${G.round}p${i}`,{round:G.round,idx:i})}
   }
   if(G.phase==='waiting'&&G.deadline){const b=$('bText'),w=Math.max(0,left);if(b&&!b.dataset.base)b.dataset.base=b.textContent;
