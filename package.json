@@ -1,0 +1,13 @@
+{
+  "name": "farmyard-frenzy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Farmyard Frenzy: The Golden Egg - gioco di strategia con battaglie automatiche",
+  "scripts": {
+    "test": "node tools/test-partite.js",
+    "bilanciamento": "node tools/bilanciamento.js 6000 14 0.2 4"
+  },
+  "devDependencies": {
+    "playwright": "1.48.2"
+  }
+}
