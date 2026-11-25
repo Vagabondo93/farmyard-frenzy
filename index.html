@@ -221,7 +221,8 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .bu{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 .board.dropok{outline:3px dashed var(--accent);outline-offset:6px;border-radius:14px}
 .uimg{width:1em;height:1em;vertical-align:-.15em;display:inline-block}
-.temo .uimg{width:1.5em;height:1.5em}
+.temo:has(.uimg){position:absolute;inset:5% 0;display:grid;place-items:center}
+.temo .uimg{position:absolute;inset:0;margin:auto;width:100%;height:100%;object-fit:contain}
 .tcgbtn.sold{display:none}
 .tcgbtn.buy .tcg{cursor:pointer}
 .tcgbtn.off{opacity:.55;cursor:not-allowed}
@@ -852,6 +853,8 @@ const UNITS={
    d:"Cova un uovo finto nella tua metà campo: i ladri nemici puntano all'uovo più vicino e scoprono l'inganno solo arrivati al nido, restando storditi 2 s.",beats:'Faina, Topi, Volpe',loses:'Spazzino, Lupo, Cacciatore'},
  veterinario:{n:'Veterinario',i:'🧑‍⚕️',t:2,minRound:3,tags:['Umano'],hp:65,dmg:0,spd:65,role:'medic',heal:10,healR:100,
    d:"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.",beats:'Assassino, Cacciatore',loses:'Lupo, Assassino se resta solo'},
+ avicoltore:{n:'Avicoltore',i:'🪺',t:2,minRound:2,tags:['Umano'],hp:55,dmg:0,spd:62,role:'escort',guardR:130,followFly:true,lane:2.5,
+   d:"Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.",beats:'Squadre lente a difendere contro gazze e falchi',loses:'Chi lo raggiunge, squadre senza volanti'},
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
    d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 100.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
  trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:45,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:8,
@@ -896,6 +899,7 @@ const P3={
  toro:{n:"Furia",d:"Ricarica la carica in 2,5 s e travolge con 40 danni.",m:{chargeCd:2.5,chargeDmg:40}},
  chioccia:{n:"Covata",d:"Cova due uova finte invece di una.",m:{fakes:2}},
  veterinario:{n:"Pronto soccorso",d:"Cura anche gli umani, più in fretta e più lontano.",m:{heal:14,healR:130,healAll:true}},
+ avicoltore:{n:"Voliera",d:"Corrente ×3,5 e i volanti che lo raggiungono recuperano 10 vita al secondo.",m:{lane:3.5,laneHeal:10}},
  apicoltore:{n:"Sciame",d:"Piazza due arnie invece di una.",m:{spawns:{type:'arnia',every:3,max:2}}},
  trombettiere:{n:"Fanfara",d:"Suona la carica ogni 12 secondi.",m:{bugleRepeat:12}},
  talpa:{n:"Tunnel",d:"Dopo aver preso l'uovo torna sottoterra e lo porta a casa senza farsi vedere.",m:{reburrow:true}},
@@ -946,7 +950,8 @@ function newMatch(o={}){
 
 // Ogni partita usa solo una selezione di personaggi: così le copie per le ★★ si trovano davvero.
 const COUNTERS=[{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
-  {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco']},{if:['ladro'],need:['corvo','poliziotto','assassino']}];
+  {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
+  {if:['avicoltore'],need:['corvo','gazza','falco']}]; // l'Avicoltore esce solo se nella partita c'è almeno un volante
 const POOLQ={thief:3,def:4,atk:3,sup:3},POOLQR={thief:4,def:5,atk:4,sup:3};
 function makePool(variant,rng,big){
   const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly,pool=[],Q=big?POOLQR:POOLQ;
@@ -1033,7 +1038,7 @@ function botTurn(p,rng,ec,sk=.7){
     s+=({cacciatore:A*1+has('corvo')*1.5,assassino:U*1.3,cane:(L-has('talpa'))*1.1,poliziotto:L,corvo:has('talpa')*3+has('ladro')*1.5,
       bracconiere:(L-has('talpa'))*.8,tacchino:has('ladro')-has('cacciatore')*.5,faina:has('tacchino')*1.2-has('cane'),
       ladro:has('cane')*.8+Gd*.2,talpa:Gd*.6-has('corvo')*2,mais:(has('cane')+has('tacchino')+has('corvo'))*.8,gazza:has('cane')*.8+has('bracconiere')+has('tacchino')*.5-has('corvo')*1.5,
-      coltivatore:A*.6,benefattore:U*.6,topi:has('mucca')+has('tacchino')*.5-has('gatto'),volpe:has('poliziotto')*.8+has('gallico'),oca:L*.4,gatto:(has('topi')+has('faina')+has('talpa'))*1.2,mucca:has('ladro')*.6,lupo:(has('cane')+has('gatto')+has('oca'))*.9,falco:(has('corvo')+has('gazza'))*1.5,toro:U*.4,chioccia:L*.4,veterinario:A*.15,apicoltore:L*.5,gallico:(has('faina')+has('ladro')+has('talpa'))*.8,spazzino:(has('mais')+has('spaventa')+has('coltivatore')+has('benefattore')+has('bracconiere'))*1.2,
+      coltivatore:A*.6,avicoltore:p.board.filter(b=>UNITS[b.type].flying).length*1.6-1,benefattore:U*.6,topi:has('mucca')+has('tacchino')*.5-has('gatto'),volpe:has('poliziotto')*.8+has('gallico'),oca:L*.4,gatto:(has('topi')+has('faina')+has('talpa'))*1.2,mucca:has('ladro')*.6,lupo:(has('cane')+has('gatto')+has('oca'))*.9,falco:(has('corvo')+has('gazza'))*1.5,toro:U*.4,chioccia:L*.4,veterinario:A*.15,apicoltore:L*.5,gallico:(has('faina')+has('ladro')+has('talpa'))*.8,spazzino:(has('mais')+has('spaventa')+has('coltivatore')+has('benefattore')+has('bracconiere'))*1.2,
       spaventa:has('corvo')*1.2+(has('cacciatore')+has('poliziotto')+has('assassino'))*.6})[type]||0;
     s+=p.board.filter(b=>b.type===type&&b.star===1).length*2.2;
     return s;
@@ -1140,6 +1145,13 @@ function allyThief(u,S){
   return best;
 }
 // l'alleato più avanzato verso l'uovo nemico (per chi accompagna l'attacco quando non ci sono ladri)
+// il volante alleato più vicino (per l'Avicoltore)
+function laneOf(u,S){let best=null,bd=1e9;
+  for(const a of S.units) if(a.alive&&a.side===u.side&&a.def.lane&&a.stun<=0){const d=dist(u,a);if(d<bd){bd=d;best=a}}
+  return best}
+function allyFlyer(u,S){let best=null,bd=1e9;
+  for(const x of S.units) if(x.alive&&x.side===u.side&&x.def.flying){const d=dist(u,x);if(d<bd){bd=d;best=x}}
+  return best}
 function frontAlly(u,S){
   const foe=S.eggs[1-u.side].home;let best=null,bd=1e9;
   for(const x of S.units) if(x.alive&&x.side===u.side&&x!==u&&x.role!=='static'&&!x.underground&&!x.def.follow){const d=dist(x,foe);if(d<bd){bd=d;best=x}}
@@ -1148,7 +1160,7 @@ function frontAlly(u,S){
 function anchorOf(u,S){
   if(u.role==='guard'||u.role==='scout') return S.eggs[u.side].home;
   if(u.role==='assault') return S.eggs[1-u.side].home;
-  if(u.role==='escort') return allyThief(u,S)||(u.def.follow&&frontAlly(u,S))||S.eggs[u.side].home;
+  if(u.role==='escort') return (u.def.followFly?allyFlyer(u,S):allyThief(u,S)||(u.def.follow&&frontAlly(u,S)))||S.eggs[u.side].home;
   if(u.role==='center') return{x:W/2-(u.side?-1:1)*60,y:u.sy};
   return null;
 }
@@ -1179,6 +1191,13 @@ function moveTo(u,tx,ty,dt,S){
     if(Math.abs(tx-RX)<RW+4&&!onBridge({y:ty})) tx=RX+(Math.sign(u.x-RX)||1)*(RW+4);
     const w=riverStep(u,tx,ty);if(w){tx=w.x;ty=w.y}
     if(u.reburrow&&Math.abs(u.x-RX)>RW+30&&u.carrying===null&&!u.fake){u.underground=true;u.reburrow=false}}
+  if(u.def.flying){const a=laneOf(u,S);u.via=null;
+    if(a){const K=a.def.lane+(a.star===2?.5:0),da=dist(u,a),dd=Math.hypot(tx-u.x,ty-u.y),dat=Math.hypot(tx-a.x,ty-a.y);
+      // conviene passare dall'Avicoltore? si confrontano i tempi: verso di lui si vola K volte più veloci
+      if(da>14&&da/K+dat<dd*.97){tx=a.x;ty=a.y;u.via=a.id}
+      const vx=tx-u.x,vy=ty-u.y,L=Math.hypot(vx,vy)||1,cos=da>8?((a.x-u.x)*vx+(a.y-u.y)*vy)/(L*da):0;
+      if(cos>.94){sp*=K;u.lb=.2}
+      if(a.def.laneHeal&&da<30) u.hp=Math.min(u.maxHp,u.hp+a.def.laneHeal*dt)}}
   const dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy); if(d<1) return;
   const s=Math.min(d,sp*dt); u.x+=dx/d*s; u.y+=dy/d*s;
   if(Math.abs(dx)>3) u.face=dx>0?1:-1;
@@ -1257,7 +1276,11 @@ function idlePoint(u,S){
       if(!best) best=S.units.find(x=>x.alive&&x.side===u.side&&x!==u&&x.role!=='static'&&x.def.tags.includes('Animale'));
       if(best) return{x:best.x-(u.side?-1:1)*22,y:best.y+14};
       return{x:own.x+(u.side?-90:90),y:u.sy}}
-    case 'escort':{const a=allyThief(u,S)||(u.def.follow&&frontAlly(u,S));if(a)return{x:a.x-(u.side?-1:1)*26,y:a.y+(u.id%2?20:-20)};return{x:own.x+(u.side?-90:90),y:u.sy}}
+    case 'escort':if(u.def.followFly){const a=allyFlyer(u,S),lim=W/2-50; // resta nella propria metà campo
+        const cf=S.units.find(x=>x.alive&&x.side===u.side&&x.def.flying&&x.carrying!==null),ref=cf||a;
+        const tx=own.x+(u.side?-1:1)*240,ty=ref?clamp(ref.y,40,H-40):u.sy;
+        return{x:u.side?Math.max(W-lim,tx):Math.min(lim,tx),y:ty}}
+      {const a=allyThief(u,S)||(u.def.follow&&frontAlly(u,S));if(a)return{x:a.x-(u.side?-1:1)*26,y:a.y+(u.id%2?20:-20)};return{x:own.x+(u.side?-90:90),y:u.sy}}
   }
   return{x:u.x,y:u.y};
 }
@@ -1290,7 +1313,7 @@ function step(S,dt){
   CUR=S;S.t+=dt;
   const live=S.units.filter(u=>u.alive);
   for(const u of live){u.cd=Math.max(0,u.cd-dt);if(u.boostT>0)u.boostT-=dt;if(u.chargeT>0)u.chargeT-=dt;if(u.chargeCd>0)u.chargeCd-=dt;if(u.pst>0)u.pst-=dt;if(u.stun>0)u.stun-=dt;if(u.snare>0)u.snare-=dt;if(u.invis>0){u.invis-=dt;if(u.invis<=0)fx(S,u.x,u.y-20,'visibile','#fff6c4')}
-    if(u.hit>0)u.hit-=dt;if(u.lunge>0)u.lunge-=dt}
+    if(u.hit>0)u.hit-=dt;if(u.lunge>0)u.lunge-=dt;if(u.lb>0)u.lb-=dt}
   for(const u of live){ if(!(u.underground||u.invis>0||u.disguised)) continue;
     for(const e of live){ if(e.side===u.side) continue; const d=dist(u,e);
       const rev=(e.def.reveal&&d<e.def.reveal)||(u.underground&&e.def.hearUnder&&d<e.def.hearUnder)||(u.disguised&&!u.underground&&e.def.sniff&&d<e.def.sniff);
@@ -1517,6 +1540,7 @@ function render(){
     drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
+    if(u.lb>0){ctx.font='11px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.fillText('💨',X(u.x)-(F?-1:1)*u.face*18,u.y-22)}
   }
   for(const t of S.tracers){ctx.globalAlpha=Math.min(1,t.t*7);ctx.strokeStyle=t.col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(t.x1),t.y1);ctx.lineTo(X(t.x2),t.y2);ctx.stroke();ctx.globalAlpha=1}
   ctx.textAlign='center';ctx.textBaseline='middle';
@@ -1661,7 +1685,7 @@ function statMax(star,key){if(!STATMAX[star]){const m={};for(const k in UNITS){i
 function statVal(s,k){return k==='rng'&&s.atk&&!s.ranged?'mischia':(s[k]||'—')}
 function statChips(type,star){const s=statsOf(type,star);return `<span class="stats">${STATDEF.map(([k,i,l])=>`<span class="sc" title="${l}"><i aria-hidden="true">${i}</i><span class="sr">${l} </span>${statVal(s,k)}</span>`).join('')}</span>`}
 const ROLES={thief:{n:'Ladro',d:"Ruba l'uovo"},def:{n:'Difensore',d:"Protegge l'uovo"},atk:{n:'Attaccante',d:'Caccia le unità nemiche'},sup:{n:'Supporto',d:'Esche, trappole e trucchi'}};
-const ROLEOF={topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'def',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
+const ROLEOF={topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'def',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
   cacciatore:'atk',assassino:'atk',spazzino:'atk',mais:'sup',spaventa:'sup',coltivatore:'sup',benefattore:'sup'};
 const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
