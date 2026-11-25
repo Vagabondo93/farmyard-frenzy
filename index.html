@@ -273,6 +273,11 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
     </div>
     <div class="panel">
       <h3>Il tuo profilo</h3>
+      <div id="loginBox" class="hidden" style="display:grid;gap:8px">
+        <button class="btn primary" id="loginGoogle">Accedi con Google</button>
+        <button class="btn" id="loginAnon">Entra come ospite online</button>
+        <p class="empty" style="margin:0">L'accesso serve per giocare online e comparire in classifica. Come ospite il profilo resta solo su questo dispositivo.</p>
+      </div>
       <div id="regBox" class="hidden" style="display:grid;gap:8px">
         <label for="nickIn" style="font-weight:700">Scegli il tuo nickname</label>
         <div class="field-row"><input id="nickIn" maxlength="16" autocomplete="nickname" placeholder="es. VolpeAstuta"><button class="btn primary" id="regBtn">Iscriviti</button></div>
@@ -280,7 +285,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <div id="meBox" class="hidden" style="display:grid;gap:6px">
         <div style="font-family:var(--f-display);font-size:24px" id="meNick"></div>
         <div class="statline"><span class="pill gold">Elo <span id="meElo"></span></span><span class="pill">🌫️ Nebbia <span id="meEloF"></span></span><span class="pill" id="meWL"></span></div>
-        <div class="statline"><button class="linkbtn" id="renBtn">Cambia nickname</button><button class="linkbtn" id="guestBtn">Gioca come ospite</button></div>
+        <div class="statline"><button class="linkbtn" id="renBtn">Cambia nickname</button><button class="linkbtn" id="guestBtn">Gioca come ospite</button><button class="linkbtn hidden" id="logoutBtn">Esci</button></div>
         <div id="renBox" class="hidden" style="display:grid;gap:6px">
           <label for="renIn" style="font-weight:700">Nuovo nickname</label>
           <div class="field-row"><input id="renIn" maxlength="16" autocomplete="nickname"><button class="btn primary" id="renSave">Salva</button><button class="btn" id="renCancel">Annulla</button></div>
@@ -1743,6 +1748,7 @@ function renderLobby(){
   renderTop();
   const reg=!!PROFILE;
   $('regBox').classList.toggle('hidden',!!RAW||ONLINE!=='ok'||!CANWRITE);
+  $('loginBox').classList.toggle('hidden',ONLINE!=='login');$('logoutBtn').classList.toggle('hidden',!FBAUTH||!UID);
   $('meBox').classList.toggle('hidden',!reg);
   $('guestBox').classList.toggle('hidden',!(GUEST&&RAW));
   if(GUEST&&RAW) $('guestNick').textContent=RAW.nick;
@@ -1750,6 +1756,7 @@ function renderLobby(){
   const can=ONLINE==='ok'&&reg&&CANWRITE;
   for(const id of ['roomFriendly','roomRanked','joinBtn','rumbleOnline']) $(id).disabled=!can;
   $('onlineNote').textContent=ONLINE==='loading'?'Connessione al server di gioco…':
+    ONLINE==='login'?'Accedi per giocare online con gli amici: basta mandare il link e un codice stanza.':
     ONLINE==='off'?'Il gioco online non è disponibile in questa vista: serve aver fatto l\'accesso a claude.ai e avere il link condiviso. Puoi comunque fare il tutorial e giocare contro il bot.':
     !CANWRITE?'Puoi vedere la classifica, ma per iscriverti e giocare online il proprietario deve condividerti il gioco come Contributor o Editor.':
     GUEST&&RAW?'Le partite online e la classifica richiedono il profilo: rientra per usarle.':
@@ -1761,27 +1768,57 @@ function renderLobby(){
     '<li class="empty">Nessun giocatore ancora. Iscriviti per primo!</li>';
 }
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+// Dentro claude.ai si usa il database della pagina; sul sito pubblico si usa Firebase (vedi firebase-config.js).
+let FBAUTH=null;
+function loadScript(src){return new Promise((ok,ko)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)})}
+function fbAdapter(fs){
+  const D=path=>{const r=fs.doc(path);return{id:r.id,path,get:()=>r.get(),set:d=>r.set(d),update:d=>r.update(d),delete:()=>r.delete(),
+    onSnapshot:(n,e)=>r.onSnapshot(n,e),collection:p=>C(path+'/'+p),
+    acquire:async o=>{const ttl=o.ttlMs||30000;try{return await fs.runTransaction(async tx=>{const sn=await tx.get(r),L=sn.exists&&sn.data()._lease,now=Date.now();
+      if(L&&L.exp>now&&L.holder!==o.holder)return{acquired:false};tx.set(r,{_lease:{holder:o.holder,exp:now+ttl}},{merge:true});return{acquired:true}})}catch(e){return{acquired:false}}}}};
+  const Q=q=>({where:(a,b,c)=>Q(q.where(a,b,c)),orderBy:(a,d)=>Q(q.orderBy(a,d)),limit:n=>Q(q.limit(n)),get:()=>q.get(),onSnapshot:(n,e)=>q.onSnapshot(n,e)});
+  const C=path=>Object.assign(Q(fs.collection(path)),{path,doc:id=>D(path+'/'+id)});
+  return{doc:D,collection:C};
+}
+let SUBS=[];
+function startProfile(db,onFail){
+  SUBS.forEach(f=>f());SUBS=[];let first=true;
+  SUBS.push(db.doc('players/'+UID).onSnapshot(s=>{
+    ONLINE='ok';const had=!!RAW;
+    RAW=s.exists?{id:s.id,...s.data()}:null;PROFILE=GUEST?null:RAW;
+    if(!G) renderLobby(); else renderTop();
+    if(RAW&&!had&&!first&&!tutSeen()) openTut();
+    if(first&&!RAW&&!CANWRITE&&!tutSeen()) openTut();
+    first=false;
+  },()=>onFail&&onFail()));
+  SUBS.push(db.collection('players').orderBy('elo','desc').limit(20).onSnapshot(s=>{BOARD=s.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderLobby()},()=>{}));
+  SUBS.push(db.collection('players').orderBy('eloFog','desc').limit(20).onSnapshot(s=>{BOARDF=s.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderLobby()},()=>{}));
+  SUBS.push(db.collection('players').orderBy('eloRumble','desc').limit(20).onSnapshot(s=>{BOARDR=s.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderLobby()},()=>{}));
+}
+async function initFirebase(off){
+  try{await loadScript('firebase-config.js')}catch(e){}
+  const cfg=window.FF_FIREBASE;if(!cfg||!cfg.apiKey){off();return}
+  try{
+    const V='https://www.gstatic.com/firebasejs/10.12.2/';
+    await loadScript(V+'firebase-app-compat.js');await loadScript(V+'firebase-auth-compat.js');await loadScript(V+'firebase-firestore-compat.js');
+    firebase.initializeApp(cfg);FBAUTH=firebase.auth();DB=fbAdapter(firebase.firestore());CANWRITE=true;
+    FBAUTH.onAuthStateChanged(u=>{
+      if(!u){UID=null;RAW=PROFILE=null;SUBS.forEach(f=>f());SUBS=[];ONLINE='login';renderLobby();return}
+      UID=u.uid;ONLINE='loading';renderLobby();startProfile(DB,off);
+    });
+  }catch(e){off()}
+}
 async function initOnline(){
   const off=()=>{ONLINE='off';renderLobby();if(!tutSeen())openTut()};
-  if(!(window.claude&&window.claude.use)){off();return}
+  if(!(window.claude&&window.claude.use)){initFirebase(off);return}
   const t=setTimeout(()=>{if(ONLINE==='loading')off()},10000);
   try{
     const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
     if(!db||!user){clearTimeout(t);off();return}
     UID=await user.id(); if(!UID){clearTimeout(t);off();return}
     DB=db; CANWRITE=(await user.can('data.write'))!==false;
-    let first=true;
-    db.doc('players/'+UID).onSnapshot(s=>{
-      clearTimeout(t);ONLINE='ok';const had=!!RAW;
-      RAW=s.exists?{id:s.id,...s.data()}:null;PROFILE=GUEST?null:RAW;
-      if(!G) renderLobby(); else renderTop();
-      if(RAW&&!had&&!first&&!tutSeen()) openTut();
-      if(first&&!RAW&&!CANWRITE&&!tutSeen()) openTut();
-      first=false;
-    },()=>{clearTimeout(t);off()});
-    db.collection('players').orderBy('elo','desc').limit(20).onSnapshot(s=>{BOARD=s.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderLobby()},()=>{});
-    db.collection('players').orderBy('eloFog','desc').limit(20).onSnapshot(s=>{BOARDF=s.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderLobby()},()=>{});
-    db.collection('players').orderBy('eloRumble','desc').limit(20).onSnapshot(s=>{BOARDR=s.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderLobby()},()=>{});
+    startProfile(db,()=>{clearTimeout(t);off()});
+    const tt=setInterval(()=>{if(ONLINE==='ok'){clearTimeout(t);clearInterval(tt)}},300);
   }catch(e){clearTimeout(t);off()}
 }
 async function register(){
@@ -1923,6 +1960,9 @@ document.addEventListener('pointercancel',e=>endDrag(e,true));
 function setGuest(on){GUEST=on;try{on?sessionStorage.setItem('ff-guest','1'):sessionStorage.removeItem('ff-guest')}catch(e){}
   PROFILE=GUEST?null:RAW;if(roomUnsub&&!G){roomUnsub();roomUnsub=null;$('roomBox').classList.add('hidden')}lobbyMsg(on?'Ora giochi come ospite.':'');renderLobby()}
 $('guestBtn').onclick=()=>setGuest(true);
+$('loginGoogle').onclick=async()=>{try{await FBAUTH.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){lobbyMsg('Accesso con Google non riuscito o annullato.')}};
+$('loginAnon').onclick=async()=>{try{await FBAUTH.signInAnonymously()}catch(e){lobbyMsg('Accesso come ospite non riuscito: controlla che sia attivo nelle impostazioni di Firebase.')}};
+$('logoutBtn').onclick=async()=>{if(G)return;try{await FBAUTH.signOut();lobbyMsg('Sei uscito.')}catch(e){}};
 $('unguestBtn').onclick=()=>setGuest(false);
 $('renBtn').onclick=()=>{$('renBox').classList.remove('hidden');$('renIn').value=PROFILE?PROFILE.nick:'';$('renIn').focus()};
 $('renCancel').onclick=()=>{$('renBox').classList.add('hidden');lobbyMsg('')};

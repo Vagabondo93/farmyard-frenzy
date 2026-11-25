@@ -14,7 +14,10 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 | `docs/` | Banner e logo originali ad alta risoluzione. |
 | `tools/bilanciamento.js` | Simula migliaia di battaglie tra squadre casuali e stampa quanto vince ogni unità e ogni ordine. |
 | `tools/test-partite.js` | Gioca da solo partite contro il bot, Royal Rumble e partite online, e controlla che non ci siano errori. |
-| `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online. |
+| `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online su claude.ai. |
+| `tools/test-firebase.js`, `tools/mock-firebase.js` | Test del sito pubblico con un Firebase simulato. |
+| `firebase-config.js`, `firestore.rules`, `firebase.json` | Configurazione di Firebase per il sito pubblico. |
+| `.github/workflows/pubblica.yml` | Pubblicazione automatica su GitHub Pages. |
 
 ## Giocare in locale
 
@@ -63,7 +66,13 @@ npm test
 Le partite online (1 contro 1 e Rumble) sono deterministiche: ogni giocatore simula la stessa battaglia
 a partire dalle squadre e dal seme casuale condivisi, quindi tutti vedono lo stesso risultato.
 
-## Online: come funziona oggi e cosa serve per pubblicarlo altrove
+## Online
+
+Sul sito pubblico l'online usa Firebase (accesso con Google o come ospite): la configurazione va in
+`firebase-config.js`, le regole del database sono in `firestore.rules` e i passaggi per pubblicare sono in
+`docs/PUBBLICAZIONE.md`. Dentro claude.ai il gioco usa invece il database della pagina.
+
+## Come è nato l'online
 
 Profili, Elo, classifiche e stanze usano il database integrato delle pagine di claude.ai
 (`window.claude.use('db')`). Fuori da claude.ai quel database non esiste, quindi:
