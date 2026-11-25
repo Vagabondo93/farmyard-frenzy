@@ -11,6 +11,7 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 |---|---|
 | `index.html` | Tutto il gioco: grafica, regole, simulazione, bot, modalità online. Si apre direttamente nel browser. |
 | `banner.jpg`, `logo.webp` | Banner e logo usati nel menu (versioni alleggerite). |
+| `icons/` | Illustrazioni dei personaggi (256×256, sfondo trasparente). Dove manca un file si usa il disegno vettoriale interno. |
 | `docs/` | Banner e logo originali ad alta risoluzione. |
 | `tools/bilanciamento.js` | Simula migliaia di battaglie tra squadre casuali e stampa quanto vince ogni unità e ogni ordine. |
 | `tools/test-partite.js` | Gioca da solo partite contro il bot, Royal Rumble e partite online, e controlla che non ci siano errori. |
