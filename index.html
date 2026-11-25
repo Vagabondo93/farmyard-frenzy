@@ -214,7 +214,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .ttext{margin:0;font-size:13.5px;line-height:1.45}
 .tvs{font-size:12.5px;color:var(--muted);line-height:1.45}
 .tvs .good{color:var(--good);font-weight:800}.tvs .bad{color:var(--bad);font-weight:800}
-.tpow{font-size:12.5px;border:2px dashed var(--line);border-radius:12px;padding:6px 9px;color:var(--muted);margin-top:auto}
+.tpow{font-size:12.5px;border:2px dashed var(--line);border-radius:12px;padding:6px 9px;color:var(--muted)}
 .tpow.on{border-style:solid;border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--ink)}
 .cmbox{width:100%;max-width:400px;display:grid;gap:10px;max-height:100%;overflow:auto}
 .cmbox .row{background:var(--panel);border-radius:14px;padding:8px}
@@ -225,7 +225,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcgbtn.buy .tcg{cursor:pointer}
 .tcgbtn.off{opacity:.55;cursor:not-allowed}
 .tcgbtn.off:hover{transform:none}
-.tfoot{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:8px}
+.tfoot{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:8px}
 .buylbl{margin-left:auto;background:var(--accent);color:var(--accent-ink);font-weight:900;font-size:13px;border-radius:999px;padding:5px 12px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
 .tcgbtn.off .buylbl{background:var(--chip);color:var(--muted)}
 .tcg .oc{font-size:12.5px;background:var(--chip);border-radius:6px;padding:2px 8px;font-weight:700}
@@ -244,6 +244,18 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .pchip{cursor:pointer;border-left:4px solid var(--rsup)}.pchip.r-thief{border-left-color:var(--rthief)}.pchip.r-def{border-left-color:var(--rdef)}.pchip.r-atk{border-left-color:var(--ratk)}
 .pchip.lock{opacity:.5}.pchip small{font-weight:700;color:var(--muted)}
 .rank li.out{opacity:.5}
+.trow i{font-style:normal}
+/* carte compatte di market e squadra: illustrazione bassa ma personaggio grande, statistiche su due colonne */
+.tcg.dense{gap:7px;padding:9px}
+.tcg.dense .tart{aspect-ratio:5/2}
+.tcg.dense .temo{font-size:78px}.tcg.dense.s2 .temo{font-size:84px}.tcg.dense.s3 .temo{font-size:90px}
+.tcg.dense .tstats{grid-template-columns:1fr 1fr;column-gap:14px;row-gap:5px;padding:7px 10px}
+.tcg.dense .trow{grid-template-columns:auto 1fr;grid-template-areas:'i v' 'b b';gap:2px 6px;align-items:center}
+.tcg.dense .trow>span:first-child{grid-area:i}.tcg.dense .trow .tv{grid-area:v;text-align:right}.tcg.dense .trow .tbar{grid-area:b;height:6px}
+.tcg.dense .tl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tcg.dense .ttext{font-size:13px;line-height:1.4}
+.tcg.dense .tvs{font-size:12px;line-height:1.4}
+.tcg.dense .tpow{font-size:12px;padding:5px 8px}
 .hidden{display:none!important}
 </style>
 
@@ -1580,7 +1592,7 @@ function renderAll(){
     if(!t) return `<div class="tcgbtn sold" aria-hidden="true"></div>`;
     const d=UNITS[t],c=COST[d.t],n=p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
-    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,1,{foot:`${hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
+    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,1,{dense:true,foot:`${hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
   $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.';
   $('orders').innerHTML=Object.entries(ORDERS).map(([k,d])=>`<button class="ord${selU&&selU.order===k?' cur':''}" data-ord="${k}" ${!shop||p.gold<ORDER_COST||!selU?'disabled':''}>
       <span class="cost">${ORDER_COST}</span><span class="ic">${d.i}</span>
@@ -1588,7 +1600,7 @@ function renderAll(){
   const field=p.board.filter(b=>!b.bench),bench=p.board.filter(b=>b.bench);
   $('boardCount').textContent=`${field.length}/${MAXB} · tocca un'unità per darle un ordine`;
   $('benchCount').textContent=`${bench.length}/${MAXBENCH} · non scende in campo, ma conta per le copie ★★`;
-  const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+b.star+' stelle':''}">${tcgCard(b.type,b.star,{compact:true,foot:
+  const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+b.star+' stelle':''}">${tcgCard(b.type,b.star,{compact:true,dense:true,foot:
      `<span class="oc ${b.order?'':'none'}">${b.order?ORDERS[b.order].i+' '+ORDERS[b.order].n:'nessun ordine'}</span>
       <span class="acts"><button class="sell" data-card="${b.type}:${b.star}">Scheda</button>${shop?`<button class="sell" data-swap="${b.uid}">${b.bench?'↑ In campo':'↓ Panchina'}</button><button class="sell" data-sell="${b.uid}">Vendi (+1)</button>`:''}</span>`})}</div>`;
   let h=field.map(card).join('');
@@ -1620,12 +1632,13 @@ const ROLEOF={topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'def',
   cacciatore:'atk',assassino:'atk',spazzino:'atk',mais:'sup',spaventa:'sup',coltivatore:'sup',benefattore:'sup'};
 const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
-  return `<article class="tcg r-${r} s${star}${o.compact?' compact':''}">
+  const roleTag={thief:'Ladro',def:'Guardiano'}[r];
+  return `<article class="tcg r-${r} s${star}${o.compact?' compact':''}${o.dense?' dense':''}">
     <header><span class="tname">${d.n}</span><span class="tcost" title="Costo">${COST[d.t]}</span></header>
     <div class="tart"><span class="temo" aria-hidden="true">${IC(d)}</span><span class="tstars">${'★'.repeat(star)}</span></div>
-    <div class="ttags"><span class="trole">${ROLES[r].n}</span>${d.fogOnly?'<span class="trole fogb">🌫️ Solo Nebbia</span>':''} ${d.tags.filter(t=>t!=='Piccolo').join(' · ')} · Livello ${d.t}${(d.minRound||1)>1?` · dal round ${d.minRound}`:''}</div>
+    <div class="ttags"><span class="trole">${ROLES[r].n}</span>${d.fogOnly?'<span class="trole fogb">🌫️ Solo Nebbia</span>':''} ${d.tags.filter(t=>t!=='Piccolo'&&t!==roleTag).join(' · ')} · Liv. ${d.t}${(d.minRound||1)>1?` · dal round ${d.minRound}`:''}</div>
     <div class="tstats">${STATDEF.map(([key,i,l])=>{const v=statVal(s,key),w=v==='mischia'?6:v==='—'?0:Math.max(4,Math.min(100,v/statMax(star,key)*100));
-      return `<div class="trow"><span>${i} ${l}</span><span class="tbar"><b style="width:${w}%"></b></span><span class="tv">${v}</span></div>`}).join('')}</div>
+      return `<div class="trow" title="${l}: ${v}"><span><i aria-hidden="true">${i}</i><span class="tl"> ${l}</span></span><span class="tbar"><b style="width:${w}%"></b></span><span class="tv">${v}</span></div>`}).join('')}</div>
     ${o.compact?'':`<p class="ttext">${d.d}</p>
     <div class="tvs"><span class="good">Forte contro</span> ${d.beats}<br><span class="bad">Debole contro</span> ${d.loses}</div>`}
     ${!o.compact||star===3?`<div class="tpow ${star===3?'on':''}">⚡ <b>${P3[k].n}</b> <span class="tpl">(★★★)</span>: ${P3[k].d}</div>`:''}
