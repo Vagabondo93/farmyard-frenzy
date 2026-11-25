@@ -1532,10 +1532,10 @@ function endRound(){
   } else showBanner(title,text,'Vai al market ▶',()=>{G.round++;startShop()});
   renderAll();
 }
-async function baitLoss(S,players,me,skipOpp){
+function baitLoss(S,players,me,skipOpp){
   const out=[],cp=[0,1,3,9];
   for(const u of S.units){
-    if(u.alive||u.def.role!=='static'||u.def.hidden||u.buid==null||(skipOpp&&u.side!==me)) continue;
+    if(u.alive||u.def.role!=='static'||!u.def.tags.includes('Oggetto')||u.def.hidden||u.buid==null||(skipOpp&&u.side!==me)) continue;
     const p=players[u.side],b=p.board.find(x=>x.uid===u.buid); if(!b) continue;
     const before=cp[b.star];
     if(b.star>1){b.star--;if(u.side===me)out.push(`${UNITS[b.type].n} scende a ${'★'.repeat(b.star)}`)}
