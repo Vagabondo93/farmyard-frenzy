@@ -1960,17 +1960,19 @@ $('menuBtn').onclick=async()=>{
 let cd=null,suppressClick=false;
 document.addEventListener('click',e=>{if(suppressClick){e.stopPropagation();e.preventDefault();suppressClick=false}},true);
 document.addEventListener('pointerdown',e=>{
+  if(cd) endDrag(e,true); // un trascinamento rimasto a metà (rilascio perso) si chiude prima di iniziarne un altro
   if(!G||G.phase!=='shop')return;
-  const el=e.target.closest('.bu');if(!el||e.target.closest('button'))return;
-  cd={uid:+el.dataset.sel,x:e.clientX,y:e.clientY,el,ghost:null};
+  const el=e.target.closest&&e.target.closest('.bu');if(!el||e.target.closest('button'))return;
+  cd={pid:e.pointerId,uid:+el.dataset.sel,x:e.clientX,y:e.clientY,el,ghost:null};
 });
 document.addEventListener('dragstart',e=>{if(e.target.closest&&e.target.closest('.bu'))e.preventDefault()});
 document.addEventListener('pointermove',e=>{
-  if(!cd)return;
+  if(!cd||e.pointerId!==cd.pid)return;
+  if(e.pointerType==='mouse'&&e.buttons===0){endDrag(e,false);return} // tasto rilasciato fuori dalla finestra
   if(!cd.ghost){
     if(Math.hypot(e.clientX-cd.x,e.clientY-cd.y)<8)return;
     const r=cd.el.getBoundingClientRect();cd.dx=e.clientX-r.left;cd.dy=e.clientY-r.top;
-    cd.ghost=cd.el.cloneNode(true);
+    cd.ghost=cd.el.cloneNode(true);cd.ghost.classList.add('dragGhost');
     Object.assign(cd.ghost.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',pointerEvents:'none',zIndex:30,opacity:.92,transform:'rotate(-3deg)',boxShadow:'0 14px 30px rgba(0,0,0,.3)'});
     document.body.appendChild(cd.ghost);cd.el.style.opacity=.35;
   }
@@ -1979,9 +1981,10 @@ document.addEventListener('pointermove',e=>{
   $('board').classList.toggle('dropok',!!(over&&over.closest('#board')));$('bench').classList.toggle('dropok',!!(over&&over.closest('#bench')));
 });
 function endDrag(e,cancel){
-  if(!cd)return;const c=cd;cd=null;
+  if(!cd||(e&&e.pointerId!=null&&e.pointerId!==cd.pid&&!cancel))return;const c=cd;cd=null;
+  document.querySelectorAll('.dragGhost').forEach(g=>g.remove());
   if(!c.ghost)return;
-  c.ghost.remove();c.el.style.opacity='';$('board').classList.remove('dropok');$('bench').classList.remove('dropok');
+  c.el.style.opacity='';$('board').classList.remove('dropok');$('bench').classList.remove('dropok');
   suppressClick=true;setTimeout(()=>{suppressClick=false},50);
   if(cancel||!G||G.phase!=='shop'){renderAll();return}
   const over=document.elementFromPoint(e.clientX,e.clientY),p=ME(),b=p.board.find(x=>x.uid===c.uid);
@@ -1998,6 +2001,8 @@ function endDrag(e,cancel){
 }
 document.addEventListener('pointerup',e=>endDrag(e,false));
 document.addEventListener('pointercancel',e=>endDrag(e,true));
+window.addEventListener('blur',()=>endDrag(null,true));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)endDrag(null,true)});
 // ---------- cambia nickname e modalità ospite ----------
 function setGuest(on){GUEST=on;try{on?sessionStorage.setItem('ff-guest','1'):sessionStorage.removeItem('ff-guest')}catch(e){}
   PROFILE=GUEST?null:RAW;if(roomUnsub&&!G){roomUnsub();roomUnsub=null;$('roomBox').classList.add('hidden')}lobbyMsg(on?'Ora giochi come ospite.':'');renderLobby()}
