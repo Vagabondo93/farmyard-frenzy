@@ -1105,7 +1105,7 @@ const onBridge=u=>BRIDGES.some(b=>Math.abs(u.y-b)<BW);
 function riverStep(u,tx,ty){
   const su=Math.sign(u.x-RX)||1,st=Math.sign(tx-RX)||su,inX=Math.abs(u.x-RX)<RW+6;
   if(inX&&onBridge(u)){const b=BRIDGES.reduce((p,c)=>Math.abs(u.y-c)<Math.abs(u.y-p)?c:p);const side=Math.abs(tx-RX)<RW+6?su:st;return{x:RX+side*(RW+16),y:b}}
-  if(su===st||inX) return null;
+  if(su===st) return null; // anche chi è sulla riva fuori dal ponte deve fare il giro
   const b=BRIDGES.reduce((p,c)=>Math.abs(u.y-c)+Math.abs(ty-c)<Math.abs(u.y-p)+Math.abs(ty-p)?c:p);
   const entry={x:RX+su*(RW+12),y:b};
   if(Math.hypot(u.x-entry.x,u.y-entry.y)<10){
@@ -1164,7 +1164,10 @@ function moveTo(u,tx,ty,dt,S){
   if(u.def.flying&&!u.def.noSlow) for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.slowFly&&dist(u,e)<e.def.slowFly){sp*=e.def.slowFlyMul??.5;break}
   if(canCarry(u)&&!u.def.flying&&!u.underground)
     for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.block&&(!u.def.agile||e.def.blockAll)&&dist(u,e)<36){sp*=.4;break}
-  if(S.fog&&!u.def.flying){const w=riverStep(u,tx,ty);if(w){tx=w.x;ty=w.y}
+  if(S.fog&&!u.def.flying){
+    // un bersaglio in acqua (fuori dai ponti) si raggiunge solo dalla riva
+    if(Math.abs(tx-RX)<RW+4&&!onBridge({y:ty})) tx=RX+(Math.sign(u.x-RX)||1)*(RW+4);
+    const w=riverStep(u,tx,ty);if(w){tx=w.x;ty=w.y}
     if(u.reburrow&&Math.abs(u.x-RX)>RW+30&&u.carrying===null&&!u.fake){u.underground=true;u.reburrow=false}}
   const dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy); if(d<1) return;
   const s=Math.min(d,sp*dt); u.x+=dx/d*s; u.y+=dy/d*s;
@@ -1173,6 +1176,7 @@ function moveTo(u,tx,ty,dt,S){
 }
 function dropEgg(u,S){
   const e=S.eggs[u.carrying]; e.state='dropped';e.dropT=0;e.recT=0;e.x=u.x;e.y=u.y;e.carrier=null;u.carrying=null;
+  if(S.fog&&Math.abs(e.x-RX)<RW+4&&!onBridge(e)) e.x=RX+(e.x<RX?-1:1)*(RW+8); // la corrente lo porta a riva
 }
 function damage(t,amt,S,src){
   t.hp-=amt; t.hit=.15;
