@@ -21,7 +21,7 @@ const phase=p=>p.evaluate(()=>window.__g()?.phase);
 async function playRound(pages){
   for(const p of pages) if(await phase(p)==='shop') await buyAndReady(p);
   for(const p of pages){await p.bringToFront();await p.waitForFunction(()=>['battle','result','over'].includes(window.__g().phase),null,{timeout:60000});
-    if(await phase(p)==='battle') await p.click('[data-speed="4"]')}
+    if(await phase(p)==='battle'&&await p.isVisible('[data-speed="4"]')) await p.click('[data-speed="4"]')}
   for(const p of pages){await p.bringToFront();await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000})}
 }
 (async()=>{
@@ -39,7 +39,7 @@ async function playRound(pages){
     await ctx.close()}
   // --- online con database finto
   const ctx=await b.newContext();
-  await ctx.addInitScript({content:fs.readFileSync(path.join(__dirname,'mock-db.js'),'utf8')+";try{localStorage.setItem('uovo-tut','1')}catch(e){}"});
+  await ctx.addInitScript({content:fs.readFileSync(path.join(__dirname,'mock-db.js'),'utf8')+";try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=4;"});
   const names=['anna','bruno','carla'],P=[];
   for(const n of names){const p=await ctx.newPage();p.on('pageerror',e=>errs.push(n+': '+e.message));P.push(p)}
   for(let i=0;i<3;i++){const p=P[i];await p.goto(url+'?u='+names[i]);await p.waitForSelector('#nickIn',{state:'visible'});

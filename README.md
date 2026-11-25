@@ -14,6 +14,7 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 | `docs/` | Banner e logo originali ad alta risoluzione. |
 | `tools/bilanciamento.js` | Simula migliaia di battaglie tra squadre casuali e stampa quanto vince ogni unità e ogni ordine. |
 | `tools/test-partite.js` | Gioca da solo partite contro il bot, Royal Rumble e partite online, e controlla che non ci siano errori. |
+| `tools/test-timer.js` | Controlla il tempo per il Pronto online: conto alla rovescia, partenza automatica, giocatore sparito. |
 | `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online su claude.ai. |
 | `tools/test-firebase.js`, `tools/mock-firebase.js` | Test del sito pubblico con un Firebase simulato. |
 | `firebase-config.js`, `firestore.rules`, `firebase.json` | Configurazione di Firebase per il sito pubblico. |
@@ -63,7 +64,12 @@ npm test
 - **Royal Rumble**: fino a 8 giocatori, 2 uova a testa (max 5), avversario casuale ogni round, fame dal round 8,
   market condiviso con 19 copie per personaggio.
 
-Le partite online (1 contro 1 e Rumble) sono deterministiche: ogni giocatore simula la stessa battaglia
+Nelle partite online (1 contro 1 e Rumble) il round 1 non ha limiti di tempo; dal round 2, quando il primo
+giocatore preme Pronto, gli altri hanno 60 s (+5 s per round, massimo 2 minuti). Allo scadere la squadra parte così
+com'è; chi non risponde entro altri 15 s gioca il round con la squadra vuota. Le battaglie online scorrono in tempo
+reale per tutti e accelerano da sole: ×1,5 dopo 20 s, ×2 dopo 35 s.
+
+Le partite online sono deterministiche: ogni giocatore simula la stessa battaglia
 a partire dalle squadre e dal seme casuale condivisi, quindi tutti vedono lo stesso risultato.
 
 ## Online
@@ -88,5 +94,5 @@ Profili, Elo, classifiche e stanze usano il database integrato delle pagine di c
 
 - L'Elo viene calcolato e salvato dal browser di ciascun giocatore: per una classifica pubblica
   andrebbe calcolato da un server.
-- Nella Rumble online, chi chiude la pagina senza premere "Abbandona" lascia gli altri in attesa.
+- Al round 1 non c'è limite di tempo, quindi chi chiude la pagina proprio lì lascia l'altro in attesa.
 - Bilanciamento: Cane e Galli-co un po' forti, Benefattore debole (vedi `npm run bilanciamento`).

@@ -262,6 +262,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcg.compact .tart{height:86px}.tcg.compact .temo{font-size:62px}
 .cmbox .tcg .tart{height:150px}.cmbox .tcg .temo{font-size:100px}
 @media (min-width:1500px){.cards{grid-template-columns:repeat(5,minmax(0,1fr))}.main{grid-template-columns:minmax(0,1.7fr) minmax(340px,1fr)}}
+#timerPill.urgent{background:var(--red);color:#fff}
 .hidden{display:none!important}
 </style>
 
@@ -382,6 +383,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
         <span id="speedBox" class="hidden" style="display:flex;gap:6px">
           <button class="btn on" data-speed="1">1×</button><button class="btn" data-speed="2">2×</button><button class="btn" data-speed="4">4×</button>
         </span>
+        <span class="pill hidden" id="timerPill"></span>
         <span class="toast" id="toast" aria-live="polite"></span>
       </div>
     </section>
@@ -415,7 +417,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       </div>
     </div>
     <div class="cards" id="shop"></div>
-    <h3 style="margin:16px 0 4px">Ordini <small>2 oro ciascuno, quanti ne vuoi</small></h3>
+    <h3 style="margin:16px 0 4px">Ordini <small>1 oro ciascuno, quanti ne vuoi</small></h3>
     <p class="empty" id="ordHint" style="margin:0 0 6px"></p>
     <div class="ords" id="orders"></div>
   </section>
@@ -439,7 +441,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 const W=960,H=540;
 const HOME=[{x:62,y:H/2},{x:W-62,y:H/2}];
 const SIDE=[{name:'Tu',col:'#2f6fe0',soft:'rgba(47,111,224,.18)'},{name:'Bot',col:'#d23f2d',soft:'rgba(210,63,45,.18)'}];
-const COST={1:2,2:3,3:4}, ORDER_COST=2, REROLL=1, MAXB=7, MAXBENCH=5, WIN=3, ROUND_T=40, STEP=1/60, MAX_ROUNDS=15;
+const COST={1:2,2:3,3:4}, ORDER_COST=1, REROLL=1, MAXB=7, MAXBENCH=5, WIN=3, ROUND_T=40, STEP=1/60, MAX_ROUNDS=15;
 
 const SCARE="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20x%3D%2730%27%20y%3D%2726%27%20width%3D%274%27%20height%3D%2737%27%20rx%3D%271%27%20fill%3D%27%237a5230%27/%3E%3Crect%20x%3D%277%27%20y%3D%2729%27%20width%3D%2750%27%20height%3D%274%27%20rx%3D%272%27%20fill%3D%27%237a5230%27/%3E%3Cpath%20d%3D%27M7%2027l-5-3M7%2031H1M7%2035l-5%203M57%2027l5-3M57%2031h6M57%2035l5%203%27%20stroke%3D%27%23e5b94a%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M17%2029h30l-4%2020H21z%27%20fill%3D%27%23d2452f%27/%3E%3Cpath%20d%3D%27M19%2035h26M20%2042h24M28%2029v20M36%2029v20%27%20stroke%3D%27%238e2a20%27%20stroke-width%3D%271.6%27/%3E%3Cpath%20d%3D%27M26%2049l-3%207M32%2049v8M38%2049l3%207%27%20stroke%3D%27%23e5b94a%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27/%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2720%27%20r%3D%279.5%27%20fill%3D%27%23d9b27a%27%20stroke%3D%27%23a8834e%27%20stroke-width%3D%271%27/%3E%3Cpath%20d%3D%27M27%2018l3%203m0-3l-3%203M34%2018l3%203m0-3l-3%203%27%20stroke%3D%27%233b2a1a%27%20stroke-width%3D%271.5%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M27.5%2025q4.5%202.5%209%200%27%20stroke%3D%27%233b2a1a%27%20stroke-width%3D%271.4%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M17%2013h30l-6-3-3-8h-12l-3%208z%27%20fill%3D%27%23e9bd45%27%20stroke%3D%27%23b8892a%27%20stroke-width%3D%271%27/%3E%3Crect%20x%3D%2725%27%20y%3D%278.5%27%20width%3D%2714%27%20height%3D%272.4%27%20fill%3D%27%23d2452f%27/%3E%3C/svg%3E";
 const SCAREIMG=new Image();SCAREIMG.src=SCARE;
@@ -998,11 +1000,16 @@ function buyUnit(p,i,rng){
 }
 function sellUnit(p,uid){const b=p.board.find(x=>x.uid===uid);if(b&&G&&G.rmb&&!p.ghost)G.rmb.counts[b.type]=(G.rmb.counts[b.type]||0)+[0,1,3,9][b.star];p.board=p.board.filter(x=>x.uid!==uid);p.gold+=1}
 
+// Tempo per il Pronto nelle partite con più giocatori: nessun limite al primo round, poi 60 s (+5 s per round, max 120)
+// che partono quando il primo giocatore preme Pronto.
+const isMP=()=>!!G&&(G.mode==='pvp'||(G.rmb&&G.rmb.online));
+const turnLimit=r=>r<=1?null:Math.min(120,60+5*(r-2));
+function setDeadline(at){const T=turnLimit(G.round);if(T&&at&&(!G.deadline||at+T*1000<G.deadline))G.deadline=at+T*1000}
 function startShop(){
-  G.phase='shop';
+  G.phase='shop';G.deadline=null;G.oppDoc=null;G.myAt=null;G.afkSent=false;for(const p of G.players)p.ovr=null;
   if(G.mode==='rumble'){rumbleShop();return}
   for(let s=0;s<2;s++){const p=G.players[s];p.gold=Math.min(10,(G.variant==='fog'?6:3)+G.round)+(G.lost[s]?1:0);rollShop(p,s?G.brng:G.rng,G.round)}
-  if(G.mode!=='pvp') botTurn(G.players[1],G.brng,G.lastComp[0]);
+  if(G.mode!=='pvp') botTurn(G.players[1],G.brng,G.lastComp[0]); else pvpWatch();
   hideBanner(); toast(G.round===1?'Hai 4 oro: compra due unità da 2. Un ladro per attaccare e un guardiano per difendere è un buon inizio.':'');
   renderAll();
 }
@@ -1076,7 +1083,7 @@ function makeSim(seed){
   const S={t:0,units:[],eggs:[0,1].map(s=>({side:s,home:HOME[s],x:HOME[s].x,y:HOME[s].y,state:'home',carrier:null,dropT:0})),
     traps:[],fakes:[],fx:[],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:Math.min(70,ROUND_T+(G.round-1)*3)};
   let id=1;
-  for(let s=0;s<2;s++) for(const b of G.players[s].board.filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
+  for(let s=0;s<2;s++) for(const b of (G.players[s].ovr||G.players[s].board).filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
   for(const u of [...S.units]) if(u.def.pack) for(let i=0;i<u.def.pack;i++)
     S.units.push(spawn({type:u.type,star:1,order:u.order,px:(u.side?W-u.x:u.x)+(i?-22:22),py:clamp(u.y+(i?32:-32),30,H-30)},u.side,id++));
   for(const u of S.units) if(u.def.fakeEgg){const n=u.def.fakes||1;
@@ -1497,7 +1504,7 @@ function render(){
     const y=f.y-(1.1-f.t)*24;ctx.strokeText(f.text,X(f.x),y);ctx.fillStyle=f.col;ctx.fillText(f.text,X(f.x),y);ctx.globalAlpha=1}
   const frac=Math.max(0,1-S.t/S.T);
   ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(W/2-120,8,240,8);ctx.fillStyle=frac>.25?'#fff6c4':'#ffb0a0';ctx.fillRect(W/2-120,8,240*frac,8);
-  ctx.font='bold 12px Nunito,sans-serif';ctx.fillStyle='#fff';ctx.fillText(Math.ceil(Math.max(0,S.T-S.t))+' s',W/2,26);
+  ctx.font='bold 12px Nunito,sans-serif';ctx.fillStyle='#fff';ctx.fillText(Math.ceil(Math.max(0,S.T-S.t))+' s'+(isMP()&&mpSpeed(S)>1?`  ·  ⏩ ×${mpSpeed(S)}`:''),W/2,26);
   if(S.pending&&!S.over){const left=Math.max(0,7-(S.t-S.pending.t)),mine=S.pending.winner===G.me;
     const msg=(mine?'Hai consegnato l\'uovo!':`${G.oppName} ha consegnato l'uovo!`)+` ${left.toFixed(1)} s: se ${mine?'l\'avversario consegna':'consegni anche tu'}, è pari`;
     ctx.font='bold 15px Nunito,sans-serif';const w=ctx.measureText(msg).width+28;
@@ -1589,7 +1596,7 @@ function renderAll(){
   const p=ME(),shop=G.phase==='shop';
   $('goldPill').textContent=`Oro ${p.gold}`;
   $('readyBtn').classList.toggle('hidden',!shop);
-  $('speedBox').classList.toggle('hidden',shop);
+  $('speedBox').classList.toggle('hidden',shop||isMP());
   $('rerollBtn').disabled=!shop||p.gold<REROLL;
   $('shopPanel').style.opacity=shop?1:.55;
   cv.classList.toggle('drag',shop);
@@ -1903,24 +1910,36 @@ function cleanBoard(list){
     star:[1,2,3].includes(b.star)?b.star:1,order:ORDERS[b.order]?b.order:null,bench:false,
     px:clamp(+b.px||100,26,UNITS[b.type].role==='static'?W-26:W/2-26),py:clamp(+b.py||H/2,26,H-26)}));
 }
+function pvpWatch(){
+  const round=G.round,opp=1-G.me;
+  const un=DB.doc(`rooms/${G.room}/turns/r${round}s${opp}`).onSnapshot(sn=>{
+    if(!G||G.round!==round||!sn.exists) return;
+    const d=sn.data();G.oppDoc=d;setDeadline(d.at||Date.now());
+    if(G.phase==='waiting') pvpResolve();
+  },()=>{});
+  G.unsub.push(un);
+}
 async function submitTurn(){
-  const round=G.round,opp=1-G.me,base=`rooms/${G.room}/turns/`;
+  const round=G.round,base=`rooms/${G.room}/turns/`,mine=DB.doc(base+`r${round}s${G.me}`);
   const board=ME().board.filter(b=>!b.bench).map(b=>({type:b.type,star:b.star,order:b.order||null,px:b.px,py:b.py}));
   G.phase='waiting';renderAll();
   showBanner('Squadra inviata',`In attesa che ${G.oppName} finisca gli acquisti…`,null);
-  try{await DB.doc(base+`r${round}s${G.me}`).set({board,by:UID})}
-  catch(e){G.phase='shop';hideBanner();toast('Invio non riuscito, premi di nuovo Pronto.');renderAll();return}
-  let un=null;
-  un=DB.doc(base+`r${round}s${opp}`).onSnapshot(s=>{
-    if(!s.exists||!G||G.round!==round||G.phase!=='waiting') return;
-    if(un) un();
-    G.players[opp].board=cleanBoard(s.data().board);
-    // la mia squadra passa dallo stesso filtro, così entrambi simulano dati identici
-    const mine=cleanBoard(board);G.players[G.me].board.filter(b=>!b.bench).forEach((b,i)=>{b.px=mine[i].px;b.py=mine[i].py});
-    startBattle();
-  },()=>{});
-  G.unsub.push(()=>un&&un());
+  let ex=null;try{ex=await mine.get()}catch(e){}
+  if(ex&&ex.exists&&ex.data().afk){ME().ovr=[];toast('Eri fuori tempo: questo round la tua squadra non scende in campo.')}
+  else{const at=Date.now();
+    try{await mine.set({board,by:UID,at})}catch(e){G.phase='shop';hideBanner();toast('Invio non riuscito, premi di nuovo Pronto.');renderAll();return}
+    G.myAt=at;setDeadline(at);
+    // la mia squadra passa dallo stesso filtro dell'avversario, così entrambi simulano dati identici
+    const cl=cleanBoard(board);G.players[G.me].board.filter(b=>!b.bench).forEach((b,i)=>{b.px=cl[i].px;b.py=cl[i].py});}
+  pvpResolve();
 }
+function pvpResolve(){
+  if(!G||G.phase!=='waiting'||!G.oppDoc) return;
+  const opp=1-G.me;G.players[opp].board=cleanBoard(G.oppDoc.board);
+  startBattle();
+}
+// chi non risponde 15 s dopo la scadenza gioca il round con la squadra vuota, così gli altri non restano bloccati
+async function sendAfk(path,extra){try{const r=DB.doc(path),sn=await r.get();if(!sn.exists)await r.set({...extra,board:[],afk:true,at:Date.now(),by:'tempo scaduto'})}catch(e){}}
 let menuArm=0;
 $('menuBtn').onclick=async()=>{
   if(!G) return;
@@ -2025,6 +2044,7 @@ const pOf=i=>i==='ghost'?G.rmb.ghost:G.rmb.P[i];
 const pName=i=>pOf(i).name;
 const fieldOf=p=>p.board.filter(b=>!b.bench).map(b=>({...b}));
 function rumbleShop(){
+  for(const p of [...G.rmb.P,G.rmb.ghost]) p.ovr=null;
   const R=G.rmb,rr=mulberry(((G.seedBase||1)*977+G.round*131)>>>0);
   const alive=R.P.map((p,i)=>i).filter(i=>!R.P[i].out);
   for(let i=alive.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[alive[i],alive[j]]=[alive[j],alive[i]]}
@@ -2070,6 +2090,7 @@ function rumbleEnd(){
   const el=$('log');for(const l of lines.reverse()){const d=document.createElement('div');d.innerHTML=`👑 ${l}`;el.prepend(d)}
   G.phase='result';
   const me=R.P[R.me],alive=R.P.filter(p=>!p.out);
+  for(const p of [...R.P,R.ghost]) p.ovr=null;
   if(me.out){rumbleFinish(me.place);return}
   if(alive.length<=1||G.round>=40){const order=[...alive].sort((x,y)=>y.lives-x.lives);order.forEach((p,i)=>{p.place=i+1});rumbleFinish(me.place);return}
   showBanner(myTitle,myText,'Vai al market ▶',()=>{G.round++;startShop()});
@@ -2096,8 +2117,11 @@ async function submitRumble(){
   const R=G.rmb,round=G.round,me=R.P[R.me];
   const board=me.board.map(b=>({type:b.type,star:b.star,order:b.order||null,px:b.px,py:b.py,bench:!!b.bench}));
   G.phase='waiting';renderAll();showBanner('Squadra inviata','In attesa degli altri giocatori…',null);
-  try{await DB.doc(`rooms/${G.room}/rr/r${round}p${R.me}`).set({round,idx:R.me,board,by:UID})}
-  catch(e){G.phase='shop';hideBanner();toast('Invio non riuscito, premi di nuovo Pronto.');renderAll();return}
+  const ref=DB.doc(`rooms/${G.room}/rr/r${round}p${R.me}`);let ex=null;try{ex=await ref.get()}catch(e){}
+  if(ex&&ex.exists&&ex.data().afk){me.ovr=[];toast('Eri fuori tempo: questo round la tua squadra non scende in campo.')}
+  else{const at=Date.now();try{await ref.set({round,idx:R.me,board,by:UID,at})}
+    catch(e){G.phase='shop';hideBanner();toast('Invio non riuscito, premi di nuovo Pronto.');renderAll();return}
+    G.myAt=at;setDeadline(at)}
   rumbleTry();
 }
 function rumbleTry(){
@@ -2106,7 +2130,7 @@ function rumbleTry(){
   const alive=R.P.map((p,i)=>i).filter(i=>!R.P[i].out),miss=alive.filter(i=>!by[i]);
   if(miss.length){$('bText').textContent=`In attesa di: ${miss.map(i=>R.P[i].name).join(', ')}`;return}
   // squadre ufficiali del round: le stesse per tutti i client
-  for(const i of alive){const d=by[i],p=R.P[i];if(d.left){p.left=true;p.board=[]}else p.board=cleanFull(d.board,i*100)}
+  for(const i of alive){const d=by[i],p=R.P[i];if(d.left){p.left=true;p.board=[]}else if(d.afk)p.ovr=[];else p.board=cleanFull(d.board,i*100)}
   R.P[R.me].uidc=Math.max(R.P[R.me].uidc,R.me*100+50);
   const cp=[0,1,3,9];R.counts=Object.fromEntries(G.pool.map(k=>[k,RMB.copies]));
   for(const p of R.P) if(!p.out) for(const b of p.board) if(R.counts[b.type]!=null) R.counts[b.type]-=cp[b.star];
@@ -2148,7 +2172,9 @@ function watchRumbleRoom(code,host){
 }
 function startRumbleOnline(code,d,meIdx){
   newMatch({mode:'rumble',online:true,room:code,seed:+d.seed||1,players:d.players.map(p=>({name:String(p.nick||'Giocatore').slice(0,16),uid:p.uid})),meIdx});
-  const un=DB.collection(`rooms/${code}/rr`).onSnapshot(s=>{if(!G||!G.rmb)return;G.rmb.docs=s.docs.map(x=>x.data());rumbleTry()},()=>{});
+  const un=DB.collection(`rooms/${code}/rr`).onSnapshot(s=>{if(!G||!G.rmb)return;G.rmb.docs=s.docs.map(x=>x.data());
+    for(const d of G.rmb.docs) if(d.round===G.round&&!d.afk) setDeadline(d.at);
+    rumbleTry()},()=>{});
   G.unsub.push(un);
   toast(`Royal Rumble con ${d.players.length} giocatori. Ogni round affronti un avversario a caso.`);
 }
@@ -2190,12 +2216,29 @@ $('copyBtn').onclick=()=>{const c=$('roomCode').textContent;try{navigator.clipbo
 const ME=()=>G.players[G.me];
 
 let last=performance.now();
+const mpSpeed=S=>S.t<20?1:S.t<35?1.5:2, mpRate=S=>mpSpeed(S)*(window.__mpx||1); // __mpx: solo per i test automatici
+function mpTick(){
+  const now=Date.now(),left=G.deadline?Math.ceil((G.deadline-now)/1000):null,pill=$('timerPill');
+  if(G.phase==='shop'&&left!=null){
+    pill.classList.remove('hidden');pill.classList.toggle('urgent',left<=10);pill.textContent=`⏱ ${Math.max(0,left)} s per il Pronto`;
+    if(left<=0){G.sel=null;toast('Tempo scaduto: la tua squadra parte così com\'è.');if(G.mode==='pvp')submitTurn();else submitRumble()}
+  } else pill.classList.add('hidden');
+  if(G.phase==='waiting'&&G.deadline&&!G.afkSent&&now>G.deadline+15000){
+    G.afkSent=true;
+    if(G.mode==='pvp'){if(!G.oppDoc)sendAfk(`rooms/${G.room}/turns/r${G.round}s${1-G.me}`,{})}
+    else{const R=G.rmb;for(const i of R.P.map((p,k)=>k).filter(k=>!R.P[k].out))
+      if(!R.docs.some(d=>d.round===G.round&&d.idx===i))sendAfk(`rooms/${G.room}/rr/r${G.round}p${i}`,{round:G.round,idx:i})}
+  }
+  if(G.phase==='waiting'&&G.deadline){const b=$('bText'),w=Math.max(0,left);if(b&&!b.dataset.base)b.dataset.base=b.textContent;
+    if(b)b.textContent=`${b.dataset.base||''} Tempo rimasto: ${w} s.`} else {const b=$('bText');if(b&&b.dataset.base)delete b.dataset.base}
+}
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
   if(!G){render();requestAnimationFrame(frame);return}
+  if(isMP()) mpTick();
   if(G.phase==='reveal'){G.revealT-=dt;if(G.revealT<=0){G.phase='battle';hideBanner();renderAll()}}
   else if(G.phase==='battle'&&G.sim&&!G.sim.over){
-    G.acc+=dt*G.speed;
+    G.acc+=dt*(isMP()?mpRate(G.sim):G.speed);
     while(G.acc>=STEP){step(G.sim,STEP);G.acc-=STEP;if(G.sim.over)break}
     flushLog();
     if(G.sim.over) endRound();

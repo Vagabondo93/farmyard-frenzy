@@ -20,7 +20,7 @@ function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{l
   const srv=await serve('window.FF_FIREBASE={apiKey:"test",projectId:"test"};'),base=`http://127.0.0.1:${srv.address().port}/`;
   const ctx=await b.newContext();
   await ctx.route(/gstatic\.com\/firebasejs/,r=>r.fulfill({contentType:'text/javascript',body:r.request().url().includes('app-compat')?fs.readFileSync(path.join(__dirname,'mock-firebase.js'),'utf8'):''}));
-  await ctx.addInitScript({content:"try{localStorage.setItem('uovo-tut','1')}catch(e){}"});
+  await ctx.addInitScript({content:"try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=4;"});
   const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage();p.on('pageerror',e=>errs.push(n+': '+e.message));await p.goto(base+'?u='+n);P.push(p)}
   await P[0].evaluate(()=>{for(const k of Object.keys(localStorage))if(k.startsWith('mockfb:'))localStorage.removeItem(k)});
   for(const p of P){await p.waitForSelector('#loginBox:not(.hidden)',{timeout:10000})}
@@ -34,7 +34,7 @@ function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{l
   for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){
     for(const p of P){for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}await p.click('#readyBtn')}
-    for(const p of P){await p.bringToFront();await p.waitForFunction(()=>['battle','result','over'].includes(window.__g().phase),null,{timeout:60000});if(await p.evaluate(()=>window.__g().phase==='battle'))await p.click('[data-speed="4"]')}
+    for(const p of P){await p.bringToFront();await p.waitForFunction(()=>['battle','result','over'].includes(window.__g().phase),null,{timeout:60000});if(await p.evaluate(()=>window.__g().phase==='battle')&&await p.isVisible('[data-speed="4"]'))await p.click('[data-speed="4"]')}
     for(const p of P){await p.bringToFront();await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000})}
     const s=await Promise.all(P.map(p=>p.evaluate(()=>JSON.stringify([window.__g().score,window.__g().sim.t.toFixed(3)]))));
     ok(s[0]===s[1],`round ${r+1} online: stesso risultato per entrambi ${s[0]}`);
