@@ -15,9 +15,9 @@ const res=await p.evaluate(({N,BUDGET,STAR2,ROUND,VAR})=>{
   const rng=A.mul(12345);
   const thieves=types.filter(t=>U[t].tags.includes('Ladro'));
   const team=()=>{let g=BUDGET,list=[];let guard=0;
-    {const t=thieves.filter(t=>C[U[t].t]<=g)[Math.floor(rng()*thieves.filter(t=>C[U[t].t]<=g).length)];g-=C[U[t].t];list.push({type:t,star:1,order:rng()<.3?O[Math.floor(rng()*O.length)]:null})}
-    while(g>=2&&list.length<7&&guard++<50){const t=types[Math.floor(rng()*types.length)];const c=C[U[t].t]*(STAR2&&rng()<STAR2?3:1);if(c>g)continue;g-=c;
-      list.push({type:t,star:c>C[U[t].t]?2:1,order:rng()<.3?O[Math.floor(rng()*O.length)]:null})}
+    {const t=thieves.filter(t=>(U[t].cost??C[U[t].t])<=g)[Math.floor(rng()*thieves.filter(t=>(U[t].cost??C[U[t].t])<=g).length)];g-=(U[t].cost??C[U[t].t]);list.push({type:t,star:1,order:rng()<.3?O[Math.floor(rng()*O.length)]:null})}
+    while(g>=1&&list.length<7&&guard++<50){const t=types[Math.floor(rng()*types.length)];const c=(U[t].cost??C[U[t].t])*(STAR2&&rng()<STAR2?3:1);if(c>g)continue;g-=c;
+      list.push({type:t,star:c>(U[t].cost??C[U[t].t])?2:1,order:rng()<.3?O[Math.floor(rng()*O.length)]:null})}
     return list.map((x,i)=>({uid:i+1,...x,bench:false,...A.pos(x.type,i,rng)}));};
   const st={};for(const t of types)st[t]={n:0,w:0,l:0,d:0};const os={};for(const o of O)os[o]={n:0,w:0,l:0,d:0};
   let draws=0,timeouts=0,tot=0,len=0;

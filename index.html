@@ -450,7 +450,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 const W=960,H=540;
 const HOME=[{x:62,y:H/2},{x:W-62,y:H/2}];
 const SIDE=[{name:'Tu',col:'#2f6fe0',soft:'rgba(47,111,224,.18)'},{name:'Bot',col:'#d23f2d',soft:'rgba(210,63,45,.18)'}];
-const COST={1:2,2:3,3:4}, ORDER_COST=1, REROLL=1, MAXB=7, MAXBENCH=5, WIN=3, ROUND_T=40, STEP=1/60, MAX_ROUNDS=15;
+const COST={1:2,2:3,3:4},costOf=k=>UNITS[k].cost??COST[UNITS[k].t], ORDER_COST=1, REROLL=1, MAXB=7, MAXBENCH=5, WIN=3, ROUND_T=40, STEP=1/60, MAX_ROUNDS=15;
 
 const SCARE="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20x%3D%2730%27%20y%3D%2726%27%20width%3D%274%27%20height%3D%2737%27%20rx%3D%271%27%20fill%3D%27%237a5230%27/%3E%3Crect%20x%3D%277%27%20y%3D%2729%27%20width%3D%2750%27%20height%3D%274%27%20rx%3D%272%27%20fill%3D%27%237a5230%27/%3E%3Cpath%20d%3D%27M7%2027l-5-3M7%2031H1M7%2035l-5%203M57%2027l5-3M57%2031h6M57%2035l5%203%27%20stroke%3D%27%23e5b94a%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M17%2029h30l-4%2020H21z%27%20fill%3D%27%23d2452f%27/%3E%3Cpath%20d%3D%27M19%2035h26M20%2042h24M28%2029v20M36%2029v20%27%20stroke%3D%27%238e2a20%27%20stroke-width%3D%271.6%27/%3E%3Cpath%20d%3D%27M26%2049l-3%207M32%2049v8M38%2049l3%207%27%20stroke%3D%27%23e5b94a%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27/%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2720%27%20r%3D%279.5%27%20fill%3D%27%23d9b27a%27%20stroke%3D%27%23a8834e%27%20stroke-width%3D%271%27/%3E%3Cpath%20d%3D%27M27%2018l3%203m0-3l-3%203M34%2018l3%203m0-3l-3%203%27%20stroke%3D%27%233b2a1a%27%20stroke-width%3D%271.5%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M27.5%2025q4.5%202.5%209%200%27%20stroke%3D%27%233b2a1a%27%20stroke-width%3D%271.4%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M17%2013h30l-6-3-3-8h-12l-3%208z%27%20fill%3D%27%23e9bd45%27%20stroke%3D%27%23b8892a%27%20stroke-width%3D%271%27/%3E%3Crect%20x%3D%2725%27%20y%3D%278.5%27%20width%3D%2714%27%20height%3D%272.4%27%20fill%3D%27%23d2452f%27/%3E%3C/svg%3E";
 const SCAREIMG=new Image();SCAREIMG.src=SCARE;
@@ -815,7 +815,7 @@ const UNITS={
    d:"Scudo vivente vicino all'uovo: attira gli attacchi entro 90 e rallenta molto i ladri che gli passano accanto (non la Faina).",beats:'Ladro, Talpa scoperta',loses:'Cacciatore, Faina, Mais'},
  faina:{n:'Faina',i:'🦡',t:1,tags:['Animale','Ladro','Piccolo'],hp:32,dmg:0,spd:100,carry:.6,carry2:.7,role:'thief',dodge:.3,agile:true,
    d:"Velocissima all'andata, ma con l'uovo in bocca rallenta. Schiva il 30% dei colpi corpo a corpo e scavalca il Tacchino.",beats:'Tacchino, Bracconiere',loses:'Cane, Cacciatore'},
- cane:{n:'Cane',i:'🐕',t:1,tags:['Animale','Guardiano'],hp:46,dmg:7,spd:82,rng:18,cd:.9,role:'guard',guardR:140,prio:{Ladro:4},bonus:{Ladro:1.5},carry:.7,sniff:60,
+ cane:{n:'Cane',i:'🐕',t:2,tags:['Animale','Guardiano'],hp:46,dmg:7,spd:82,rng:18,cd:.9,role:'guard',guardR:140,prio:{Ladro:4},bonus:{Ladro:1.5},carry:.7,sniff:60,
    d:"Difende un'area ampia e insegue i ladri facendo doppio danno. Non vede i ladri invisibili né la talpa sottoterra. Se restate senza ladri e hai un Cacciatore, diventa cane da riporto e va a prendere l'uovo.",beats:'Faina, ladri visibili',loses:'Cacciatore, Mais, Ladro invisibile'},
  spaventa:{n:'Spaventapasseri',i:'🌾',img:SCARE,t:1,tags:['Oggetto','Esca'],hp:190,dmg:0,spd:0,role:'static',lure:180,lureTag:'Umano',lureNoOrder:true,slowFly:150,
    d:'Piazzalo dove vuoi, anche in campo nemico. Rallenta del 50% chi vola entro 180. Gli Umani nemici senza ordine lo attaccano, e il Ladro senza ordine si spaventa e perde 2,5 s. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Corvo, Cacciatore, Poliziotto, Assassino senza ordini',loses:'Animali, Umani con un ordine'},
@@ -837,14 +837,14 @@ const UNITS={
    d:'Avanza a metà campo e lascia monete ogni 2,5 s (fino a 5, ogni 1,5 s se ★★): attirano gli Umani nemici e fermano il Ladro per 0,75 s. Si mette sulla strada degli Umani nemici diretti al tuo uovo.',beats:'Ladro, Assassino, Poliziotto, Cacciatore',loses:'Animali'},
  spazzino:{n:'Spazzino',i:'🧹',t:2,tags:['Umano'],hp:60,dmg:6,spd:70,rng:18,cd:.7,role:'hunter',prio:{Oggetto:12},bonus:{Oggetto:4},noLure:true,sweeper:true,
    d:"Ignora le esche nemiche e le distrugge (4× danno), anche germogli e monete. Smonta le trappole che trova sul percorso. Quando non restano esche o trappole nemiche, va lui a rubare l'uovo.",beats:'Mais, Spaventapasseri, Coltivatore, Benefattore, Bracconiere',loses:'Assassino, Cane, Poliziotto'},
- topi:{n:'Topi',i:'🐭',t:1,tags:['Animale','Ladro','Piccolo'],hp:14,dmg:0,spd:85,carry:.7,role:'thief',pack:2,
+ topi:{n:'Topi',i:'🐭',t:1,cost:1,tags:['Animale','Ladro','Piccolo'],hp:10,dmg:0,spd:85,carry:.7,role:'thief',pack:2,
    d:"Tre topolini per una carta: fragilissimi, ma basta che uno arrivi all'uovo.",beats:'Tacchino, Mucca, Poliziotto',loses:'Gatto, Cane, Apicoltore'},
  volpe:{n:'Volpe',i:'🦊',t:2,fogOnly:true,tags:['Animale','Ladro'],hp:55,dmg:0,spd:78,carry:.8,role:'thief',disguise:true,
    d:"Si traveste da unità nemica: nessuno la attacca finché non tocca l'uovo o viene ferita. Il Cane la fiuta da vicino e il Corvo la smaschera.",beats:'Poliziotto, Galli-co, Tacchino',loses:'Cane, Corvo, Gatto'},
  procione:{n:'Procione',i:'🦝',t:2,fogOnly:true,minRound:3,tags:['Animale','Ladro'],hp:75,dmg:0,spd:78,carry:.9,role:'thief',pass:150,
    d:"Quando ha l'uovo lo lancia a un ladro alleato più vicino al tuo nido, entro 150. Rende al meglio con altri ladri in campo.",beats:'Cane, Galli-co, Mucca',loses:'Poliziotto, Lupo, Falco'},
- oca:{n:'Oca',i:'🪿',t:1,tags:['Animale','Guardiano'],hp:70,dmg:5,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,
-   d:"Starnazza quando vede un ladro entro 170: i difensori alleati vicini corrono il 35% più veloci per 3 s.",beats:'Ladro, Faina, Topi',loses:'Assassino, Volpe, Lupo'},
+ oca:{n:'Oca',i:'🪿',t:1,tags:['Animale','Guardiano'],hp:70,dmg:5,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,hitAir:true,swim:true,
+   d:"Starnazza quando vede un ladro entro 170: i difensori alleati vicini corrono il 35% più veloci per 3 s. Becca anche i volanti (pur non volando) e in Nebbia attraversa il ruscello a nuoto (più lenta in acqua).",beats:'Ladro, Faina, Topi, Gazza',loses:'Assassino, Volpe, Lupo'},
  gatto:{n:'Gatto',i:'🐈',t:2,tags:['Animale','Guardiano'],hp:48,dmg:7,spd:92,rng:18,cd:.75,role:'guard',guardR:180,prio:{Piccolo:6,Ladro:2},bonus:{Piccolo:1.7},hearUnder:75,
    d:"Caccia gli animali piccoli (Topi, Faina, Talpa) con danno +70% e sente le talpe sottoterra entro 75, costringendole a riemergere.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatore'},
  mucca:{n:'Mucca',i:'🐄',t:2,minRound:3,tags:['Animale','Guardiano'],hp:340,dmg:9,spd:34,rng:20,cd:1.1,role:'guard',guardR:120,push:56,block:true,
@@ -956,7 +956,7 @@ function newMatch(o={}){
 
 // Ogni partita usa solo una selezione di personaggi: così le copie per le ★★ si trovano davvero.
 const COUNTERS=[{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
-  {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
+  {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco','oca']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
   {if:['avicoltore'],need:['corvo','gazza','falco']}]; // l'Avicoltore esce solo se nella partita c'è almeno un volante
 const POOLQ={thief:3,def:4,atk:3,sup:3},POOLQR={thief:4,def:5,atk:4,sup:3};
 function makePool(variant,rng,big){
@@ -1001,7 +1001,7 @@ function buyUnit(p,i,rng){
   const type=p.shop[i]; if(!type) return 'none';
   const RC=G&&G.rmb&&!p.ghost;
   if(RC&&(G.rmb.counts[type]||0)<=0){p.shop[i]=null;return 'soldout'}
-  const c=COST[UNITS[type].t]; if(p.gold<c) return 'gold';
+  const c=costOf(type); if(p.gold<c) return 'gold';
   const same=p.board.filter(b=>b.type===type&&b.star===1);
   if(p.board.length>=MAXB+MAXBENCH&&same.length<2) return 'full';
   p.gold-=c; p.shop[i]=null; if(RC) G.rmb.counts[type]--;
@@ -1050,7 +1050,7 @@ function botTurn(p,rng,ec,sk=.7){
     return s;
   };
   for(let k=0;k<14;k++){
-    const opts=p.shop.map((t,i)=>t&&{i,t,s:score(t),c:COST[UNITS[t].t]}).filter(o=>o&&o.c<=p.gold).sort((a,b)=>b.s-a.s);
+    const opts=p.shop.map((t,i)=>t&&{i,t,s:score(t),c:costOf(t)}).filter(o=>o&&o.c<=p.gold).sort((a,b)=>b.s-a.s);
     const best=opts[0];
     if(!best){ if(p.gold>=REROLL+2&&rng()<.6){p.gold-=REROLL;rollShop(p,rng,G.round);continue} break }
     const merge=p.board.filter(b=>b.type===best.t&&b.star===1).length===2;
@@ -1134,7 +1134,7 @@ function canTarget(a,t){
   if(t.disguised) return false;
   if(CUR&&CUR.fog&&!sees(a,t)) return false;
   if(t.invis>0) return false;
-  if(t.def.flying&&!(a.def.ranged||a.def.flying)) return false;
+  if(t.def.flying&&!(a.def.ranged||a.def.flying||a.def.hitAir)) return false;
   return true;
 }
 function prioOf(u,t){
@@ -1192,7 +1192,8 @@ function moveTo(u,tx,ty,dt,S){
   if(u.def.flying&&!u.def.noSlow) for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.slowFly&&dist(u,e)<e.def.slowFly){sp*=e.def.slowFlyMul??.5;break}
   if(canCarry(u)&&!u.def.flying&&!u.underground)
     for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.block&&(!u.def.agile||e.def.blockAll)&&dist(u,e)<36){sp*=.4;break}
-  if(S.fog&&!u.def.flying){
+  if(S.fog&&u.def.swim&&Math.abs(u.x-RX)<RW&&!onBridge(u)) sp*=.6; // a nuoto va più piano
+  if(S.fog&&!u.def.flying&&!u.def.swim){
     // un bersaglio in acqua (fuori dai ponti) si raggiunge solo dalla riva
     if(Math.abs(tx-RX)<RW+4&&!onBridge({y:ty})) tx=RX+(Math.sign(u.x-RX)||1)*(RW+4);
     const w=riverStep(u,tx,ty);if(w){tx=w.x;ty=w.y}
@@ -1369,7 +1370,7 @@ function step(S,dt){
     if(mine.length<max&&!mine.some(t=>dist(t,u)<40)){S.traps.push({side:u.side,owner:u.id,x:u.x,y:u.y+6,armed:true,snare:u.def.snare||2.5});fx(S,u.x,u.y-22,'trappola piazzata','#ffd9a0')}
     u.trapT=u.def.trapEvery-(u.star===2?1:0);
   }
-  if(S.fog) for(const u of S.units) if(u.alive&&!u.def.flying&&u.role!=='static'&&Math.abs(u.x-RX)<RW&&!onBridge(u)) u.x=RX+(u.x<RX?-RW:RW);
+  if(S.fog) for(const u of S.units) if(u.alive&&!u.def.flying&&!u.def.swim&&u.role!=='static'&&Math.abs(u.x-RX)<RW&&!onBridge(u)) u.x=RX+(u.x<RX?-RW:RW);
   const sep=S.units.filter(u=>u.alive&&!u.underground&&u.role!=='static'&&!u.def.flying);
   for(let i=0;i<sep.length;i++)for(let j=i+1;j<sep.length;j++){const a=sep[i],b=sep[j];if(a.side!==b.side)continue;
     const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;if(d<24){const k=(24-d)/2,ca=a.carrying!==null,cb=b.carrying!==null;
@@ -1657,7 +1658,7 @@ function renderAll(){
   const selU=p.board.find(b=>b.uid===G.sel);
   $('shop').innerHTML=p.shop.map((t,i)=>{
     if(!t) return `<div class="tcgbtn sold" aria-hidden="true"></div>`;
-    const d=UNITS[t],c=COST[d.t],n=p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
+    const d=UNITS[t],c=costOf(t),n=p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
     return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,1,{foot:`${hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
   $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.';
@@ -1701,7 +1702,7 @@ const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
   const roleTag={thief:'Ladro',def:'Guardiano'}[r];
   return `<article class="tcg r-${r} s${star}${o.compact?' compact':''}${o.dense?' dense':''}">
-    <header><span class="tname">${d.n}</span><span class="tcost" title="Costo">${COST[d.t]}</span></header>
+    <header><span class="tname">${d.n}</span><span class="tcost" title="Costo">${d.cost??COST[d.t]}</span></header>
     <div class="tart"><span class="temo" aria-hidden="true">${IC(d)}</span><span class="tstars">${'★'.repeat(star)}</span></div>
     <div class="ttags"><span class="trole">${ROLES[r].n}</span>${d.fogOnly?'<span class="trole fogb">🌫️ Solo Nebbia</span>':''} ${d.tags.filter(t=>t!=='Piccolo'&&t!==roleTag).join(' · ')} · Liv. ${d.t}${(d.minRound||1)>1?` · dal round ${d.minRound}`:''}</div>
     <div class="tstats">${STATDEF.map(([key,i,l])=>{const v=statVal(s,key),w=v==='mischia'?6:v==='—'?0:Math.max(4,Math.min(100,v/statMax(star,key)*100));
