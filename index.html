@@ -290,10 +290,10 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 
   <section class="lobby" id="lobby">
     <div class="hero">
-      <img class="heroimg" src="banner.jpg" width="2000" height="667" alt="In un'aia al tramonto due squadre si contendono un uovo d'oro: tacchino, gallo con l'elmo, cane, faina, ladro, cacciatore, poliziotto, corvo, gazza, talpa e spaventapasseri.">
+      <img class="heroimg" src="banner.jpg" width="2000" height="667" alt="In un'aia al tramonto due squadre si contendono le uova d'oro: tacchino, gallo con l'elmo, cane, faina, ladro, cacciatore, poliziotto, corvo, gazza, talpa e spaventapasseri.">
       <div class="herobar">
         <img class="herologo" src="logo.webp" alt="Farmyard Frenzy: The Golden Egg">
-        <div class="herotxt"><h2>Un uovo d'oro.<br>Due pollai. Zero pietà.</h2>
+        <div class="herotxt"><h2>Due uova d'oro.<br>Due pollai. Zero pietà.</h2>
           <p>Arruola tacchini-scudo, faine ladre e galli con l'elmo. Dai l'ordine, poi guardali scatenarsi. Vince chi legge la mossa dell'altro.</p></div>
       </div>
     </div>
@@ -815,7 +815,7 @@ const UNITS={
    d:"Scudo vivente vicino all'uovo: attira gli attacchi entro 90 e rallenta molto i ladri che gli passano accanto (non la Faina).",beats:'Ladro, Talpa scoperta',loses:'Cacciatore, Faina, Mais'},
  faina:{n:'Faina',i:'🦡',t:1,tags:['Animale','Ladro','Piccolo'],hp:32,dmg:0,spd:100,carry:.6,carry2:.7,role:'thief',dodge:.3,agile:true,
    d:"Velocissima all'andata, ma con l'uovo in bocca rallenta. Schiva il 30% dei colpi corpo a corpo e scavalca il Tacchino.",beats:'Tacchino, Bracconiere',loses:'Cane, Cacciatore'},
- cane:{n:'Cane',i:'🐕',t:2,tags:['Animale','Guardiano'],hp:46,dmg:7,spd:82,rng:18,cd:.9,role:'guard',guardR:140,prio:{Ladro:4},bonus:{Ladro:1.5},carry:.7,sniff:60,
+ cane:{n:'Cane',i:'🐕',t:2,tags:['Animale','Guardiano'],hp:42,dmg:7,spd:74,rng:18,cd:.9,role:'guard',guardR:140,prio:{Ladro:4},bonus:{Ladro:1.5},carry:.7,sniff:60,
    d:"Difende un'area ampia e insegue i ladri facendo doppio danno. Non vede i ladri invisibili né la talpa sottoterra. Se restate senza ladri e hai un Cacciatore, diventa cane da riporto e va a prendere l'uovo.",beats:'Faina, ladri visibili',loses:'Cacciatore, Mais, Ladro invisibile'},
  spaventa:{n:'Spaventapasseri',i:'🌾',img:SCARE,t:1,tags:['Oggetto','Esca'],hp:190,dmg:0,spd:0,role:'static',lure:180,lureTag:'Umano',lureNoOrder:true,slowFly:150,
    d:'Piazzalo dove vuoi, anche in campo nemico. Rallenta del 50% chi vola entro 180. Gli Umani nemici senza ordine lo attaccano, e il Ladro senza ordine si spaventa e perde 2,5 s. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Corvo, Cacciatore, Poliziotto, Assassino senza ordini',loses:'Animali, Umani con un ordine'},
@@ -845,8 +845,8 @@ const UNITS={
    d:"Quando ha l'uovo lo lancia a un ladro alleato più vicino al tuo nido, entro 150. Rende al meglio con altri ladri in campo.",beats:'Cane, Galli-co, Mucca',loses:'Poliziotto, Lupo, Falco'},
  oca:{n:'Oca',i:'🪿',t:1,tags:['Animale','Guardiano'],hp:70,dmg:5,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,hitAir:true,swim:true,
    d:"Starnazza quando vede un ladro entro 170: i difensori alleati vicini corrono il 35% più veloci per 3 s. Becca anche i volanti (pur non volando) e in Nebbia attraversa il ruscello a nuoto (più lenta in acqua).",beats:'Ladro, Faina, Topi, Gazza',loses:'Assassino, Volpe, Lupo'},
- gatto:{n:'Gatto',i:'🐈',t:2,tags:['Animale','Guardiano'],hp:48,dmg:7,spd:92,rng:18,cd:.75,role:'guard',guardR:180,prio:{Piccolo:6,Ladro:2},bonus:{Piccolo:1.7},hearUnder:75,
-   d:"Caccia gli animali piccoli (Topi, Faina, Talpa) con danno +70% e sente le talpe sottoterra entro 75, costringendole a riemergere.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatore'},
+ gatto:{n:'Gatto',i:'🐈',t:2,tags:['Animale','Guardiano'],hp:48,dmg:7,spd:84,rng:18,cd:.75,role:'guard',guardR:180,prio:{Piccolo:6,Ladro:2},bonus:{Piccolo:1.4},hearUnder:75,
+   d:"Caccia gli animali piccoli (Topi, Faina, Talpa) con danno +40% e sente le talpe sottoterra entro 75, costringendole a riemergere.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatore'},
  mucca:{n:'Mucca',i:'🐄',t:2,minRound:3,tags:['Animale','Guardiano'],hp:340,dmg:9,spd:34,rng:20,cd:1.1,role:'guard',guardR:120,push:56,block:true,
    d:"Un muro lento e gigantesco vicino all'uovo: spinge via i nemici che le passano accanto e rallenta molto i ladri.",beats:'Ladro, Topi, Toro',loses:'Gazza, Cacciatore, Mais'},
  lupo:{n:'Lupo',i:'🐺',t:2,minRound:2,tags:['Animale','Killer'],hp:65,dmg:9,spd:90,rng:18,cd:.8,role:'hunter',advance:true,prio:{Guardiano:5},bonus:{Guardiano:1.8},
