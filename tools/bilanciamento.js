@@ -6,12 +6,13 @@ const VAR=process.env.VAR||'classic',N=+process.argv[2]||3000, BUDGET=+process.a
 (async()=>{
 const src=fs.readFileSync(process.env.F||path.join(__dirname,'..','index.html'),'utf8').replace('let G;',
  'let G;window.__api={UNITS:()=>UNITS,ORD:()=>ORDERS,COST:()=>COST,makeSim:(s)=>makeSim(s),step:(S,d)=>step(S,d),setG:g=>{G=g},pos:(t,n,r)=>defaultPos(t,n,r),mul:mulberry};');
-const tmp=path.join(os.tmpdir(),'ff-bilanciamento.html');fs.writeFileSync(tmp,src);
+const tmp=path.join(os.tmpdir(),'ff-bilanciamento-'+process.pid+'.html');fs.writeFileSync(tmp,src);
 const b=await chromium.launch();const p=await b.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto('file://'+tmp);
 const res=await p.evaluate(({N,BUDGET,STAR2,ROUND,VAR})=>{
   const A=window.__api,U=A.UNITS(),O=Object.keys(A.ORD()),C=A.COST();
-  const types=Object.keys(U).filter(k=>!U[k].hidden);
+  // solo i personaggi davvero acquistabili in questa mappa e in questo round
+  const types=Object.keys(U).filter(k=>!U[k].hidden&&(VAR==='fog'||!U[k].fogOnly)&&(U[k].minRound||1)<=ROUND&&(U[k].t<3||ROUND>=3));
   const rng=A.mul(12345);
   const thieves=types.filter(t=>U[t].tags.includes('Ladro'));
   const team=()=>{let g=BUDGET,list=[];let guard=0;
@@ -43,4 +44,5 @@ for(const [t,s] of Object.entries(res.st).sort((a,b)=>(b[1].w/(b[1].w+b[1].l||1)
 console.log('ORDINI');
 for(const [t,s] of Object.entries(res.os).sort((a,b)=>(b[1].w/(b[1].w+b[1].l||1))-(a[1].w/(a[1].w+a[1].l||1))))
   console.log(t.padEnd(16),String(s.n).padStart(7),'   ',f(s.w/(s.w+s.l||1)));
+if(process.env.OUT)fs.writeFileSync(process.env.OUT,JSON.stringify({VAR,N,BUDGET,STAR2,ROUND,...res}));
 console.log(errs.length?'ERRORI: '+errs.join(' | '):'Nessun errore.');await b.close();})();
