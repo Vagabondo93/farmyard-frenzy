@@ -240,7 +240,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Cresta d'acciaio": "Crête d'acier",
 "Attira gli attacchi entro 190, ha ancora più vita e ogni beccata stordisce per quasi un secondo.": "Attire les attaques à moins de 190, a encore plus de PV et chaque coup de bec étourdit presque une seconde.",
 "Invasione": "Invasion",
-"Arrivano in cinque invece che in tre.": "Elles arrivent à cinq au lieu de trois.",
 "Trasformista": "Transformiste",
 "Resta travestita anche con l'uovo in bocca, finché non viene ferita.": "Reste déguisée même avec l'œuf dans la gueule, tant qu'elle n'est pas blessée.",
 "Doppio passaggio": "Double passe",
@@ -881,5 +880,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Campo": "Terrain",
 "Squadra": "Équipe",
 "Market e ordini": "Boutique et ordres",
-"Squadra e panchina": "Équipe et banc"
+"Squadra e panchina": "Équipe et banc",
+"Arrivano in sei invece che in tre.": "Elles arrivent à six au lieu de trois."
 };

@@ -240,7 +240,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Cresta d'acciaio": "Steel crest",
 "Attira gli attacchi entro 190, ha ancora più vita e ogni beccata stordisce per quasi un secondo.": "Draws attacks within 190, has even more health and each peck stuns for almost a second.",
 "Invasione": "Invasion",
-"Arrivano in cinque invece che in tre.": "They come in fives instead of threes.",
 "Trasformista": "Master of disguise",
 "Resta travestita anche con l'uovo in bocca, finché non viene ferita.": "Stays disguised even with the egg in its mouth, until it gets hurt.",
 "Doppio passaggio": "Double pass",
@@ -881,5 +880,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Campo": "Field",
 "Squadra": "Team",
 "Market e ordini": "Shop and orders",
-"Squadra e panchina": "Team and bench"
+"Squadra e panchina": "Team and bench",
+"Arrivano in sei invece che in tre.": "They arrive as six instead of three."
 };
