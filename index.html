@@ -1434,17 +1434,22 @@ function navGraph(S,sw){const key=sw?'navSw':'nav';if(S[key])return S[key];const
 function plotNav(u,tx,ty,S){const sw=!!u.def.swim;
   if(inPlot(tx,ty,S,PLOT_R,sw)){const o={x:tx,y:ty};pushOut(o,S,sw);tx=o.x;ty=o.y}
   if(!segHit(u.x,u.y,tx,ty,S,sw)){u.nav=null;return{x:tx,y:ty}}
+    // rete di sicurezza: se mentre aggira un ostacolo non avanza per 1,2 s, scarta per 2 s la tappa su cui è incastrata
+  {const pr=u.navP,cont=S.t-(u.navT??-9)<.2;
+    if(!pr||!cont||Math.hypot(pr.x-u.x,pr.y-u.y)>4)u.navP={x:u.x,y:u.y,t:S.t};
+    else if(S.t-pr.t>1.2&&u.nav){u.navBan={i:u.nav.i,until:S.t+2};u.navP={x:u.x,y:u.y,t:S.t};u.nav=null}}
   u.navT=S.t;
   const c=u.nav;if(c&&Math.abs(c.tx-tx)+Math.abs(c.ty-ty)<24&&S.t<c.until&&Math.hypot(c.wp.x-u.x,c.wp.y-u.y)>6)return c.wp;
   const {N,E}=navGraph(S,sw),n=N.length,D=new Array(n+1).fill(Infinity),first=new Array(n+1).fill(-1),done=new Array(n+1).fill(false);
-  for(let i=0;i<n;i++){const d0=Math.hypot(N[i].x-u.x,N[i].y-u.y);
+  const ban=u.navBan&&S.t<u.navBan.until?u.navBan.i:-1;
+  for(let i=0;i<n;i++){if(i===ban)continue;const d0=Math.hypot(N[i].x-u.x,N[i].y-u.y);
     if(d0<9){D[i]=0;first[i]=d0<1.5?-2:i} // vicino a un angolo: prima ci arriva esattamente, poi la tappa è il nodo dopo
     else if(!segHit(u.x,u.y,N[i].x,N[i].y,S,sw)&&d0<D[i]){D[i]=d0;first[i]=i}}
   for(;;){let k=-1;for(let i=0;i<=n;i++)if(!done[i]&&D[i]<Infinity&&(k<0||D[i]<D[k]))k=i;if(k<0||k===n)break;done[k]=true;
-    for(let j=0;j<n;j++)if(E[k][j]&&D[k]+E[k][j]<D[j]){D[j]=D[k]+E[k][j];first[j]=first[k]===-2?j:first[k]}
+    for(let j=0;j<n;j++)if(j!==ban&&E[k][j]&&D[k]+E[k][j]<D[j]){D[j]=D[k]+E[k][j];first[j]=first[k]===-2?j:first[k]}
     if(!segHit(N[k].x,N[k].y,tx,ty,S,sw)){const v=D[k]+Math.hypot(tx-N[k].x,ty-N[k].y);if(v<D[n]){D[n]=v;first[n]=first[k]===-2?-3:first[k]}}}
   if(first[n]<0)return{x:tx,y:ty};
-  const wp=N[first[n]];u.nav={tx,ty,wp,until:S.t+.4};return wp}
+  const wp=N[first[n]];u.nav={tx,ty,wp,i:first[n],until:S.t+.4};return wp}
 function drawPond(p){const cx=p.x+p.w/2,cy=p.y+p.h/2,rx=p.w/2+4,ry=p.h/2+4;ctx.save();
   ctx.fillStyle='#6b8f3a';ctx.beginPath();ctx.ellipse(cx,cy+2,rx+6,ry+6,0,0,7);ctx.fill();
   ctx.fillStyle='#8a7a52';ctx.beginPath();ctx.ellipse(cx,cy,rx+2,ry+2,0,0,7);ctx.fill();
@@ -1475,6 +1480,8 @@ const onBridge=u=>BR().some(b=>Math.abs(u.y-b)<BW);
 // percorso a terra: se il bersaglio è oltre il ruscello si passa dal ponte più comodo
 function riverStep(u,tx,ty){
   const su=Math.sign(u.x-RX)||1,st=Math.sign(tx-RX)||su,inX=Math.abs(u.x-RX)<RW+6;
+  // bersaglio sul ponte: chi è già sul ponte (o alla sua altezza) ci va dritto, gli altri entrano dalla propria riva
+  if(Math.abs(tx-RX)<RW+6&&onBridge({y:ty})){if(onBridge(u))return null;const b=BR().reduce((p,c)=>Math.abs(ty-c)<Math.abs(ty-p)?c:p);return{x:RX+su*(RW+12),y:b}}
   if(inX&&onBridge(u)){const b=BR().reduce((p,c)=>Math.abs(u.y-c)<Math.abs(u.y-p)?c:p);const side=Math.abs(tx-RX)<RW+6?su:st;return{x:RX+side*(RW+16),y:b}}
   if(su===st) return null; // anche chi è sulla riva fuori dal ponte deve fare il giro
   const b=BR().reduce((p,c)=>Math.abs(u.y-c)+Math.abs(ty-c)<Math.abs(u.y-p)+Math.abs(ty-p)?c:p);
