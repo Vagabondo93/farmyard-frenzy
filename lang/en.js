@@ -881,5 +881,18 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Squadra": "Team",
 "Market e ordini": "Shop and orders",
 "Squadra e panchina": "Team and bench",
-"Arrivano in sei invece che in tre.": "They arrive as six instead of three."
+"Arrivano in sei invece che in tre.": "They arrive as six instead of three.",
+"📊 Meta dei giocatori": "📊 Player meta",
+"Tutte": "All",
+"👥 2v2": "👥 2v2",
+"Personaggio": "Character",
+"Preso quando compare": "Picked when offered",
+"Round vinti in campo": "Rounds won on the field",
+"Con un ordine": "With an order",
+"Ordine preferito": "Favourite order",
+"Mostra tutti i personaggi": "Show all characters",
+"Dalle scelte dei giocatori nelle partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "From players' choices in real matches: how often each character is picked when it shows up in the shop, how much it wins on the field and how often it gets an order.",
+"Servono più partite per una statistica affidabile: per ora {0}. Le statistiche si riempiono man mano che si gioca.": "More matches are needed for a reliable statistic: {0} so far. The stats fill up as people play.",
+"Ultime {0} partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "Last {0} real matches: how often each character is picked when it shows up in the shop, how much it wins on the field and how often it gets an order.",
+"Ancora nessuna partita registrata.": "No matches recorded yet."
 };

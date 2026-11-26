@@ -37,6 +37,11 @@ service cloud.firestore {
     match /feedback/{id} {
       allow create: if request.auth != null;
     }
+    // statistiche anonime delle partite (sezione Meta): tutti leggono, chi ha fatto l'accesso aggiunge, nessuno modifica
+    match /telemetry/{id} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.size() < 40;
+    }
     match /rooms/{code} {
       allow read: if true;
       allow write: if request.auth != null;

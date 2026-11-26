@@ -4,7 +4,7 @@
   "private": true,
   "description": "Farmyard Frenzy: The Golden Egg - gioco di strategia con battaglie automatiche",
   "scripts": {
-    "test": "node tools/test-partite.js && node tools/test-timer.js && node tools/test-rumble-bot.js && node tools/test-social.js && node tools/test-firebase.js && node tools/test-tutorial.js && node tools/test-lingue.js && node tools/test-consigli.js && node tools/test-duo.js && node tools/test-ordini.js",
+    "test": "node tools/test-partite.js && node tools/test-timer.js && node tools/test-rumble-bot.js && node tools/test-social.js && node tools/test-firebase.js && node tools/test-tutorial.js && node tools/test-lingue.js && node tools/test-consigli.js && node tools/test-duo.js && node tools/test-ordini.js && node tools/test-meta.js",
     "bilanciamento": "node tools/bilanciamento.js 6000 14 0.2 4"
   },
   "devDependencies": {

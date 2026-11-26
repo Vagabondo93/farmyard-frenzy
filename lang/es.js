@@ -881,5 +881,18 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Squadra": "Equipo",
 "Market e ordini": "Tienda y órdenes",
 "Squadra e panchina": "Equipo y banquillo",
-"Arrivano in sei invece che in tre.": "Llegan seis en vez de tres."
+"Arrivano in sei invece che in tre.": "Llegan seis en vez de tres.",
+"📊 Meta dei giocatori": "📊 Meta de los jugadores",
+"Tutte": "Todas",
+"👥 2v2": "👥 2c2",
+"Personaggio": "Personaje",
+"Preso quando compare": "Elegido cuando aparece",
+"Round vinti in campo": "Rondas ganadas en el campo",
+"Con un ordine": "Con una orden",
+"Ordine preferito": "Orden preferida",
+"Mostra tutti i personaggi": "Mostrar todos los personajes",
+"Dalle scelte dei giocatori nelle partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "De las elecciones de los jugadores en partidas reales: cuánto se elige cada personaje cuando aparece en la tienda, cuánto gana en el campo y con qué frecuencia recibe una orden.",
+"Servono più partite per una statistica affidabile: per ora {0}. Le statistiche si riempiono man mano che si gioca.": "Hacen falta más partidas para una estadística fiable: por ahora {0}. Las estadísticas se llenan a medida que se juega.",
+"Ultime {0} partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "Últimas {0} partidas reales: cuánto se elige cada personaje cuando aparece en la tienda, cuánto gana en el campo y con qué frecuencia recibe una orden.",
+"Ancora nessuna partita registrata.": "Todavía no hay partidas registradas."
 };
