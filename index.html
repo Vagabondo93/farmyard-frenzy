@@ -48,6 +48,9 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 .score .s0{background:var(--blue)} .score .s1{background:var(--red)}
 .score .goal{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:800}
 .meta{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.mmbox{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--chip);border-radius:12px;padding:8px 12px}
+.rank li b .linkbtn{margin-left:6px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa;margin-right:6px;vertical-align:1px}.dot.on{background:#3fae3f}
 .langsel{background:var(--chip);color:inherit;border:0;border-radius:999px;padding:5px 10px;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .pill{background:var(--chip);border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums}
 .pill.gold{background:var(--gold);color:#241800}
@@ -338,6 +341,9 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
         </label>
         <button class="btn primary" id="tutBtn">📖 Tutorial rapido</button>
         <button class="btn" id="botBtn">🤖 Contro il bot (allenamento)</button>
+        <button class="btn" id="quickFriendly" disabled>⚡ Partita rapida</button>
+        <button class="btn" id="quickRanked" disabled>⚡ Partita rapida classificata (Elo simile)</button>
+        <div id="mmBox" class="hidden mmbox"><span id="mmText">Cerco un avversario…</span><button class="btn" id="mmCancel">Annulla</button></div>
         <button class="btn" id="roomFriendly" disabled>🤝 Crea stanza amichevole</button>
         <button class="btn" id="roomRanked" disabled>🏆 Crea stanza classificata (Elo)</button>
         <button class="btn" id="rumbleBot">👑 Royal Rumble contro 7 bot</button>
@@ -346,13 +352,23 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       </div>
       <div id="roomBox" class="hidden" style="display:grid;gap:4px">
         <span>Stanza <span id="roomKind"></span> creata. Manda questo codice al tuo avversario:</span>
-        <div style="display:flex;gap:10px;align-items:center"><span class="code" id="roomCode"></span><button class="btn" id="copyBtn">Copia</button></div>
-        <span class="empty" id="roomWait">In attesa che entri… La partita parte da sola.</span>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="code" id="roomCode"></span><button class="btn" id="copyBtn">Copia</button><button class="btn" id="linkBtn">🔗 Copia link d'invito</button></div>
+        <span class="empty" id="roomWait">In attesa che entri l'avversario…</span>
+        <ol class="rank hidden" id="lobbyMembers"></ol>
+        <button class="btn primary hidden" id="pvpStart">Avvia la partita</button>
+        <span class="empty" id="inviteHint">Puoi invitare gli amici online dal riquadro «Giocatori online».</span>
         <div id="rumbleBox" class="hidden" style="display:grid;gap:6px"><ol class="rank" id="rumbleList"></ol>
           <label class="hidden" id="rumbleFillRow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rumbleFill"> Riempi i posti liberi con bot (fino a 8, bravura adattiva, l'Elo conta)</label>
           <button class="btn primary hidden" id="rumbleStart">Avvia la Royal Rumble</button></div>
       </div>
       <p class="toast" id="lobbyMsg" aria-live="polite" style="margin:0"></p>
+    </div>
+    <div class="panel hidden" id="socialPanel">
+      <h3>Giocatori online <span class="pill" id="onlineCount">0</span></h3>
+      <ol class="rank" id="onlineList"></ol>
+      <div id="reqBox" class="hidden"><h3 style="margin-top:14px">Richieste di amicizia</h3><ol class="rank" id="reqList"></ol></div>
+      <h3 style="margin-top:14px">Amici</h3>
+      <ol class="rank" id="friendList"></ol>
     </div>
     <div class="panel">
       <h3>Classifica <span class="seg" role="tablist"><button class="on" data-rt="classic">Classica</button><button data-rt="fog">🌫️ Nebbia</button><button data-rt="rumble">👑 Rumble</button></span></h3>
@@ -367,6 +383,15 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <h2 id="tutT"></h2>
       <p id="tutP"></p>
       <div class="row"><button class="btn" id="tutPrev">Indietro</button><button class="btn primary" id="tutNext">Avanti</button></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="invModal" role="dialog" aria-modal="true" aria-labelledby="invT">
+    <div class="mbox">
+      <div class="big" aria-hidden="true">📨</div>
+      <h2 id="invT">Invito a giocare</h2>
+      <p id="invP"></p>
+      <div class="row"><button class="btn" id="invNo">No, grazie</button><button class="btn primary" id="invYes">Entra</button></div>
     </div>
   </div>
 
@@ -1970,7 +1995,7 @@ function showGame(on){
 }
 function showLobby(){
   if(G&&G.unsub) G.unsub.forEach(f=>f());
-  G=null; if(roomUnsub){roomUnsub();roomUnsub=null}
+  G=null; if(roomUnsub){roomUnsub();roomUnsub=null}LOBBY=null;
   $('roomBox').classList.add('hidden'); hideBanner(); showGame(false); renderLobby();
 }
 function renderTop(){$('eloPill').textContent=PROFILE?`${PROFILE.nick} · Elo ${Math.round(PROFILE.elo)} · 🌫️ ${Math.round(PROFILE.eloFog??1000)} · 👑 ${Math.round(PROFILE.eloRumble??1000)}`:'Ospite'}
@@ -1988,7 +2013,8 @@ function renderLobby(){
   if(GUEST&&RAW) $('guestNick').textContent=RAW.nick;
   if(reg){$('meNick').textContent=PROFILE.nick;$('meElo').textContent=Math.round(PROFILE.elo);$('meEloF').textContent=Math.round(PROFILE.eloFog??1000);$('meWL').textContent=`${(PROFILE.wins||0)+(PROFILE.winsFog||0)} vittorie · ${(PROFILE.losses||0)+(PROFILE.lossesFog||0)} sconfitte`}
   const can=ONLINE==='ok'&&reg&&CANWRITE;
-  for(const id of ['roomFriendly','roomRanked','joinBtn','rumbleOnline']) $(id).disabled=!can;
+  for(const id of ['roomFriendly','roomRanked','joinBtn','rumbleOnline','quickFriendly','quickRanked']) $(id).disabled=!can||!!QUEUE;
+  $('socialPanel').classList.toggle('hidden',!can);if(can)renderSocial();
   $('onlineNote').textContent=ONLINE==='loading'?'Connessione al server di gioco…':
     ONLINE==='login'?'Accedi per giocare online con gli amici: basta mandare il link e un codice stanza.':
     ONLINE==='off'?'Il gioco online non è disponibile in questa vista: serve aver fatto l\'accesso a claude.ai e avere il link condiviso. Puoi comunque fare il tutorial e giocare contro il bot.':
@@ -2016,11 +2042,12 @@ function fbAdapter(fs){
 }
 let SUBS=[];
 function startProfile(db,onFail){
-  SUBS.forEach(f=>f());SUBS=[];let first=true;
+  SUBS.forEach(f=>f());SUBS=[];SOCIAL=false;let first=true;
   SUBS.push(db.doc('players/'+UID).onSnapshot(s=>{
     ONLINE='ok';const had=!!RAW;
     RAW=s.exists?{id:s.id,...s.data()}:null;PROFILE=GUEST?null:RAW;
     if(!G) renderLobby(); else renderTop();
+    if(PROFILE&&!SOCIAL) startSocial();
     if(RAW&&!had&&!first&&!tutSeen()) openTut();
     if(first&&!RAW&&!CANWRITE&&!tutSeen()) openTut();
     first=false;
@@ -2072,6 +2099,115 @@ async function register(){
   finally{$('regBtn').disabled=false}
 }
 const CODECH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+// ---------- online: chi c'è, amici, inviti, partita rapida ----------
+// Nessun documento viene cancellato: chi esce azzera il suo "at", e gli inviti/richieste chiusi cambiano stato.
+const ONLINE_MS=70000;let SOCIAL=false,PRES=[],FREQ=[],LOBBY=null,QUEUE=null,LASTINV=0;
+const isOn=p=>p&&+p.at>Date.now()-ONLINE_MS;
+const myFriends=()=>(RAW&&Array.isArray(RAW.friends))?RAW.friends.filter(f=>f&&f.id):[];
+const isFriend=id=>myFriends().some(f=>f.id===id);
+const reqPending=id=>FREQ.some(r=>r.status==='pending'&&((r.from===UID&&r.to===id)||(r.to===UID&&r.from===id)));
+function startSocial(){
+  if(!DB||!PROFILE)return;SOCIAL=true;
+  const beat=()=>{if(!PROFILE)return;DB.doc('presence/'+UID).set({nick:PROFILE.nick,elo:Math.round(PROFILE.elo),eloFog:Math.round(PROFILE.eloFog??1000),eloRumble:Math.round(PROFILE.eloRumble??1000),at:Date.now(),busy:!!(G&&G.mode!=='bot'&&!G.finished)}).catch(()=>{})};
+  beat();const t1=setInterval(beat,25000),t2=setInterval(()=>{if(!G)renderSocial()},15000);
+  SUBS.push(()=>{clearInterval(t1);clearInterval(t2);SOCIAL=false});
+  SUBS.push(DB.collection('presence').onSnapshot(sn=>{PRES=sn.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderSocial()},()=>{}));
+  SUBS.push(DB.collection('friendReq').onSnapshot(sn=>{FREQ=sn.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.to===UID||r.from===UID);settleFriends();if(!G)renderSocial()},()=>{}));
+  SUBS.push(DB.doc('invites/'+UID).onSnapshot(sn=>{const d=sn.exists&&sn.data();if(d&&+d.at>Date.now()-120000&&d.from!==UID&&+d.at!==LASTINV)showInvite(d)},()=>{}));
+  const join=new URLSearchParams(location.search).get('join');
+  if(join&&/^[A-Za-z0-9]{5}$/.test(join)){try{const u=new URL(location.href);u.searchParams.delete('join');history.replaceState(null,'',u)}catch(e){}
+    if(!G){$('codeIn').value=join.toUpperCase();joinRoom()}}
+}
+addEventListener('pagehide',()=>{if(SOCIAL&&DB&&UID){try{DB.doc('presence/'+UID).update({at:0})}catch(e){}}if(QUEUE)stopQueue()});
+function renderSocial(){
+  if(!$('socialPanel')||!PROFILE)return;
+  const on=PRES.filter(p=>isOn(p)).sort((a,b)=>(b.id===UID)-(a.id===UID)||String(a.nick).localeCompare(String(b.nick)));
+  $('onlineCount').textContent=on.length;
+  const inv=id=>LOBBY&&id!==UID?`<button class="linkbtn" data-invite="${esc(id)}">Invita</button>`:'';
+  $('onlineList').innerHTML=on.length?on.slice(0,40).map(p=>`<li class="${p.id===UID?'me':''}"><span class="pos"><i class="dot on"></i></span><span>${esc(p.nick)}${p.id===UID?' (tu)':''}</span><span class="wl">${p.busy?'in partita':'Elo '+(+p.elo||1000)}</span><b>${p.id!==UID&&!isFriend(p.id)&&!reqPending(p.id)?`<button class="linkbtn" data-friend="${esc(p.id)}" data-nick="${esc(p.nick)}">＋ Amico</button>`:''}${p.busy?'':inv(p.id)}</b></li>`).join(''):'<li class="empty">Nessuno online in questo momento.</li>';
+  const fr=myFriends().map(f=>({...f,p:PRES.find(x=>x.id===f.id)})).sort((a,b)=>isOn(b.p)-isOn(a.p));
+  $('friendList').innerHTML=fr.length?fr.map(f=>`<li><span class="pos"><i class="dot${isOn(f.p)?' on':''}"></i></span><span>${esc(f.nick)}</span><span class="wl">${isOn(f.p)?(f.p.busy?'in partita':'online'):'offline'}</span><b>${isOn(f.p)&&!f.p.busy?inv(f.id):''}</b></li>`).join(''):'<li class="empty">Ancora nessun amico: aggiungili dalla lista online o dalla lobby.</li>';
+  const req=FREQ.filter(r=>r.to===UID&&r.status==='pending');
+  $('reqBox').classList.toggle('hidden',!req.length);
+  $('reqList').innerHTML=req.map(r=>`<li><span class="pos">📨</span><span>${esc(r.fromNick)}</span><span class="wl"></span><b><button class="linkbtn" data-accept="${esc(r.id)}">Accetta</button><button class="linkbtn" data-refuse="${esc(r.id)}">Rifiuta</button></b></li>`).join('');
+}
+async function addFriendLocal(id,nick){if(isFriend(id))return;const list=[...myFriends(),{id,nick:String(nick||'').slice(0,16)}];try{await DB.doc('players/'+UID).update({friends:list})}catch(e){}}
+async function sendFriend(id,nick){
+  if(!PROFILE||id===UID)return;
+  try{await DB.doc('friendReq/'+id+'__'+UID).set({from:UID,fromNick:PROFILE.nick,to:id,toNick:String(nick||''),status:'pending',at:Date.now()});toast(`Richiesta di amicizia inviata a ${nick}.`);lobbyMsg(`Richiesta di amicizia inviata a ${nick}.`)}
+  catch(e){lobbyMsg('Richiesta non inviata, riprova.')}
+}
+async function settleFriends(){
+  // chi ha mandato la richiesta aggiunge l'amico quando l'altro accetta
+  for(const r of FREQ) if(r.from===UID&&r.status==='accepted'){await addFriendLocal(r.to,r.toNick);try{await DB.doc('friendReq/'+r.id).update({status:'done'})}catch(e){}}
+}
+async function answerFriend(rid,ok){
+  const r=FREQ.find(x=>x.id===rid);if(!r)return;
+  if(ok) await addFriendLocal(r.from,r.fromNick);
+  try{await DB.doc('friendReq/'+rid).update({status:ok?'accepted':'refused'})}catch(e){}
+  lobbyMsg(ok?`Tu e ${r.fromNick} ora siete amici.`:'');
+}
+async function sendInvite(id){
+  if(!LOBBY||!PROFILE)return;const p=PRES.find(x=>x.id===id)||myFriends().find(x=>x.id===id)||{};
+  try{await DB.doc('invites/'+id).set({from:UID,fromNick:PROFILE.nick,room:LOBBY.code,label:LOBBY.label,at:Date.now()});lobbyMsg(`Invito mandato a ${p.nick||'un amico'}.`)}catch(e){lobbyMsg('Invito non inviato, riprova.')}
+}
+let INVNOW=null;
+function showInvite(d){
+  if(G&&G.mode!=='bot'&&!G.finished)return;INVNOW=d;
+  $('invP').textContent=`${d.fromNick} ti invita a una ${d.label||'partita'}.`;$('invModal').classList.remove('hidden');
+}
+function closeInvite(){if(INVNOW){LASTINV=+INVNOW.at;DB.doc('invites/'+UID).update({at:0}).catch(()=>{})}INVNOW=null;$('invModal').classList.add('hidden')}
+$('invNo').onclick=closeInvite;
+$('invYes').onclick=()=>{const d=INVNOW;closeInvite();if(!d)return;if(G)showLobby();$('codeIn').value=d.room;joinRoom()};
+document.addEventListener('click',e=>{
+  const f=e.target.closest('[data-friend]');if(f){sendFriend(f.dataset.friend,f.dataset.nick);f.disabled=true;return}
+  const i=e.target.closest('[data-invite]');if(i){sendInvite(i.dataset.invite);i.disabled=true;return}
+  const a=e.target.closest('[data-accept]');if(a){answerFriend(a.dataset.accept,true);return}
+  const n=e.target.closest('[data-refuse]');if(n){answerFriend(n.dataset.refuse,false);return}
+});
+$('linkBtn').onclick=()=>{const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('join',$('roomCode').textContent);
+  try{navigator.clipboard.writeText(u.toString()).then(()=>lobbyMsg('Link copiato: chi lo apre entra direttamente nella stanza.'),()=>lobbyMsg('Copia non riuscita: '+u))}catch(e){lobbyMsg(u.toString())}};
+// partita rapida: si entra in coda; in classificata si cerca un Elo simile, con una tolleranza che cresce con l'attesa
+async function quickMatch(ranked){
+  if(!PROFILE||!DB||QUEUE||G)return;const v=variant();
+  QUEUE={ranked,variant:v,since:Date.now(),busy:false};
+  try{await DB.doc('queue/'+UID).set({nick:PROFILE.nick,elo:eloOf(v),variant:v,ranked,win:v==='fog'?7:winTarget(),at:Date.now(),room:null})}catch(e){QUEUE=null;lobbyMsg('Non riesco a entrare in coda, riprova.');return}
+  QUEUE.un=DB.doc('queue/'+UID).onSnapshot(sn=>{const d=sn.exists&&sn.data();if(QUEUE&&d&&d.room)joinMatched(d.room)},()=>{});
+  QUEUE.t=setInterval(mmTick,2000);renderMM();renderLobby();
+}
+function mmWindow(){return QUEUE.ranked?100+Math.floor((Date.now()-QUEUE.since)/1000)*10:null}
+function renderMM(){$('mmBox').classList.toggle('hidden',!QUEUE);if(!QUEUE)return;const w=mmWindow(),sec=Math.floor((Date.now()-QUEUE.since)/1000);
+  $('mmText').textContent=`Cerco un avversario${QUEUE.variant==='fog'?' (Nebbia)':''}… ${sec} s`+(w?` · Elo ±${w}`:'')}
+async function mmTick(){
+  if(!QUEUE||QUEUE.busy)return;QUEUE.busy=true;
+  try{
+    const now=Date.now();renderMM();DB.doc('queue/'+UID).update({at:now}).catch(()=>{});
+    const sn=await DB.collection('queue').get(),me=eloOf(QUEUE.variant),w=mmWindow();
+    const c=sn.docs.map(d=>({id:d.id,...d.data()})).filter(d=>d.id!==UID&&!d.room&&+d.at>now-8000&&d.variant===QUEUE.variant&&!!d.ranked===QUEUE.ranked&&(!w||Math.abs((+d.elo||1000)-me)<=w))
+      .sort((a,b)=>Math.abs((+a.elo||1000)-me)-Math.abs((+b.elo||1000)-me));
+    const o=c[0];if(!o||!(UID<o.id))return; // la stanza la crea chi ha l'identificativo più basso
+    const ref=DB.doc('queue/'+o.id),L=await ref.acquire({holder:UID,ttlMs:4000});if(!L.acquired)return;
+    const cur=(await ref.get()).data(),mine=(await DB.doc('queue/'+UID).get()).data();
+    if(!QUEUE||!cur||cur.room||+cur.at<now-8000||!mine||mine.room)return;
+    let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>CODECH[Math.floor(Math.random()*CODECH.length)]).join('');if(!(await DB.doc('rooms/'+code).get()).exists)break}
+    const d={host:UID,hostNick:PROFILE.nick,hostElo:me,guest:o.id,guestNick:o.nick,guestElo:+o.elo||1000,ranked:QUEUE.ranked,variant:QUEUE.variant,win:QUEUE.variant==='fog'?7:winTarget(),
+      seed:Math.floor(Math.random()*2e9),status:'playing',forfeit:null,created:now,quick:true};
+    await DB.doc('rooms/'+code).set(d);await ref.update({room:code});stopQueue();
+    if(roomUnsub) roomUnsub();roomUnsub=DB.doc('rooms/'+code).onSnapshot(x=>{const r=x.exists&&x.data();if(r)handleRoom(r)},()=>{});
+    startPvp(code,d,0);
+  }catch(e){}finally{if(QUEUE)QUEUE.busy=false}
+}
+async function joinMatched(code){
+  let d=null;try{d=(await DB.doc('rooms/'+code).get()).data()}catch(e){}
+  if(!d||!QUEUE)return;stopQueue();
+  if(roomUnsub) roomUnsub();roomUnsub=DB.doc('rooms/'+code).onSnapshot(x=>{const r=x.exists&&x.data();if(r)handleRoom(r)},()=>{});
+  startPvp(code,d,1);
+}
+function stopQueue(){if(!QUEUE)return;clearInterval(QUEUE.t);QUEUE.un&&QUEUE.un();const q=QUEUE;QUEUE=null;
+  DB.doc('queue/'+UID).set({nick:PROFILE?PROFILE.nick:'',variant:q.variant,ranked:q.ranked,at:0,room:null}).catch(()=>{});renderMM();if(!G)renderLobby()}
+$('quickFriendly').onclick=()=>quickMatch(false);
+$('quickRanked').onclick=()=>quickMatch(true);
+$('mmCancel').onclick=()=>stopQueue();
 async function createRoom(ranked){
   if(!PROFILE||!DB) return;
   lobbyMsg('Creo la stanza…');
@@ -2083,10 +2219,8 @@ async function createRoom(ranked){
   }catch(e){lobbyMsg('Non riesco a creare la stanza, riprova.');return}
   lobbyMsg('');
   $('roomCode').textContent=code;$('roomKind').textContent=`${ranked?'classificata':'amichevole'} ${variant()==='fog'?'in modalità Nebbia, a 7 prese':`a ${winTarget()} prese`}`;$('roomBox').classList.remove('hidden');
-  if(roomUnsub) roomUnsub();
-  roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
-    if(d.status==='playing'&&d.guest&&d.guest!==UID&&!G) startPvp(code,d,0);
-    handleRoom(d)},()=>{});
+  $('rumbleBox').classList.add('hidden');
+  LOBBY={code,kind:'pvp',label:ranked?'partita classificata':'partita amichevole',host:true};watchPvpLobby(code,true);
 }
 async function joinRoom(){
   if(!PROFILE||!DB) return;
@@ -2098,13 +2232,28 @@ async function joinRoom(){
   if(!d){lobbyMsg('Stanza non trovata: controlla il codice.');return}
   if(d.type==='rumble'){joinRumble(code,ref,d);return}
   if(d.host===UID){lobbyMsg('È la tua stanza: aspetta che entri l\'avversario.');return}
-  if(d.status!=='waiting'||d.guest){lobbyMsg('Questa stanza è già in gioco o chiusa.');return}
-  try{await ref.update({guest:UID,guestNick:PROFILE.nick,guestElo:eloOf(d.variant),status:'playing'})}catch(e){lobbyMsg('Non riesco a entrare nella stanza.');return}
+  if(d.status!=='waiting'||(d.guest&&d.guest!==UID)){lobbyMsg('Questa stanza è già in gioco o chiusa.');return}
+  try{await ref.update({guest:UID,guestNick:PROFILE.nick,guestElo:eloOf(d.variant)})}catch(e){lobbyMsg('Non riesco a entrare nella stanza.');return}
   lobbyMsg('');
-  if(roomUnsub) roomUnsub();
-  roomUnsub=ref.onSnapshot(x=>{const r=x.exists&&x.data();if(r)handleRoom(r)},()=>{});
-  startPvp(code,{...d,guest:UID,guestNick:PROFILE.nick,guestElo:eloOf(d.variant)},1);
+  $('roomCode').textContent=code;$('roomKind').textContent=`${d.ranked?'classificata':'amichevole'} ${d.variant==='fog'?'in modalità Nebbia, a 7 prese':`a ${d.win} prese`}`;
+  $('roomBox').classList.remove('hidden');$('rumbleBox').classList.add('hidden');
+  LOBBY={code,kind:'pvp',label:d.ranked?'partita classificata':'partita amichevole',host:false};watchPvpLobby(code,false);
 }
+function watchPvpLobby(code,host){
+  if(roomUnsub) roomUnsub();renderSocial();
+  $('pvpStart').onclick=async()=>{try{await DB.doc('rooms/'+code).update({status:'playing'})}catch(e){lobbyMsg('Avvio non riuscito.')}};
+  roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
+    if(d.status==='waiting'&&!G){
+      const ms=[{id:d.host,nick:d.hostNick,elo:d.hostElo},d.guest?{id:d.guest,nick:d.guestNick,elo:d.guestElo}:null].filter(Boolean);
+      $('lobbyMembers').classList.remove('hidden');$('lobbyMembers').innerHTML=ms.map(m=>memberLi(m)).join('');
+      $('pvpStart').classList.toggle('hidden',!host);$('pvpStart').disabled=!d.guest;
+      $('roomWait').textContent=host?(d.guest?'Il tuo avversario è entrato: premi Avvia quando siete pronti.':'In attesa che entri l\'avversario…'):'Sei nella stanza: la partita parte quando chi l\'ha creata preme Avvia.';
+    }
+    if(d.status==='playing'&&d.guest&&!G){LOBBY=null;startPvp(code,d,d.host===UID?0:1)}
+    handleRoom(d)},()=>{});
+}
+function memberLi(m){const fr=isFriend(m.id),me=m.id===UID;
+  return `<li class="${me?'me':''}"><span class="pos">·</span><span>${esc(m.nick)}</span><span class="wl">Elo ${Math.round(+m.elo||1000)}</span><b>${!me&&!fr&&!reqPending(m.id)?`<button class="linkbtn" data-friend="${esc(m.id)}" data-nick="${esc(m.nick)}">＋ Amico</button>`:fr?'<span class="wl">amico</span>':''}</b></li>`}
 function handleRoom(d){
   if(G&&G.mode==='pvp'&&d.forfeit&&d.forfeit!==UID&&G.phase!=='over') finishMatch(1,`${G.oppName} ha abbandonato la partita.`);
 }
@@ -2389,7 +2538,8 @@ function watchRumbleRoom(code,host){
   roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
     const ps=d.players||[];
     const fillN=d.status==='waiting'&&d.fill?8-ps.length:0;
-    $('rumbleList').innerHTML=ps.map((p,i)=>`<li class="${p.uid===UID?'me':''}"><span class="pos">${i+1}</span><span>${p.bot?'🤖 ':''}${esc(p.nick)}</span><span class="wl">${p.bot?'bot':'Elo '+Math.round(+p.elo||1000)}</span><b></b></li>`).join('')+
+    if(!LOBBY){LOBBY={code,kind:'rumble',label:'Royal Rumble',host};renderSocial()}$('lobbyMembers').classList.add('hidden');$('pvpStart').classList.add('hidden');
+    $('rumbleList').innerHTML=ps.map((p,i)=>p.bot?`<li><span class="pos">${i+1}</span><span>🤖 ${esc(p.nick)}</span><span class="wl">bot</span><b></b></li>`:memberLi({id:p.uid,nick:p.nick,elo:p.elo}).replace('<span class="pos">·</span>',`<span class="pos">${i+1}</span>`)).join('')+
       (fillN>0?`<li><span class="pos">+</span><span>🤖 ${fillN} bot di riempimento</span><span class="wl">bravura adattiva</span><b></b></li>`:'');
     const waiting=d.status==='waiting';$('rumbleFillRow').classList.toggle('hidden',!waiting);
     $('rumbleFill').checked=!!d.fill;$('rumbleFill').disabled=!host;

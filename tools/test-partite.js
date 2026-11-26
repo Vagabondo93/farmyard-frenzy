@@ -46,7 +46,7 @@ async function playRound(pages){
     await p.fill('#nickIn',names[i]+'X');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)')}
   console.log('1 contro 1 online (classificata)');
   await P[0].click('#roomRanked');await P[0].waitForSelector('#roomBox:not(.hidden)');
-  await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');
+  await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
   for(const p of P.slice(0,2)) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){await playRound(P.slice(0,2));
     const s=await Promise.all(P.slice(0,2).map(p=>p.evaluate(()=>JSON.stringify([window.__g().score,window.__g().sim.t.toFixed(3)]))));

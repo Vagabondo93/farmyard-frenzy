@@ -30,7 +30,7 @@ function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{l
   ok(true,'accesso e iscrizione di due giocatori');
   await P[0].waitForTimeout(400);ok((await P[0].textContent('#rankList')).includes('Bruno'),'classifica condivisa: Anna vede Bruno');
   await P[0].click('#roomRanked');await P[0].waitForSelector('#roomBox:not(.hidden)');
-  await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');
+  await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
   for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){
     for(const p of P){for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}await p.click('#readyBtn')}

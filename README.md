@@ -20,6 +20,7 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 | `lang/en.js`, `lang/es.js`, `lang/fr.js` | Traduzioni in inglese, spagnolo e francese: dizionario «testo italiano → testo tradotto». |
 | `tools/test-lingue.js` | Gioca in ogni lingua e segnala i testi rimasti in italiano. |
 | `tools/i18n-estrai.js` | Elenca tutti i testi visibili del gioco, per trovare quelli nuovi da tradurre. |
+| `tools/test-social.js` | Chi è online, amicizie, inviti dalla lobby, link d'invito e partita rapida. |
 | `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online su claude.ai. |
 | `tools/test-firebase.js`, `tools/mock-firebase.js` | Test del sito pubblico con un Firebase simulato. |
 | `firebase-config.js`, `firestore.rules`, `firebase.json` | Configurazione di Firebase per il sito pubblico. |
