@@ -102,7 +102,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Tacchino, Cane, Corvo": "Turkey, Dog, Crow",
 "Umani": "Humans",
 "Galli-co": "Roosterix",
-"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 95, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.": "A rooster with a rooster helmet: the Turkey's advanced defence. Draws attacks within 95, slows every thief passing by, Marten included, and each peck stuns for a moment.",
+"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 78, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.": "A rooster with a rooster helmet: the Turkey's advanced defence. Draws attacks within 78, slows every thief passing by, Marten included, and each peck stuns for a moment.",
 "Faina, Ladro, Talpa, Assassino": "Marten, Thief, Mole, Assassin",
 "Cacciatore, Gazza, Mais": "Hunter, Magpie, Corn",
 "Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.": "Invisible for the first 7 seconds. Carries the egg without slowing down. The Crow reveals him.",

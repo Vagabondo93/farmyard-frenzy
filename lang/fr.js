@@ -102,7 +102,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Tacchino, Cane, Corvo": "Dindon, Chien, Corbeau",
 "Umani": "Humains",
 "Galli-co": "Coq Gaulois",
-"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 95, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.": "Un coq avec un casque de coq : la défense avancée du Dindon. Attire les attaques à moins de 95, ralentit tous les voleurs qui passent à côté, Fouine comprise, et chaque coup de bec étourdit un instant.",
+"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 78, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.": "Un coq avec un casque de coq : la défense avancée du Dindon. Attire les attaques à moins de 78, ralentit tous les voleurs qui passent à côté, Fouine comprise, et chaque coup de bec étourdit un instant.",
 "Faina, Ladro, Talpa, Assassino": "Fouine, Voleur, Taupe, Assassin",
 "Cacciatore, Gazza, Mais": "Chasseur, Pie, Maïs",
 "Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.": "Invisible pendant les 7 premières secondes. Porte l'œuf sans ralentir. Le Corbeau le repère.",

@@ -903,8 +903,8 @@ const UNITS={
    d:'Piazzalo dove vuoi, anche in campo nemico. Rallenta del 50% chi vola entro 180. Gli Umani nemici senza ordine lo attaccano, e il Ladro senza ordine si spaventa e perde 2,5 s. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Corvo, Cacciatrice, Poliziotto, Assassino senza ordini',loses:'Animali, Umani con un ordine'},
  mais:{n:'Mais',i:'🌽',t:1,tags:['Oggetto','Esca'],hp:150,dmg:0,spd:0,role:'static',lure:180,lureTag:'Animale',
    d:'Piazzalo dove vuoi, anche in campo nemico. Gli Animali nemici entro 180 lo attaccano, e Faina e Gazza si fermano 2,5 s a mangiarlo. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Tacchino, Cane, Corvo',loses:'Umani'},
- gallico:{n:'Galli-co',i:'🐓',t:3,cost:5,tags:['Animale','Guardiano'],hp:150,dmg:8,spd:50,rng:18,cd:.9,role:'guard',guardR:100,taunt:95,block:true,blockAll:true,stunHit:.25,
-   d:"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 95, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.",beats:'Faina, Ladro, Talpa, Assassino',loses:'Cacciatrice, Gazza, Mais'},
+ gallico:{n:'Galli-co',i:'🐓',t:3,cost:5,tags:['Animale','Guardiano'],hp:125,dmg:7,spd:50,rng:18,cd:.9,role:'guard',guardR:100,taunt:78,block:true,blockAll:true,blockMul:.6,stunHit:.15,
+   d:"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 78, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.",beats:'Faina, Ladro, Talpa, Assassino',loses:'Cacciatrice, Gazza, Mais'},
  ladro:{n:'Ladro',i:'🦹',t:2,tags:['Umano','Ladro'],hp:70,dmg:0,spd:62,carry:1,role:'thief',invis:7,
    d:"Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.",beats:'Cane, Cacciatrice',loses:'Poliziotto, Assassino, Corvo'},
  cacciatore:{n:'Cacciatrice',i:'🤠',t:2,tags:['Umano','Tiratore'],hp:45,dmg:10,spd:40,rng:155,cd:1.4,ranged:true,role:'hunter',prio:{Animale:4},bonus:{Animale:1.35},
@@ -1298,7 +1298,7 @@ function moveTo(u,tx,ty,dt,S){
   if(!u.def.unstoppable) for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.aura&&dist(u,e)<e.def.aura.r){sp*=e.def.aura.slow;break}
   if(u.def.flying&&!u.def.noSlow) for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.slowFly&&dist(u,e)<e.def.slowFly){sp*=e.def.slowFlyMul??.5;break}
   if(canCarry(u)&&!u.def.flying&&!u.underground&&!u.def.unstoppable)
-    for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.block&&(!u.def.agile||e.def.blockAll)&&dist(u,e)<36){sp*=.4;break}
+    for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.block&&(!u.def.agile||e.def.blockAll)&&dist(u,e)<36){sp*=e.def.blockMul||.4;break}
   if(S.fog&&u.def.swim&&Math.abs(u.x-RX)<RW&&!onBridge(u)) sp*=.6; // a nuoto va più piano
   if(S.fog&&!u.def.flying&&!u.def.swim){
     // un bersaglio in acqua (fuori dai ponti) si raggiunge solo dalla riva

@@ -102,7 +102,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Tacchino, Cane, Corvo": "Pavo, Perro, Cuervo",
 "Umani": "Humanos",
 "Galli-co": "Gallo Galo",
-"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 95, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.": "Un gallo con casco de gallo: la defensa avanzada del Pavo. Atrae los ataques a menos de 95, frena a todos los ladrones que pasan a su lado, Garduña incluida, y cada picotazo aturde un instante.",
+"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 78, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.": "Un gallo con casco de gallo: la defensa avanzada del Pavo. Atrae los ataques a menos de 78, frena a todos los ladrones que pasan a su lado, Garduña incluida, y cada picotazo aturde un instante.",
 "Faina, Ladro, Talpa, Assassino": "Garduña, Ladrón, Topo, Asesino",
 "Cacciatore, Gazza, Mais": "Cazador, Urraca, Maíz",
 "Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.": "Invisible los primeros 7 segundos. Lleva el huevo sin frenarse. El Cuervo lo descubre.",
