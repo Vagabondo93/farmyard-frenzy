@@ -100,7 +100,18 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 @media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
 .arena{position:relative;min-width:0}
 canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:16px;background:#6f9e43;border:3px solid #5a3a1a;box-shadow:var(--shadow)}
-canvas.drag{touch-action:none}
+canvas.drag{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* menu a comparsa dell'unità sul campo (clic, o tenendo premuto da telefono) */
+.umenu{position:fixed;z-index:60;width:min(340px,94vw);background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.32);padding:10px;display:grid;gap:8px}
+.umh{display:flex;align-items:center;gap:8px}.umh .uimg{width:34px;height:34px}.umh .st{color:#d4a017;font-size:13px}.umh .pill{margin-left:auto}
+.umx{border:0;background:var(--chip);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--ink)}
+.umsub{margin:0;font-size:12.5px;color:var(--muted)}.umsub .oimg{width:18px;height:18px}
+.umgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.umgrid button{display:grid;justify-items:center;align-content:start;gap:3px;padding:6px 2px;border-radius:10px;border:1.5px solid var(--line);background:var(--chip);color:var(--ink);font:inherit;font-size:10.5px;font-weight:700;line-height:1.1;cursor:pointer;min-height:62px}
+.umgrid button .oimg{width:30px;height:30px}.umgrid button.on{border-color:#e0a91c;background:color-mix(in srgb,#f2c230 22%,var(--chip))}.umgrid button.cur{outline:2px solid var(--good);outline-offset:-2px}
+.umdesc{margin:0;font-size:13px;line-height:1.35;min-height:2.7em}
+.umfoot{display:flex;gap:6px;flex-wrap:wrap}.umfoot .btn{flex:1 1 auto;padding:9px 8px;font-size:14px}
+@media (max-width:520px){.umgrid button{font-size:9.5px;min-height:58px}.umgrid button .oimg{width:28px;height:28px}}
 .banner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .banner .box{pointer-events:auto;background:rgba(20,26,14,.9);color:#fff;border-radius:18px;padding:18px 24px;text-align:center;max-width:88%;
   display:grid;gap:10px;justify-items:center;box-shadow:0 14px 40px rgba(0,0,0,.4);border:2px solid rgba(242,194,48,.5)}
@@ -559,6 +570,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
     <section class="arena" id="arenaSec">
       <canvas id="field" width="960" height="540" aria-label="Campo di gioco"></canvas>
       <div class="tip hidden" id="tip" role="tooltip"></div>
+      <div class="umenu hidden" id="unitMenu" role="dialog" aria-label="Ordini dell'unità"></div>
       <div class="banner hidden" id="banner"><div class="box"><h2 id="bTitle"></h2><p id="bText"></p><button class="btn primary" id="bBtn"></button></div></div>
       <div class="ctrl">
         <button class="btn primary" id="readyBtn">Pronto ▶</button>
@@ -1809,7 +1821,7 @@ function step(S,dt){
     const nearPlot=sp.type==='staccionata'&&S.plots&&S.plots.length&&[-1,0,1].some(k=>inPlot(u.x,clamp(u.y+8,20,H-20)+k*36,S,32));
     if(!nearPlot&&mine.length<sp.max&&!mine.some(x=>dist(x,u)<45)){const m=spawn({type:sp.type,star:1,order:null,px:u.side?W-u.x:u.x,py:clamp(u.y+8,20,H-20)},u.side,S.nextId++);m.owner=u.id;S.units.push(m);
       if(sp.type==='staccionata'&&u.def.wallHp){m.hp=m.maxHp=u.def.wallHp}
-      fx(S,u.x,u.y-22,sp.type==='monete'?'lascia monete':sp.type==='staccionata'?'costruisce una staccionata':'pianta un germoglio','#ffe6a8')}
+      fx(S,u.x,u.y-22,sp.type==='monete'?'lascia monete':sp.type==='staccionata'?'costruisce una staccionata':sp.type==='arnia'?'piazza un\'arnia':'pianta un germoglio','#ffe6a8')}
     u.spT=sp.every-(u.star===2?1:0);
   }
   for(const u of live) if(u.alive&&u.def.regen) u.hp=Math.min(u.maxHp,u.hp+u.def.regen*dt);
@@ -2184,7 +2196,8 @@ let toastT;
 function toast(m){$('toast').textContent=m;clearTimeout(toastT);if(m)toastT=setTimeout(()=>$('toast').textContent='',6000)}
 
 // ---------- UI ----------
-function renderAll(){
+function renderAll(){renderAll0();renderUnitMenu()}
+function renderAll0(){
   $('sc0').textContent=`Tu ${G.score[G.me]}`;$('sc1').textContent=`${G.score[1-G.me]} ${G.oppName}`;
   $('roundPill').textContent=`Round ${G.round}`;$('goalTxt').textContent=`primo a ${G.win} ${G.win===1?'presa':'prese'}${G.variant==='fog'?' · 🌫️ Nebbia':''}`;
   $('phasePill').textContent={shop:'Market',waiting:'In attesa',reveal:'Rivelazione',battle:'Battaglia',result:'Fine round',over:'Fine partita'}[G.phase];
@@ -2211,7 +2224,7 @@ function renderAll(){
     const d=UNITS[t],two=(p.shopStar||[])[i]===2,c=shopCost(p,i),n=two?0:p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
     return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,two?2:1,{cost:c,foot:`${two?'<span class="merge">★★ già pronta</span>':hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
-  $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.';
+  $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta. Sul campo puoi anche cliccarla (o tenerla premuta da telefono) per il menu rapido.';
   $('orders').innerHTML=Object.entries(ORDERS).map(([k,d])=>`<button class="ord${selU&&selU.order===k?' cur':''}" data-ord="${k}" ${!shop||p.gold<ORDER_COST||!selU?'disabled':''}>
       <span class="cost">${ORDER_COST}</span><span class="ic">${OIC(d)}</span>
       <span class="nm">${d.n}</span><span class="ds">${d.d}</span></button>`).join('');
@@ -2314,15 +2327,48 @@ $('readyBtn').onclick=()=>{
 // drag sul campo
 let drag=null;
 function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+let press=null; // {x,y,t,touch,moved,timer,uid}
 cv.addEventListener('pointerdown',e=>{
   if(!G)return;
-  if(G.phase!=='shop'){showTip(e);return}const m=ptr(e);
-  const b=ME().board.filter(b=>!b.bench).reverse().find(b=>Math.hypot(b.px-m.x,b.py-m.y)<22);
-  if(b){drag=b;G.sel=b.uid;cv.setPointerCapture(e.pointerId);renderAll()}
+  if(G.phase!=='shop'){showTip(e);return}const m=ptr(e),touch=e.pointerType==='touch';
+  const b=ME().board.filter(b=>!b.bench).reverse().find(b=>Math.hypot(b.px-m.x,b.py-m.y)<(touch?30:22));
+  if(!b){closeUnitMenu();return}
+  drag=b;G.sel=b.uid;try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  press={x:e.clientX,y:e.clientY,touch,moved:false,uid:b.uid,timer:touch?setTimeout(()=>{if(press&&!press.moved){press.long=true;drag=null;openUnitMenu(b.uid)}},420):null};
+  if(UM!==b.uid)closeUnitMenu();renderAll()
 });
-cv.addEventListener('pointermove',e=>{if(!drag)return;const m=ptr(e);drag.px=clamp(m.x,26,UNITS[drag.type].role==='static'&&!UNITS[drag.type].fakeEgg?W-26:W/2-26);drag.py=clamp(m.y,26,H-26)});
-cv.addEventListener('pointerup',()=>{drag=null});
-cv.addEventListener('pointercancel',()=>{drag=null});
+cv.addEventListener('pointermove',e=>{if(!drag||!press)return;
+  if(!press.moved){if(Math.hypot(e.clientX-press.x,e.clientY-press.y)<8)return;press.moved=true;clearTimeout(press.timer);closeUnitMenu()}
+  const m=ptr(e);drag.px=clamp(m.x,26,UNITS[drag.type].role==='static'&&!UNITS[drag.type].fakeEgg?W-26:W/2-26);drag.py=clamp(m.y,26,H-26)});
+cv.addEventListener('pointerup',()=>{const p=press;press=null;drag=null;if(!p)return;clearTimeout(p.timer);
+  if(p.moved||p.long)return;
+  if(!p.touch)openUnitMenu(p.uid);
+  else if(!G.umHint){G.umHint=true;toast('Tieni premuta un\'unità per darle un ordine, mandarla in panchina o venderla.')}});
+cv.addEventListener('pointercancel',()=>{if(press)clearTimeout(press.timer);press=null;drag=null});
+cv.addEventListener('contextmenu',e=>{if(G&&G.phase==='shop')e.preventDefault()});
+// ---------- menu a comparsa dell'unità: ordini (tocca per leggerlo, poi Compra), panchina, vendi ----------
+let UM=null,UMO=null;
+function openUnitMenu(uid){UM=uid;UMO=null;G.sel=uid;try{if(navigator.vibrate)navigator.vibrate(12)}catch(e){}renderAll()}
+function closeUnitMenu(){UM=null;UMO=null;$('unitMenu').classList.add('hidden')}
+function renderUnitMenu(){const el=$('unitMenu');
+  if(!G||UM==null||G.phase!=='shop'||$('game').classList.contains('hidden')){el.classList.add('hidden');UM=null;return}
+  const p=ME(),b=p.board.find(x=>x.uid===UM&&!x.bench);if(!b){closeUnitMenu();return}
+  const d=UNITS[b.type],o=UMO&&ORDERS[UMO];
+  el.innerHTML=`<div class="umh">${IC(d)}<b>${d.n}</b><span class="st">${'★'.repeat(b.star)}</span><span class="pill gold">Oro ${p.gold}</span><button class="umx" data-umclose aria-label="Chiudi">✕</button></div>
+    <p class="umsub">${b.order?`Ordine attuale: ${OIC(ORDERS[b.order])} ${ORDERS[b.order].n}`:'Nessun ordine'} · ogni ordine costa ${ORDER_COST} oro</p>
+    <div class="umgrid">${Object.entries(ORDERS).map(([k,x])=>`<button data-umo="${k}" class="${k===UMO?'on':''}${b.order===k?' cur':''}" aria-label="${esc(x.n)}">${OIC(x)}<span>${x.n}</span></button>`).join('')}</div>
+    <p class="umdesc">${o?`<b>${OIC(o)} ${o.n}</b>: ${o.d}`:'Tocca un ordine per vedere cosa fa.'}</p>
+    <div class="umfoot">${o?`<button class="btn primary" data-ord="${UMO}" ${p.gold<ORDER_COST||b.order===UMO?'disabled':''}>${b.order===UMO?'Ha già questo ordine':p.gold<ORDER_COST?'Oro insufficiente':`Compra l'ordine · ${ORDER_COST} oro`}</button>`:''}
+      <button class="btn" data-swap="${b.uid}">🪑 In panchina</button><button class="btn sell" data-sell="${b.uid}">Vendi +1</button></div>`;
+  el.classList.remove('hidden');
+  const r=cv.getBoundingClientRect(),k=sizeOf(b.type,b.star),sx=r.left+b.px*r.width/W,sy=r.top+b.py*r.height/H,w=el.offsetWidth,h=el.offsetHeight,off=(22*k)*r.width/W+10;
+  let y=sy+off;if(y+h>innerHeight-8)y=sy-off-h;if(y<8)y=Math.max(8,innerHeight-h-8);
+  el.style.left=Math.max(8,Math.min(innerWidth-w-8,sx-w/2))+'px';el.style.top=y+'px'}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-umo]');if(t){UMO=t.dataset.umo;renderUnitMenu();return}
+  if(e.target.closest('[data-umclose]')){closeUnitMenu();return}
+  if(UM!=null&&e.target.isConnected&&!e.target.closest('#unitMenu')&&e.target!==cv)closeUnitMenu()}); // un tasto del menu appena ridisegnato non è più nella pagina: non è un clic fuori
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&UM!=null)closeUnitMenu()});
+addEventListener('scroll',()=>{if(UM!=null&&!press)closeUnitMenu()},{passive:true});
 
 const tip=$('tip');
 function unitAt(m){

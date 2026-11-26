@@ -409,7 +409,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Compra {0} per {1} oro": "Buy {0} for {1} gold",
 "(ora: {0})": "(now: {0})",
 "Ordine per {0}{1}: tocca un ordine per comprarlo.": "Order for {0}{1}: tap an order to buy it.",
-"Tocca prima una tua unità, poi l'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.": "First tap one of your units, then the order you want to give it. Each unit holds one order at a time.",
 "{0}/{1} · tocca un'unità per darle un ordine": "{0}/{1} · tap a unit to give it an order",
 "{0}/{1} · non scende in campo, ma conta per le copie ★★": "{0}/{1} · doesn't take the field, but counts for ★★ copies",
 "nessun ordine": "no order",
@@ -894,5 +893,17 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Dalle scelte dei giocatori nelle partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "From players' choices in real matches: how often each character is picked when it shows up in the shop, how much it wins on the field and how often it gets an order.",
 "Servono più partite per una statistica affidabile: per ora {0}. Le statistiche si riempiono man mano che si gioca.": "More matches are needed for a reliable statistic: {0} so far. The stats fill up as people play.",
 "Ultime {0} partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "Last {0} real matches: how often each character is picked when it shows up in the shop, how much it wins on the field and how often it gets an order.",
-"Ancora nessuna partita registrata.": "No matches recorded yet."
+"Ancora nessuna partita registrata.": "No matches recorded yet.",
+"Tocca prima una tua unità, poi l'ordine che vuoi darle. Ogni unità tiene un ordine alla volta. Sul campo puoi anche cliccarla (o tenerla premuta da telefono) per il menu rapido.": "First tap one of your units, then the order you want to give it. Each unit holds one order at a time. On the field you can also click it (or press and hold on a phone) for the quick menu.",
+"Ordini dell'unità": "Unit orders",
+"Ordine attuale: {0} {1}": "Current order: {0} {1}",
+"Nessun ordine": "No order",
+"ogni ordine costa {0} oro": "each order costs {0} gold",
+"Tocca un ordine per vedere cosa fa.": "Tap an order to see what it does.",
+"Compra l'ordine · {0} oro": "Buy the order · {0} gold",
+"Ha già questo ordine": "Already has this order",
+"🪑 In panchina": "🪑 To the bench",
+"Vendi +1": "Sell +1",
+"Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Press and hold a unit to give it an order, bench it or sell it.",
+"piazza un'arnia": "places a beehive"
 };

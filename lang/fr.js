@@ -409,7 +409,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Compra {0} per {1} oro": "Acheter {0} pour {1} or",
 "(ora: {0})": "(actuel : {0})",
 "Ordine per {0}{1}: tocca un ordine per comprarlo.": "Ordre pour {0}{1} : touche un ordre pour l'acheter.",
-"Tocca prima una tua unità, poi l'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.": "Touche d'abord une de tes unités, puis l'ordre à lui donner. Chaque unité garde un ordre à la fois.",
 "{0}/{1} · tocca un'unità per darle un ordine": "{0}/{1} · touche une unité pour lui donner un ordre",
 "{0}/{1} · non scende in campo, ma conta per le copie ★★": "{0}/{1} · ne va pas sur le terrain, mais compte pour les copies ★★",
 "nessun ordine": "aucun ordre",
@@ -894,5 +893,17 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Dalle scelte dei giocatori nelle partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "D'après les choix des joueurs dans de vraies parties : à quelle fréquence chaque personnage est pris quand il apparaît en boutique, combien il gagne sur le terrain et à quelle fréquence il reçoit un ordre.",
 "Servono più partite per una statistica affidabile: per ora {0}. Le statistiche si riempiono man mano che si gioca.": "Il faut plus de parties pour une statistique fiable : {0} pour l'instant. Les statistiques se remplissent au fil des parties.",
 "Ultime {0} partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "{0} dernières vraies parties : à quelle fréquence chaque personnage est pris quand il apparaît en boutique, combien il gagne sur le terrain et à quelle fréquence il reçoit un ordre.",
-"Ancora nessuna partita registrata.": "Aucune partie enregistrée pour l'instant."
+"Ancora nessuna partita registrata.": "Aucune partie enregistrée pour l'instant.",
+"Tocca prima una tua unità, poi l'ordine che vuoi darle. Ogni unità tiene un ordine alla volta. Sul campo puoi anche cliccarla (o tenerla premuta da telefono) per il menu rapido.": "Touche d'abord une de tes unités, puis l'ordre que tu veux lui donner. Chaque unité garde un ordre à la fois. Sur le terrain, tu peux aussi cliquer dessus (ou rester appuyé sur téléphone) pour le menu rapide.",
+"Ordini dell'unità": "Ordres de l'unité",
+"Ordine attuale: {0} {1}": "Ordre actuel : {0} {1}",
+"Nessun ordine": "Aucun ordre",
+"ogni ordine costa {0} oro": "chaque ordre coûte {0} or",
+"Tocca un ordine per vedere cosa fa.": "Touche un ordre pour voir ce qu'il fait.",
+"Compra l'ordine · {0} oro": "Acheter l'ordre · {0} or",
+"Ha già questo ordine": "A déjà cet ordre",
+"🪑 In panchina": "🪑 Sur le banc",
+"Vendi +1": "Vendre +1",
+"Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Reste appuyé sur une unité pour lui donner un ordre, la mettre sur le banc ou la vendre.",
+"piazza un'arnia": "pose une ruche"
 };

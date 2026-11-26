@@ -409,7 +409,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Compra {0} per {1} oro": "Comprar {0} por {1} de oro",
 "(ora: {0})": "(ahora: {0})",
 "Ordine per {0}{1}: tocca un ordine per comprarlo.": "Orden para {0}{1}: toca una orden para comprarla.",
-"Tocca prima una tua unità, poi l'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.": "Toca primero una de tus unidades y luego la orden que quieres darle. Cada unidad tiene una orden a la vez.",
 "{0}/{1} · tocca un'unità per darle un ordine": "{0}/{1} · toca una unidad para darle una orden",
 "{0}/{1} · non scende in campo, ma conta per le copie ★★": "{0}/{1} · no sale al campo, pero cuenta para las copias ★★",
 "nessun ordine": "sin orden",
@@ -894,5 +893,17 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Dalle scelte dei giocatori nelle partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "De las elecciones de los jugadores en partidas reales: cuánto se elige cada personaje cuando aparece en la tienda, cuánto gana en el campo y con qué frecuencia recibe una orden.",
 "Servono più partite per una statistica affidabile: per ora {0}. Le statistiche si riempiono man mano che si gioca.": "Hacen falta más partidas para una estadística fiable: por ahora {0}. Las estadísticas se llenan a medida que se juega.",
 "Ultime {0} partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.": "Últimas {0} partidas reales: cuánto se elige cada personaje cuando aparece en la tienda, cuánto gana en el campo y con qué frecuencia recibe una orden.",
-"Ancora nessuna partita registrata.": "Todavía no hay partidas registradas."
+"Ancora nessuna partita registrata.": "Todavía no hay partidas registradas.",
+"Tocca prima una tua unità, poi l'ordine che vuoi darle. Ogni unità tiene un ordine alla volta. Sul campo puoi anche cliccarla (o tenerla premuta da telefono) per il menu rapido.": "Toca primero una de tus unidades y luego la orden que quieras darle. Cada unidad tiene una orden a la vez. En el campo también puedes hacer clic en ella (o mantenerla pulsada en el móvil) para el menú rápido.",
+"Ordini dell'unità": "Órdenes de la unidad",
+"Ordine attuale: {0} {1}": "Orden actual: {0} {1}",
+"Nessun ordine": "Sin orden",
+"ogni ordine costa {0} oro": "cada orden cuesta {0} de oro",
+"Tocca un ordine per vedere cosa fa.": "Toca una orden para ver qué hace.",
+"Compra l'ordine · {0} oro": "Comprar la orden · {0} de oro",
+"Ha già questo ordine": "Ya tiene esta orden",
+"🪑 In panchina": "🪑 Al banquillo",
+"Vendi +1": "Vender +1",
+"Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Mantén pulsada una unidad para darle una orden, mandarla al banquillo o venderla.",
+"piazza un'arnia": "coloca una colmena"
 };
