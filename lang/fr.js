@@ -905,5 +905,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "🪑 In panchina": "🪑 Sur le banc",
 "Vendi +1": "Vendre +1",
 "Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Reste appuyé sur une unité pour lui donner un ordre, la mettre sur le banc ou la vendre.",
-"piazza un'arnia": "pose une ruche"
+"piazza un'arnia": "pose une ruche",
+"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Tourne ton téléphone à l’horizontale : terrain plus grand et boutique à côté."
 };

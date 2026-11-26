@@ -905,5 +905,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "🪑 In panchina": "🪑 Al banquillo",
 "Vendi +1": "Vender +1",
 "Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Mantén pulsada una unidad para darle una orden, mandarla al banquillo o venderla.",
-"piazza un'arnia": "coloca una colmena"
+"piazza un'arnia": "coloca una colmena",
+"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Gira el móvil en horizontal: campo más grande y tienda al lado."
 };

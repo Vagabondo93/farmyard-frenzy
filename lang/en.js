@@ -905,5 +905,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "🪑 In panchina": "🪑 To the bench",
 "Vendi +1": "Sell +1",
 "Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Press and hold a unit to give it an order, bench it or sell it.",
-"piazza un'arnia": "places a beehive"
+"piazza un'arnia": "places a beehive",
+"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Turn your phone sideways: bigger field with the shop beside it."
 };

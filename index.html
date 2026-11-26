@@ -357,6 +357,40 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 @media (min-width:1500px){.cards{grid-template-columns:repeat(5,minmax(0,1fr))}.main{grid-template-columns:minmax(0,1.7fr) minmax(340px,1fr)}}
 #timerPill.urgent{background:var(--red);color:#fff}
 .hidden{display:none!important}
+.rotatehint{display:none}
+@media (orientation:portrait) and (max-width:600px){.rotatehint{display:block;margin:0;text-align:center;font-size:13px;font-weight:700;color:var(--muted);background:var(--chip);border-radius:10px;padding:6px 10px}}
+/* telefono in orizzontale: campo grande a sinistra sempre visibile, market, ordini e squadra in una colonna a destra */
+@media (orientation:landscape) and (max-height:520px){
+  body{padding-block:6px 24px;font-size:14px}
+  .wrap{gap:8px}
+  .top{padding:3px 10px;border-radius:12px;gap:4px 10px;flex-wrap:nowrap;overflow-x:auto}.top h1{font-size:20px}.toplogo{height:28px}
+  body:has(#game:not(.hidden)) .top #langSel,body:has(#game:not(.hidden)) .top #eloPill,body:has(#game:not(.hidden)) .top #mailBtn{display:none}
+  .top .pill,.top .btn{padding:3px 10px;font-size:13px;white-space:nowrap}
+  .score{font-size:16px;flex-wrap:nowrap}.score .s{padding:1px 10px;min-width:48px}.score .goal{white-space:nowrap}
+  #game{--fieldw:min(62vw,calc((100dvh - 56px)*var(--far,1.7778)));grid-template-columns:var(--fieldw) minmax(0,1fr);gap:10px;align-items:start}
+  #game>.how{display:none}
+  #game>.main{display:contents}
+  #game .arena{grid-column:1;grid-row:1/span 30;position:sticky;top:6px}
+  #game canvas{width:100%;border-radius:10px;border-width:2px}
+  #game .side,#game>#shopPanel,#game>#teamPanel{grid-column:2}
+  #game .quicknav{display:flex;flex-direction:row;position:sticky;top:0;left:auto;transform:none;grid-column:2;z-index:30;background:var(--bg);padding:4px 0;gap:6px}
+  #game .quicknav button{flex:1;min-width:0;width:auto;grid-auto-flow:column;justify-content:center;align-items:center;gap:4px;border-radius:10px;font-size:14px;padding:5px 4px}
+  #game .quicknav button span{font-size:11px;overflow:hidden;text-overflow:ellipsis}
+  .ctrl{margin-top:6px;gap:6px}.ctrl .btn{padding:6px 10px;font-size:14px}
+  .panel{padding:10px 12px}
+  /* carte del market in orizzontale: immagine a sinistra, nome, testo e Compra a destra */
+  .cards{grid-template-columns:minmax(0,1fr);gap:8px}
+  #shop .tcg{display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-areas:"art head" "art text" "foot foot";gap:4px 8px;padding:7px 8px;border-width:3px}
+  #shop .tcg>header{grid-area:head;padding:3px 6px;gap:6px;min-width:0}#shop .tcg .tname{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  #shop .tcg .tcost{width:24px;height:24px;font-size:12px;flex:0 0 auto}
+  #shop .tcg .tart{grid-area:art;height:58px!important;width:58px;aspect-ratio:auto}
+  #shopPanel,#teamPanel,#game .side .panel{padding:8px}
+  #shop .tcg .ttext{grid-area:text;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;margin:0;line-height:1.3}
+  #shop .tcg .tfoot{grid-area:foot;margin-top:2px;padding-top:6px}
+  #shop .tcg .tstats,#shop .tcg .tvs,#shop .tcg .tpow,#shop .tcg .ttags{display:none}
+  .ords{grid-template-columns:repeat(2,minmax(0,1fr))}.ord .ds{display:none}
+  .board{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+}
 </style>
 
 <div class="wrap">
@@ -561,6 +595,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
     <span><b>3.</b> Premi Pronto: gli automi giocano da soli. Porta l'uovo nemico nel tuo nido.</span>
   </div>
 
+  <p class="rotatehint">📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.</p>
   <div class="main">
     <nav class="quicknav" id="quickNav" aria-label="Vai a">
       <button data-go="arenaSec" aria-label="Campo">🏟️<span>Campo</span></button>
@@ -1895,7 +1930,7 @@ let deco=[];
 function makeDeco(){const r=mulberry(77);deco=Array.from({length:Math.round(70*H/540)},()=>({x:r()*W,y:r()*H,s:2+r()*3}))}
 makeDeco();
 // dimensioni del campo: 960×540 di solito, 960×760 nel 2 contro 2
-function setField(h){if(H===h)return;H=h;HOME[0].y=HOME[1].y=h/2;makeDeco();cv.style.aspectRatio=`${W}/${h}`;DPR=0;fitCanvas()}
+function setField(h){document.documentElement.style.setProperty('--far',String(W/h));if(H===h)return;H=h;HOME[0].y=HOME[1].y=h/2;makeDeco();cv.style.aspectRatio=`${W}/${h}`;DPR=0;fitCanvas()}
 function drawField(){
   for(let i=0;i<16;i++){ctx.fillStyle=i%2?'#76a548':'#6f9e43';ctx.fillRect(i*60,0,60,H)}
   ctx.fillStyle='rgba(47,111,224,.07)';ctx.fillRect(0,0,W/2,H);
