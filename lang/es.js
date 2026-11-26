@@ -764,5 +764,9 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "RUBA": "ROBA",
 "{0} personaggi": "{0} personajes",
 "Benvenuto in Farmyard Frenzy! Ogni squadra ha un uovo d'oro nel suo nido. Tu compri i personaggi al market e li schieri, poi gli automi combattono da soli: devono rubare l'uovo avversario e difendere il tuo. Ti guido in una partita di prova di due round.": "¡Bienvenido a Farmyard Frenzy! Cada equipo tiene un huevo de oro en su nido. Tú compras personajes en la tienda y los colocas, y luego los autómatas luchan solos: deben robar el huevo rival y defender el tuyo. Te guío en una partida de prueba de dos rondas.",
-"TRASCINA": "ARRASTRA"
+"TRASCINA": "ARRASTRA",
+"A ogni nuovo round il market si ricarica con personaggi nuovi, scelti a caso.": "En cada ronda nueva la tienda se recarga con personajes nuevos, elegidos al azar.",
+"Se ti piacciono le carte rimaste, premi Blocca: al prossimo round le ritrovi, e si riempiono solo i posti delle carte che hai comprato.": "Si te gustan las cartas que quedan, pulsa Bloquear: en la siguiente ronda las vuelves a encontrar, y solo se rellenan los huecos de las cartas que compraste.",
+"Con Rimescola invece cambi subito tutte le carte del market, per 1 oro.": "Con Renovar, en cambio, cambias al momento todas las cartas de la tienda, por 1 de oro.",
+"Questa è la panchina: le unità in più aspettano qui senza scendere in campo, ma contano per unire le copie ★★. Puoi trascinarle tra squadra e panchina.": "Este es el banquillo: las unidades de más esperan aquí sin salir al campo, pero cuentan para unir las copias ★★. Puedes arrastrarlas entre el equipo y el banquillo."
 };

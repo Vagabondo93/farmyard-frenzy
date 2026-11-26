@@ -32,7 +32,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   await p.waitForFunction(()=>document.getElementById('coachT').textContent.includes('selezionarla'));
   await p.click('#board [data-sel]');await p.click('[data-ord="scatto"]');
   ok(await p.evaluate(()=>window.__g().players[0].board.some(b=>b.order==='scatto')),'ordine Scatto dato');
-  await next(); // blocca e rimescola
+  await next();await next();await next();await next(); // market, blocca, rimescola, panchina
   await p.click('#readyBtn');await p.waitForFunction(()=>window.__g().phase==='battle',null,{timeout:20000});await p.click('[data-speed="4"]');
   await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000});
   ok((await p.textContent('#bBtn')).includes('menu'),'fine del tutorial: '+await p.textContent('#coachT'));

@@ -764,5 +764,9 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "RUBA": "STEAL",
 "{0} personaggi": "{0} characters",
 "Benvenuto in Farmyard Frenzy! Ogni squadra ha un uovo d'oro nel suo nido. Tu compri i personaggi al market e li schieri, poi gli automi combattono da soli: devono rubare l'uovo avversario e difendere il tuo. Ti guido in una partita di prova di due round.": "Welcome to Farmyard Frenzy! Each team has a golden egg in its nest. You buy characters in the shop and place them, then the automatons fight by themselves: they must steal the enemy egg and defend yours. I'll guide you through a two-round practice match.",
-"TRASCINA": "DRAG"
+"TRASCINA": "DRAG",
+"A ogni nuovo round il market si ricarica con personaggi nuovi, scelti a caso.": "Every new round the shop refills with new characters, picked at random.",
+"Se ti piacciono le carte rimaste, premi Blocca: al prossimo round le ritrovi, e si riempiono solo i posti delle carte che hai comprato.": "If you like the cards that are left, press Lock: next round you'll find them again, and only the slots of the cards you bought get refilled.",
+"Con Rimescola invece cambi subito tutte le carte del market, per 1 oro.": "Reroll instead swaps every card in the shop right away, for 1 gold.",
+"Questa è la panchina: le unità in più aspettano qui senza scendere in campo, ma contano per unire le copie ★★. Puoi trascinarle tra squadra e panchina.": "This is the bench: extra units wait here without taking the field, but they count towards merging ★★ copies. You can drag them between team and bench."
 };
