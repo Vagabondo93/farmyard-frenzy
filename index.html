@@ -1177,7 +1177,7 @@ const P3={
  procione:{n:"Doppio passaggio",d:"Può passare l'uovo due volte e lanciarlo fino a 230.",m:{pass:230,passes:2}},
  oca:{n:"Allarme generale",d:"L'allarme fa correre tutti gli alleati in campo, per 5 secondi.",m:{alarmAll:true,alarmT:5}},
  gatto:{n:"Sette vite",d:"La prima volta che viene sconfitto si rialza con metà vita.",m:{lives:1}},
- mucca:{n:"Muggito",d:"Spinge via i nemici da più lontano e li stordisce per mezzo secondo.",m:{push:60,pushStun:.5}},
+ mucca:{n:"Muggito",d:"Spinge via i nemici da più lontano e li stordisce per mezzo secondo.",m:{push:68,pushStun:.5}},
  lupo:{n:"Capobranco",d:"Entra in campo con un secondo lupo.",m:{pack:1}},
  falco:{n:"Picchiata",d:"Ogni attacco stordisce il bersaglio per 0,6 s.",m:{stunHit:.6}},
  toro:{n:"Furia",d:"Ricarica la carica in 2,5 s e travolge con 40 danni.",m:{chargeCd:2.5,chargeDmg:40}},
@@ -1754,7 +1754,7 @@ function think(u,S,dt){
   const tg=u.dmg>0?pickTarget(u,S):null;
   if(tg&&u.def.charge&&u.chargeCd<=0){const d=dist(u,tg);
     if(d>40&&d<240){u.chargeT=.9;u.chargeCd=u.def.chargeCd||5;u.chargeHit={};u.chDir={x:(tg.x-u.x)/d,y:(tg.y-u.y)/d};fx(S,u.x,u.y-24,'CARICA!','#ffb0a0');return}}
-  if(tg){const reach=Math.max(u.def.rng+(u.def.ranged?0:14),u.def.push?u.def.push+8:0);
+  if(tg){const reach=Math.max(u.def.rng+(u.def.ranged?0:14),u.def.push?pushR(u)+8:0);
     if(dist(u,tg)<=reach){if(u.cd<=0)attack(u,tg,S)} else moveTo(u,tg.x,tg.y,dt,S); return}
   if(own.state==='dropped'&&dist(u,own)<320){moveTo(u,own.x,own.y,dt,S);return}
   const p=idlePoint(u,S); if(dist(u,p)>5) moveTo(u,p.x,p.y,dt,S);
@@ -1796,8 +1796,8 @@ function step(S,dt){
     if(u.def.aura){for(const e of live) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&dist(u,e)<u.def.aura.r) damage(e,u.def.aura.dps*dt,S,u)}
     if(u.def.push){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!e.def.unstoppable){const d=dist(u,e);
       // spinta a colpi: 0,6 s di spinta, poi 1,2 s in cui si può passare (così l'uovo resta raggiungibile)
-      if(d<u.def.push)e.pushA=(e.pushA||0)+dt;if(e.pushA>1.8)e.pushA=0;
-      if(d<u.def.push&&d>.1&&e.pushA<.6){const k=(u.def.push-d)*.5;e.x=clamp(e.x+(e.x-u.x)/d*k,14,W-14);e.y=clamp(e.y+(e.y-u.y)/d*k,16,H-16);
+      const PR=pushR(u);if(d<PR)e.pushA=(e.pushA||0)+dt;if(e.pushA>1.8)e.pushA=0;
+      if(d<PR&&d>.1&&e.pushA<.6){const k=(PR-d)*.5;e.x=clamp(e.x+(e.x-u.x)/d*k,14,W-14);e.y=clamp(e.y+(e.y-u.y)/d*k,16,H-16);
         if(u.def.pushStun&&!(e.pst>0)){e.stun=Math.max(e.stun,u.def.pushStun);e.pst=2}}}}
     if(u.chargeT>0){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!u.chargeHit[e.id]&&dist(u,e)<26){
       u.chargeHit[e.id]=1;e.stun=Math.max(e.stun,1);fx(S,e.x,e.y-22,'TRAVOLTO!','#ffb0a0');damage(e,u.def.chargeDmg||20,S,u)}}
@@ -1942,7 +1942,13 @@ function drawEgg(x,y,scale,glow){
   const g=ctx.createRadialGradient(-4,-6,1,0,0,16);g.addColorStop(0,'#fff6c4');g.addColorStop(.45,'#f2c230');g.addColorStop(1,'#a87a06');
   ctx.fillStyle=g;ctx.strokeStyle='#6d4f00';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(0,0,11,14,0,0,7);ctx.fill();ctx.stroke();ctx.restore();
 }
-function drawToken(x,y,side,type,star,order,o={}){
+// la Mucca diventa più grande a ogni stella (e spinge più lontano): ★ 1, ★★ 1,2, ★★★ 1,4
+const sizeOf=(type,star)=>type==='mucca'?1+.2*((star||1)-1):1;
+const pushR=u=>u.def.push*(u.type==='mucca'?1+.15*((u.star||1)-1):1);
+function drawToken(x,y,side,type,star,order,o={}){const k=sizeOf(type,star);
+  if(k===1)return drawToken1(x,y,side,type,star,order,o);
+  ctx.save();ctx.translate(x,y);ctx.scale(k,k);ctx.translate(-x,-y);drawToken1(x,y,side,type,star,order,o);ctx.restore()}
+function drawToken1(x,y,side,type,star,order,o={}){
   const d=UNITS[type];
   if(o.underground){
     ctx.globalAlpha=.9;ctx.fillStyle='#6b4423';ctx.beginPath();ctx.ellipse(x,y+4,16,8,0,0,7);ctx.fill();
