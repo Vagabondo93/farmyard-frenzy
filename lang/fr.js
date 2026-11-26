@@ -684,5 +684,10 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "{0} costruisce un nuovo ponte": "{0} construit un nouveau pont",
 "costruisce una staccionata": "construit une palissade",
 "che puzza!": "quelle odeur !",
-"sazio": "repu"
+"sazio": "repu",
+"🔒 Blocca": "🔒 Bloquer",
+"🔓 Sblocca": "🔓 Débloquer",
+"Tieni queste carte per il prossimo market: si riempiono solo gli spazi vuoti.": "Garde ces cartes pour la prochaine boutique : seules les places vides sont remplies.",
+"Market bloccato: al prossimo round ritrovi queste carte.": "Boutique bloquée : tu retrouveras ces cartes à la prochaine manche.",
+"Market sbloccato.": "Boutique débloquée."
 };

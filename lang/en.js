@@ -684,5 +684,10 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "{0} costruisce un nuovo ponte": "{0} builds a new bridge",
 "costruisce una staccionata": "builds a fence",
 "che puzza!": "what a stink!",
-"sazio": "full"
+"sazio": "full",
+"🔒 Blocca": "🔒 Lock",
+"🔓 Sblocca": "🔓 Unlock",
+"Tieni queste carte per il prossimo market: si riempiono solo gli spazi vuoti.": "Keep these cards for the next shop: only the empty slots get refilled.",
+"Market bloccato: al prossimo round ritrovi queste carte.": "Shop locked: you'll find these cards again next round.",
+"Market sbloccato.": "Shop unlocked."
 };

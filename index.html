@@ -425,6 +425,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <h3 style="margin:0">Market</h3>
       <div class="l">
         <span class="pill gold" id="goldPill">Oro 4</span>
+        <button class="btn" id="lockBtn" title="Tieni queste carte per il prossimo market: si riempiono solo gli spazi vuoti.">🔒 Blocca</button>
         <button class="btn" id="rerollBtn">Rimescola (1)</button>
       </div>
     </div>
@@ -1094,7 +1095,9 @@ function rollUnit(rng,round){
   return pool[Math.floor(rng()*pool.length)];
 }
 function rollShop(p,rng,round){
-  p.shop=Array.from({length:5},()=>rollUnit(rng,round));
+  // market bloccato: restano le carte non comprate, si riempiono solo gli spazi vuoti, poi si sblocca
+  if(p.locked&&p.shop){p.shop=p.shop.map(t=>t||rollUnit(rng,round));p.locked=false}
+  else p.shop=Array.from({length:5},()=>rollUnit(rng,round));
   const ks=Object.keys(ORDERS); const a=ks[Math.floor(rng()*ks.length)]; let b=a;
   while(b===a) b=ks[Math.floor(rng()*ks.length)];
   p.orders=[a,b];
@@ -1801,6 +1804,7 @@ function renderAll(){
   $('readyBtn').classList.toggle('hidden',!shop);
   $('speedBox').classList.toggle('hidden',shop||isMP());
   $('rerollBtn').disabled=!shop||p.gold<REROLL;
+  $('lockBtn').disabled=!shop;$('lockBtn').textContent=p.locked?'🔓 Sblocca':'🔒 Blocca';$('lockBtn').classList.toggle('on',!!p.locked);
   $('shopPanel').style.opacity=shop?1:.55;
   cv.classList.toggle('drag',shop);
   const selU=p.board.find(b=>b.uid===G.sel);
@@ -1899,7 +1903,8 @@ document.addEventListener('click',e=>{
   if(t.dataset.sel){G.sel=G.sel===+t.dataset.sel?null:+t.dataset.sel;renderAll()}
 });
 document.addEventListener('keydown',e=>{const t=e.target.closest&&e.target.closest('[data-sel]');if(t&&(e.key==='Enter'||e.key===' ')&&e.target===t){e.preventDefault();t.click()}});
-$('rerollBtn').onclick=()=>{if(!G)return;const p=ME();if(G.phase!=='shop'||p.gold<REROLL)return;p.gold-=REROLL;rollShop(p,G.rng,G.round);renderAll()};
+$('rerollBtn').onclick=()=>{if(!G)return;const p=ME();if(G.phase!=='shop'||p.gold<REROLL)return;p.gold-=REROLL;p.locked=false;rollShop(p,G.rng,G.round);renderAll()};
+$('lockBtn').onclick=()=>{if(!G||G.phase!=='shop')return;const p=ME();p.locked=!p.locked;toast(p.locked?'Market bloccato: al prossimo round ritrovi queste carte.':'Market sbloccato.');renderAll()};
 $('readyBtn').onclick=()=>{
   if(!G||G.phase!=='shop')return;
   const p=ME();

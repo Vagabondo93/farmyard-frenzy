@@ -684,5 +684,10 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "{0} costruisce un nuovo ponte": "{0} construye un puente nuevo",
 "costruisce una staccionata": "construye una valla",
 "che puzza!": "¡qué peste!",
-"sazio": "lleno"
+"sazio": "lleno",
+"🔒 Blocca": "🔒 Bloquear",
+"🔓 Sblocca": "🔓 Desbloquear",
+"Tieni queste carte per il prossimo market: si riempiono solo gli spazi vuoti.": "Guarda estas cartas para la siguiente tienda: solo se rellenan los huecos vacíos.",
+"Market bloccato: al prossimo round ritrovi queste carte.": "Tienda bloqueada: en la siguiente ronda volverás a ver estas cartas.",
+"Market sbloccato.": "Tienda desbloqueada."
 };
