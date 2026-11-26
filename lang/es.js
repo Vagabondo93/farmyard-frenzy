@@ -175,7 +175,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Faina, Topi, Volpe": "Garduña, Ratones, Zorro",
 "Spazzino, Lupo, Cacciatore": "Barrendero, Lobo, Cazador",
 "Veterinario": "Veterinario",
-"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Sigue al animal aliado más herido y cura a todos los animales aliados a menos de 100: 10 de vida por segundo, 15 con ★★.",
 "Lupo, Assassino se resta solo": "Lobo, Asesino si se queda solo",
 "Avicoltore": "Avicultor",
 "Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.": "Corriente de aire: tus voladores que vuelan hacia él van 2,5 veces más rápido (3 con ★★), desde cualquier distancia, y se desvían solos pasando por él cuando así llegan antes. Se queda en tu mitad del campo.",
@@ -873,5 +872,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Tutti i personaggi: banna quello che non vuoi in partita": "Todos los personajes: bloquea el que no quieras en la partida",
 " e ": " y ",
 "2 contro 2: un solo uovo per squadra, ognuno con il suo market. Campo più alto e round più lunghi, con campi arati che solo chi vola e la Talpa sottoterra attraversano, laghetti dove passa a nuoto l'Oca e banchi di nebbia dove si vede solo da vicino. Per ora solo amichevole.": "2 contra 2: un solo huevo por equipo, cada uno con su tienda. Campo más alto y rondas más largas, con campos arados que solo cruzan los voladores y el Topo bajo tierra, estanques que la Oca cruza a nado y bancos de niebla donde solo se ve de cerca. De momento solo amistosa.",
-"2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 contra 2: tú y {0} contra {1}. Un solo huevo por equipo; campos arados y estanques hay que rodearlos (los voladores y el Topo bajo tierra pasan, la Oca nada), en la niebla solo se ve de cerca."
+"2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 contra 2: tú y {0} contra {1}. Un solo huevo por equipo; campos arados y estanques hay que rodearlos (los voladores y el Topo bajo tierra pasan, la Oca nada), en la niebla solo se ve de cerca.",
+"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Sigue al animal aliado más cercano y cura a todos los animales aliados a menos de 100: 10 de vida por segundo, 15 con ★★."
 };

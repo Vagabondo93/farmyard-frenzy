@@ -144,7 +144,7 @@ canvas.drag{touch-action:none}
 .ord:hover:not(:disabled){border-color:var(--gold)}
 .ord:disabled{opacity:.55;cursor:not-allowed}
 .ord .ic{font-size:24px;grid-row:span 2;align-self:center}.ord .ic .oimg{width:40px;height:40px;vertical-align:middle}
-.oimg{width:1.35em;height:1.35em;vertical-align:-.3em;object-fit:contain}.tipic .oimg{width:38px;height:38px}
+.oimg{width:1.35em;height:1.35em;vertical-align:-.3em;object-fit:contain}.tipic .oimg{width:34px;height:34px}
 .ord .nm{font-weight:800;padding-right:34px}
 .ord .ds{font-size:13.5px;color:var(--ink)}
 .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;align-items:stretch}
@@ -179,7 +179,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tipnav button:hover{background:rgba(255,255,255,.3)}
 .tipbody{display:grid;margin-top:8px}.tipone{grid-area:1/1;display:flex;gap:10px;align-items:flex-start;visibility:hidden;opacity:0;transition:opacity .35s}.tipone.on{visibility:visible;opacity:1}
 .tipics{display:flex;gap:4px;flex:0 0 auto}.tipic{width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,.22);display:grid;place-items:center;font-size:24px;cursor:pointer;overflow:hidden}
-.tipic img{width:100%;height:100%;object-fit:cover}.tipic.ord{cursor:default}
+.tipic img{width:100%;height:100%;object-fit:cover}.tipic.tipord{cursor:default}
 .tipbody p{margin:0;font-size:14px;line-height:1.4;color:#eef5dc}
 @media (max-width:640px){.tipbox{max-width:none;flex-basis:100%;text-align:left}}
 .hero h2{font-size:clamp(26px,3.6vw,40px);line-height:1.05;color:#fff7d6;text-shadow:0 3px 0 rgba(0,0,0,.25)}
@@ -1090,7 +1090,7 @@ const UNITS={
  chioccia:{n:'Chioccia',i:'🐔',t:2,fogOnly:true,tags:['Animale','Esca'],hp:100,dmg:0,spd:0,role:'static',fakeEgg:true,
    d:"Cova un uovo finto nella tua metà campo: i ladri nemici puntano all'uovo più vicino e scoprono l'inganno solo arrivati al nido, restando storditi 2 s.",beats:'Faina, Topi, Volpe',loses:'Spazzino, Lupo, Cacciatrice'},
  veterinario:{n:'Veterinario',i:'🧑‍⚕️',t:2,cost:2,minRound:3,tags:['Umano'],hp:65,dmg:0,spd:65,role:'medic',heal:10,healR:100,
-   d:"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.",beats:'Assassino, Cacciatrice',loses:'Lupo, Assassino se resta solo'},
+   d:"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.",beats:'Assassino, Cacciatrice',loses:'Lupo, Assassino se resta solo'},
  avicoltore:{n:'Avicoltore',i:'🪺',t:2,cost:2,minRound:2,tags:['Umano'],hp:55,dmg:0,spd:62,role:'escort',guardR:130,followFly:true,lane:2.5,
    d:"Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.",beats:'Squadre lente a difendere contro gazze e falchi',loses:'Chi lo raggiunge, squadre senza volanti'},
  gufo:{n:'Gufo',i:'🦉',t:2,tags:['Animale','Volante'],hp:40,dmg:5,spd:70,rng:20,cd:.9,flying:true,role:'center',guardR:200,reveal:130,owlEye:true,prio:{Piccolo:5},bonus:{Piccolo:1.6},
@@ -1341,7 +1341,7 @@ function botTurn(p,rng,ec,sk=.7){
     if(buyUnit(p,best.i,rng)!=='ok'&&!merge) break;
   }
   const fits=(o,role)=>({fianco:['thief'],scatto:['thief','hunter'],attesa:['thief'],mirinoL:['guard','scout'],corazza:['guard','thief'],
-    guardia:['hunter'],mirinoT:['hunter','assault'],mirinoO:['hunter'],deboli:['hunter','guard'],mimetica:['thief'],centro:['hunter','guard'],mirinoA:['hunter','guard'],mirinoU:['hunter','guard'],assalto:['hunter','guard'],scorta:['hunter','guard'],ritirata:['guard','hunter','thief']})[o]||[];
+    guardia:['hunter'],mirinoT:['hunter','assault'],mirinoO:['hunter'],deboli:['hunter','guard'],mimetica:['thief'],centro:['hunter','guard'],mirinoA:['hunter','guard'],mirinoU:['hunter','guard'],assalto:['hunter','guard'],scorta:['hunter','guard','center','medic','escort','scout','assault'],ritirata:['guard','hunter','thief']})[o]||[];
   for(let oi=0;oi<p.orders.length;oi++){
     const o=p.orders[oi]; if(!o||p.gold<ORDER_COST) continue;
     const u=p.board.find(b=>!b.order&&fits(o,UNITS[b.type].role).includes(UNITS[b.type].role));
@@ -1367,7 +1367,7 @@ function spawn(b,side,id){
   if(b.order==='guardia'&&role!=='static'&&role!=='thief'){role='guard';leash=150}
   if(b.order==='guardia'&&role==='thief'){role='guard';leash=150}
   if(b.order==='assalto'&&(role==='guard'||role==='hunter'||role==='scout')){role='assault';leash=220}
-  if(b.order==='scorta'&&(role==='guard'||role==='hunter'||role==='scout')){role='escort';leash=130}
+  if(b.order==='scorta'&&role!=='static'&&role!=='thief'){role='escort';leash=130} // Scorta prevale sul posizionamento automatico del personaggio
   if(b.order==='centro'&&(role==='guard'||role==='hunter'||role==='scout')){role='center';leash=170}
   const x=side===0?b.px:W-b.px;
   return{id,side,buid:b.uid??null,type:b.type,def:d,star:b.star,order:b.order,x,y:b.py,sx:x,sy:b.py,hp,maxHp:hp,spd,dmg,cd:0,alive:true,carrying:null,
@@ -1645,12 +1645,11 @@ function idlePoint(u,S){
     case 'center':return{x:W/2-(u.side?-1:1)*60,y:u.sy};
     case 'hold':return u.hold;
     case 'assault':return{x:foe.x-(u.side?-1:1)*75,y:foe.y+(u.sy-H/2)*.4};
-    case 'medic':{let best=null,bf=1;
-      for(const a of S.units) if(a.alive&&a.side===u.side&&a!==u&&a.role!=='static'&&(u.def.healAll||a.def.tags.includes('Animale'))){const f=a.hp/a.maxHp;if(f<bf){bf=f;best=a}}
-      if(!best) best=S.units.find(x=>x.alive&&x.side===u.side&&x!==u&&x.role!=='static'&&x.def.tags.includes('Animale'));
+    case 'medic':{let best=null,bd=1e9; // segue l'animale alleato più vicino
+      for(const a of S.units) if(a.alive&&a.side===u.side&&a!==u&&a.role!=='static'&&(u.def.healAll||a.def.tags.includes('Animale'))){const d=dist(u,a);if(d<bd){bd=d;best=a}}
       if(best) return{x:best.x-(u.side?-1:1)*22,y:best.y+14};
       return{x:own.x+(u.side?-90:90),y:u.sy}}
-    case 'escort':if(u.def.followFly){const a=allyFlyer(u,S),lim=W/2-50; // resta nella propria metà campo
+    case 'escort':if(u.def.followFly&&u.order!=='scorta'){const a=allyFlyer(u,S),lim=W/2-50; // resta nella propria metà campo
         const cf=S.units.find(x=>x.alive&&x.side===u.side&&x.def.flying&&x.carrying!==null),ref=cf||a;
         const tx=own.x+(u.side?-1:1)*240,ty=ref?clamp(ref.y,40,H-40):u.sy;
         return{x:u.side?Math.max(W-lim,tx):Math.min(lim,tx),y:ty}}
@@ -2290,7 +2289,7 @@ function buildFacts(){
   for(let i=T.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[T[i],T[j]]=[T[j],T[i]]} // ordine mescolato a ogni apertura
   TIPN=T.length;if(!TIPN)return;
   $('tipBody').innerHTML=T.map((t,i)=>{
-    const ic=t.cards.map(k=>{if(k.startsWith('o:')){const o=ORDERS[k.slice(2)];return `<span class="tipic ord" title="${esc(o.n)}">${OIC(o)}</span>`}
+    const ic=t.cards.map(k=>{if(k.startsWith('o:')){const o=ORDERS[k.slice(2)];return `<span class="tipic tipord" title="${esc(o.n)}">${OIC(o)}</span>`}
       const d=UNITS[k];return `<span class="tipic" role="button" tabindex="0" data-card="${k}:1" title="${esc(d.n)}">${IC(d)}</span>`}).join('');
     return `<div class="tipone${i?'':' on'}" data-kind="${t.kind}"><div class="tipics">${ic}</div><p data-notr>${esc(t[LANG]||t.it)}</p></div>`}).join('');
   $('tipBox').classList.remove('hidden');showFact(0);

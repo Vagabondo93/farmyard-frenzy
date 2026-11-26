@@ -175,7 +175,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Faina, Topi, Volpe": "Fouine, Souris, Renard",
 "Spazzino, Lupo, Cacciatore": "Balayeur, Loup, Chasseur",
 "Veterinario": "Vétérinaire",
-"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Suit l'animal allié le plus blessé et soigne tous les animaux alliés à moins de 100 : 10 PV par seconde, 15 en ★★.",
 "Lupo, Assassino se resta solo": "Loup, Assassin s'il reste seul",
 "Avicoltore": "Aviculteur",
 "Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.": "Courant d'air : tes volants qui volent vers lui vont 2,5 fois plus vite (3 en ★★), depuis n'importe quelle distance, et font tout seuls le détour par lui quand ils arrivent ainsi plus tôt. Reste dans ta moitié du terrain.",
@@ -873,5 +872,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Tutti i personaggi: banna quello che non vuoi in partita": "Tous les personnages : bannis celui que tu ne veux pas dans la partie",
 " e ": " et ",
 "2 contro 2: un solo uovo per squadra, ognuno con il suo market. Campo più alto e round più lunghi, con campi arati che solo chi vola e la Talpa sottoterra attraversano, laghetti dove passa a nuoto l'Oca e banchi di nebbia dove si vede solo da vicino. Per ora solo amichevole.": "2 contre 2 : un seul œuf par équipe, chacun avec sa boutique. Terrain plus haut et manches plus longues, avec des champs labourés que seuls les volants et la Taupe sous terre traversent, des mares que l'Oie traverse à la nage et des bancs de brouillard où l'on ne voit que de près. Amicale seulement pour l'instant.",
-"2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 contre 2 : toi et {0} contre {1}. Un seul œuf par équipe ; champs labourés et mares se contournent (les volants et la Taupe sous terre passent, l'Oie nage), dans le brouillard on ne voit que de près."
+"2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 contre 2 : toi et {0} contre {1}. Un seul œuf par équipe ; champs labourés et mares se contournent (les volants et la Taupe sous terre passent, l'Oie nage), dans le brouillard on ne voit que de près.",
+"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Suit l'animal allié le plus proche et soigne tous les animaux alliés à moins de 100 : 10 PV par seconde, 15 en ★★."
 };

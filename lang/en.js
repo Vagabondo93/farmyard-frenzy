@@ -175,7 +175,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Faina, Topi, Volpe": "Marten, Mice, Fox",
 "Spazzino, Lupo, Cacciatore": "Sweeper, Wolf, Hunter",
 "Veterinario": "Vet",
-"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Follows the most wounded allied animal and heals all allied animals within 100: 10 health per second, 15 at ★★.",
 "Lupo, Assassino se resta solo": "Wolf, Assassin if left alone",
 "Avicoltore": "Poultry Farmer",
 "Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.": "Tailwind: your flyers flying towards him go 2.5 times faster (3 at ★★), from any distance, and take a detour through him on their own when that gets them there sooner. Stays in your half.",
@@ -873,5 +872,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Tutti i personaggi: banna quello che non vuoi in partita": "All characters: ban the one you don't want in the match",
 " e ": " and ",
 "2 contro 2: un solo uovo per squadra, ognuno con il suo market. Campo più alto e round più lunghi, con campi arati che solo chi vola e la Talpa sottoterra attraversano, laghetti dove passa a nuoto l'Oca e banchi di nebbia dove si vede solo da vicino. Per ora solo amichevole.": "2 vs 2: one egg per team, each player with their own shop. Taller field and longer rounds, with ploughed fields that only flyers and the Mole underground cross, ponds the Goose can swim through and fog banks where you only see up close. Friendly only for now.",
-"2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 vs 2: you and {0} against {1}. One egg per team; ploughed fields and ponds must be walked around (flyers and the Mole underground pass, the Goose swims), in the fog you only see up close."
+"2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 vs 2: you and {0} against {1}. One egg per team; ploughed fields and ponds must be walked around (flyers and the Mole underground pass, the Goose swims), in the fog you only see up close.",
+"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Follows the nearest allied animal and heals all allied animals within 100: 10 health per second, 15 at ★★."
 };
