@@ -20,7 +20,7 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
   await ctx.addInitScript({content:fs.readFileSync(path.join(__dirname,'mock-db.js'),'utf8')+";try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=8;"});
   const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(n+': '+e.message));
     await p.goto(url+'?u='+n);await p.waitForSelector('#nickIn',{state:'visible'});await p.fill('#nickIn',n+'R');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)');P.push(p)}
-  await P[0].click('#rumbleOnline');await P[0].waitForSelector('#rumbleBox:not(.hidden)');
+  await P[0].evaluate(()=>openPlay('ranked','rumble')).then(()=>P[0].click('#rumbleOnline'));await P[0].waitForSelector('#rumbleBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');
   await P[0].waitForFunction(()=>document.querySelectorAll('#rumbleList li').length===2,null,{timeout:15000});
   await P[0].check('#rumbleFill');

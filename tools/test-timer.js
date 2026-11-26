@@ -20,8 +20,8 @@ const toEnd=async ps=>{for(const p of ps){await p.bringToFront();await p.waitFor
   await ctx.addInitScript({content:fs.readFileSync(path.join(__dirname,'mock-db.js'),'utf8')+";try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=4;"});
   const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(n+': '+e.message));
     await p.goto(url+'?u='+n);await p.waitForSelector('#nickIn',{state:'visible'});await p.fill('#nickIn',n+'T');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)');P.push(p)}
-  await P[0].selectOption('#winSel','5');
-  await P[0].click('#roomFriendly');await P[0].waitForSelector('#roomBox:not(.hidden)');
+  await P[0].evaluate(()=>openPlay('friendly','classic'));await P[0].selectOption('#winSel','5');
+  await P[0].evaluate(()=>openPlay('friendly','classic')).then(()=>P[0].click('#roomFriendly'));await P[0].waitForSelector('#roomBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
   for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   // round 1: nessun limite

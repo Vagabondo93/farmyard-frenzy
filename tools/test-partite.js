@@ -31,10 +31,10 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
   // --- contro i bot
   {const ctx=await b.newContext({locale:'it-IT'});const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(e.message));
     await p.goto(url);await p.click('#tutSkip');
-    console.log('Partita contro il bot');await p.click('#botBtn');
+    console.log('Partita contro il bot');await p.evaluate(()=>openPlay('bot','classic')).then(()=>p.click('#botBtn'));
     for(let r=0;r<3;r++){await playRound([p]);if(await phase(p)==='over')break;await p.click('#bBtn')}
     ok(true,'3 round giocati');await p.click('#menuBtn');
-    console.log('Royal Rumble contro 7 bot');await p.click('#rumbleBot');
+    console.log('Royal Rumble contro 7 bot');await p.evaluate(()=>openPlay('bot','rumble')).then(()=>p.click('#rumbleBot'));
     for(let r=0;r<3;r++){await playRound([p]);if(await phase(p)==='over')break;await p.click('#bBtn')}
     const st=await p.evaluate(()=>window.__g().rmb.P.map(x=>x.lives+(x.out?'x':'')).join(' '));ok(true,'uova dopo 3 round: '+st);
     await ctx.close()}
@@ -46,16 +46,18 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
   for(let i=0;i<3;i++){const p=P[i];await p.goto(url+'?u='+names[i]);await p.waitForSelector('#nickIn',{state:'visible'});
     await p.fill('#nickIn',names[i]+'X');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)')}
   console.log('1 contro 1 online (classificata)');
-  await P[0].click('#roomRanked');await P[0].waitForSelector('#roomBox:not(.hidden)');
+  await P[0].evaluate(()=>openPlay('ranked','classic')).then(()=>P[0].click('#roomRanked'));await P[0].waitForSelector('#roomBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
   await doBans(P.slice(0,2));for(const p of P.slice(0,2)) await p.waitForSelector('#game:not(.hidden)');
+  {const v=await Promise.all(P.slice(0,2).map(p=>p.evaluate(()=>{const g=window.__g();return JSON.stringify({pool:g.pool,bans:g.bans,picks:g.picks})})));const x=JSON.parse(v[0]);
+   ok(v[0]===v[1]&&x.bans.length===4&&x.picks.length===2&&x.picks.every(k=>x.pool.includes(k))&&!x.bans.some(k=>x.pool.includes(k)),`4 ban e 2 scelte uguali per tutti: via ${x.bans.join(', ')}, scelti ${x.picks.join(', ')}`)}
   for(let r=0;r<2;r++){await playRound(P.slice(0,2));
     const s=await Promise.all(P.slice(0,2).map(p=>p.evaluate(()=>JSON.stringify([window.__g().score,window.__g().sim.t.toFixed(3)]))));
     ok(s[0]===s[1],`round ${r+1}: stesso risultato sui due schermi ${s[0]}`);
     if(await phase(P[0])==='over')break;for(const p of P.slice(0,2)) await p.click('#bBtn')}
   for(const p of P.slice(0,2)){await p.reload();await p.waitForSelector('#meBox:not(.hidden)')}
   console.log('Royal Rumble online con 3 giocatori');
-  await P[0].click('#rumbleOnline');await P[0].waitForSelector('#rumbleBox:not(.hidden)');const code=await P[0].textContent('#roomCode');
+  await P[0].evaluate(()=>openPlay('ranked','rumble')).then(()=>P[0].click('#rumbleOnline'));await P[0].waitForSelector('#rumbleBox:not(.hidden)');const code=await P[0].textContent('#roomCode');
   for(const p of P.slice(1)){await p.fill('#codeIn',code);await p.click('#joinBtn');await p.waitForTimeout(500)}
   await P[0].waitForFunction(()=>document.querySelectorAll('#rumbleList li').length===3,null,{timeout:20000});
   await P[0].click('#rumbleStart');await doBans(P);for(const p of P) await p.waitForSelector('#game:not(.hidden)');

@@ -36,7 +36,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
     await p.waitForSelector('#coach:not(.hidden)');
     for(let i=0;i<4;i++){await p.waitForTimeout(250);await grab();await p.click('#coachNext')}
     await p.click('[data-buy="0"]');await p.waitForTimeout(250);await grab();await p.click('#coachExit');await p.waitForSelector('#lobby:not(.hidden)');await grab();
-    await p.click('#botBtn').catch(()=>{});await p.waitForTimeout(400);await grab();
+    await p.evaluate(()=>openPlay('bot','classic')).then(()=>p.click('#botBtn')).catch(()=>{});await p.waitForTimeout(400);await grab();
     for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(cs[0])await cs[0].click();await grab()}
     const c=await p.$('[data-card]:visible');if(c){await c.click();await p.waitForTimeout(200);await grab();await p.keyboard.press('Escape')}
     await p.click('#readyBtn');await p.waitForTimeout(1500);await grab();

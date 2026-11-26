@@ -30,7 +30,7 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
   for(const [i,p] of P.entries()){await p.waitForSelector('#nickIn',{state:'visible'});await p.fill('#nickIn',['Anna','Bruno'][i]);await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)')}
   ok(true,'accesso e iscrizione di due giocatori');
   await P[0].waitForTimeout(400);ok((await P[0].textContent('#rankList')).includes('Bruno'),'classifica condivisa: Anna vede Bruno');
-  await P[0].click('#roomRanked');await P[0].waitForSelector('#roomBox:not(.hidden)');
+  await P[0].evaluate(()=>openPlay('ranked','classic')).then(()=>P[0].click('#roomRanked'));await P[0].waitForSelector('#roomBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
   await doBans(P);for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){

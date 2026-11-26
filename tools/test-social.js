@@ -30,7 +30,7 @@ const doBans=async(ps)=>{for(let i=0;i<300;i++){let all=true;for(const p of ps){
   await P.bruno.waitForFunction(()=>document.getElementById('friendList').textContent.includes('AnnaS'),null,{timeout:10000});
   ok(true,'Anna e Bruno sono amici, per entrambi');
   // lobby e invito
-  await P.anna.click('#roomFriendly');await P.anna.waitForSelector('#roomBox:not(.hidden)');
+  await P.anna.evaluate(()=>openPlay('friendly','classic')).then(()=>P.anna.click('#roomFriendly'));await P.anna.waitForSelector('#roomBox:not(.hidden)');
   await P.anna.waitForSelector('#lobbyFriends [data-invite]',{timeout:10000});await P.anna.click('#lobbyFriends [data-invite]');
   await P.bruno.bringToFront();await P.bruno.waitForSelector('#invModal:not(.hidden)',{timeout:10000});
   ok((await P.bruno.textContent('#invP')).includes('AnnaS'),'Bruno riceve il popup: '+await P.bruno.textContent('#invP'));
@@ -49,14 +49,14 @@ const doBans=async(ps)=>{for(let i=0;i<300;i++){let all=true;for(const p of ps){
   await P.anna.bringToFront();await P.anna.waitForFunction(()=>window.__g()&&document.getElementById('toast').textContent.includes('CarlaS'),null,{timeout:10000});
   ok(true,'Anna, in partita, riceve l\'avviso della richiesta di Carla');
   // link d'invito
-  await P.carla.bringToFront();await P.carla.click('#roomFriendly');await P.carla.waitForSelector('#roomBox:not(.hidden)');
+  await P.carla.bringToFront();await P.carla.evaluate(()=>openPlay('friendly','classic')).then(()=>P.carla.click('#roomFriendly'));await P.carla.waitForSelector('#roomBox:not(.hidden)');
   const code=await P.carla.textContent('#roomCode');
   const dave=await open('dave','&join='+code);
   await P.carla.bringToFront();await P.carla.waitForFunction(()=>document.getElementById('lobbyMembers').textContent.includes('DaveS'),null,{timeout:10000});
   ok(true,'Dave apre il link d\'invito ed entra nella lobby di Carla');
   // partita rapida classificata
   const eva=await open('eva'),fede=await open('fede');
-  await eva.click('#quickRanked');await fede.click('#quickRanked');
+  await eva.evaluate(()=>openPlay('ranked','classic')).then(()=>eva.click('#quickRanked'));await fede.evaluate(()=>openPlay('ranked','classic')).then(()=>fede.click('#quickRanked'));
   await eva.waitForSelector('#banBox:not(.hidden)',{timeout:20000});ok(true,'la partita rapida classificata passa dalla fase di ban');
   await doBans([eva,fede]);
   const banned=await eva.evaluate(()=>window.__g().pool.length);
