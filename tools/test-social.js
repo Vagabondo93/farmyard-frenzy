@@ -39,6 +39,14 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   await P.anna.waitForSelector('#pvpStart:not([disabled])');await P.anna.click('#pvpStart');
   for(const n of ['anna','bruno']) await P[n].waitForSelector('#game:not(.hidden)',{timeout:10000});
   ok(true,'Anna avvia: la partita parte per entrambi');
+  // chat della partita
+  await P.anna.fill('#chatIn','Ciao Bruno!');await P.anna.press('#chatIn','Enter');
+  await P.bruno.bringToFront();await P.bruno.waitForFunction(()=>document.getElementById('chatLog').textContent.includes('Ciao Bruno!'),null,{timeout:10000});
+  ok(true,'Bruno legge il messaggio di Anna nella chat');
+  // amicizia cercando il nickname, con avviso sul profilo
+  await P.carla.bringToFront();await P.carla.fill('#friendIn','AnnaS');await P.carla.click('#friendAdd');
+  await P.anna.bringToFront();await P.anna.waitForFunction(()=>window.__g()&&document.getElementById('toast').textContent.includes('CarlaS'),null,{timeout:10000});
+  ok(true,'Anna, in partita, riceve l\'avviso della richiesta di Carla');
   // link d'invito
   await P.carla.bringToFront();await P.carla.click('#roomFriendly');await P.carla.waitForSelector('#roomBox:not(.hidden)');
   const code=await P.carla.textContent('#roomCode');

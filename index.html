@@ -56,6 +56,16 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 .coach-hl{outline:4px solid #f2c230!important;outline-offset:3px;border-radius:12px;position:relative;z-index:5;animation:coachpulse 1.2s ease-in-out infinite}
 @keyframes coachpulse{50%{outline-color:#ffe680}}
 @media (prefers-reduced-motion:reduce){.coach-hl{animation:none}}
+.chatlog{max-height:180px;overflow-y:auto;display:grid;gap:4px;margin-bottom:8px;font-size:14px;line-height:1.35}
+.chatlog .m b{margin-right:6px}.chatlog .m.me b{color:var(--rdef)}.chatlog .empty{margin:0}
+.reqbadge{justify-self:start;background:color-mix(in srgb,#f2c230 35%,var(--chip))}
+.newspanel{grid-column:1/-1}
+.news{display:grid;gap:8px;padding:12px 0;border-top:1px dashed var(--line)}.news:first-child{border-top:0;padding-top:0}
+.news .nhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.news .ndate{color:var(--muted);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.news h4{margin:0;font-size:18px}.news p{margin:0;max-width:75ch;line-height:1.5}.news ul{margin:0;padding-left:20px;line-height:1.5}
+.ncards{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 8px}.ncards .tcgbtn{flex:0 0 200px;cursor:pointer}
+.nwr{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.nwr .box{background:var(--chip);border-radius:12px;padding:10px 12px}
+.nwr .box b{display:block;margin-bottom:4px}.nwr .row{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
 .langsel{background:var(--chip);color:inherit;border:0;border-radius:999px;padding:5px 10px;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .pill{background:var(--chip);border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums}
 .pill.gold{background:var(--gold);color:#241800}
@@ -324,6 +334,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <div id="meBox" class="hidden" style="display:grid;gap:6px">
         <div style="font-family:var(--f-display);font-size:24px" id="meNick"></div>
         <div class="statline"><span class="pill gold">Elo <span id="meElo"></span></span><span class="pill">🌫️ Nebbia <span id="meEloF"></span></span><span class="pill" id="meWL"></span></div>
+        <button class="btn hidden reqbadge" id="reqBadge"></button>
         <div class="statline"><button class="linkbtn" id="renBtn">Cambia nickname</button><button class="linkbtn" id="guestBtn">Gioca come ospite</button><button class="linkbtn hidden" id="logoutBtn">Esci</button></div>
         <div id="renBox" class="hidden" style="display:grid;gap:6px">
           <label for="renIn" style="font-weight:700">Nuovo nickname</label>
@@ -370,11 +381,18 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       </div>
       <p class="toast" id="lobbyMsg" aria-live="polite" style="margin:0"></p>
     </div>
+    <div class="panel newspanel" id="newsPanel">
+      <h3>📰 Novità</h3>
+      <div id="newsList"><p class="empty">Nessuna novità.</p></div>
+      <button class="linkbtn hidden" id="newsMore">Mostra le novità precedenti</button>
+    </div>
     <div class="panel hidden" id="socialPanel">
       <h3>Giocatori online <span class="pill" id="onlineCount">0</span></h3>
       <ol class="rank" id="onlineList"></ol>
       <div id="reqBox" class="hidden"><h3 style="margin-top:14px">Richieste di amicizia</h3><ol class="rank" id="reqList"></ol></div>
       <h3 style="margin-top:14px">Amici</h3>
+      <div class="field-row"><input id="friendIn" list="recentList" maxlength="16" placeholder="Nickname di un giocatore" autocomplete="off"><button class="btn" id="friendAdd">＋ Amico</button><button class="btn hidden" id="friendInv">Invita</button></div>
+      <datalist id="recentList"></datalist>
       <ol class="rank" id="friendList"></ol>
     </div>
     <div class="panel">
@@ -455,6 +473,11 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
         <h3>Cronaca</h3>
         <div class="log" id="log"><div class="empty">Gli eventi della battaglia appariranno qui.</div></div>
       </div>
+      <div class="panel hidden" id="chatPanel">
+        <h3>💬 Chat</h3>
+        <div class="chatlog" id="chatLog" aria-live="polite"></div>
+        <div class="field-row"><input id="chatIn" maxlength="200" placeholder="Scrivi un messaggio…" autocomplete="off"><button class="btn primary" id="chatSend">Invia</button></div>
+      </div>
     </aside>
   </div>
 
@@ -487,6 +510,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   </details>
 </div>
 
+<script src="news.js"></script>
 <script src="lang/en.js"></script>
 <script src="lang/es.js"></script>
 <script src="lang/fr.js"></script>
@@ -2029,7 +2053,7 @@ function showGame(on){
 }
 function showLobby(){
   if(G&&G.unsub) G.unsub.forEach(f=>f());
-  G=null; if(roomUnsub){roomUnsub();roomUnsub=null}LOBBY=null;
+  G=null; if(roomUnsub){roomUnsub();roomUnsub=null}LOBBY=null;$('chatPanel').classList.add('hidden');
   $('roomBox').classList.add('hidden'); hideBanner(); showGame(false); renderLobby();
 }
 function renderTop(){$('eloPill').textContent=PROFILE?`${PROFILE.nick} · Elo ${Math.round(PROFILE.elo)} · 🌫️ ${Math.round(PROFILE.eloFog??1000)} · 👑 ${Math.round(PROFILE.eloRumble??1000)}`:'Ospite'}
@@ -2038,7 +2062,7 @@ function eloOf(v){return PROFILE?Math.round(v==='fog'?(PROFILE.eloFog??1000):v==
 let RANKTAB='classic',BOARDF=[],BOARDR=[];
 function lobbyMsg(m){$('lobbyMsg').textContent=m}
 function renderLobby(){
-  renderTop();
+  renderTop();renderNews();
   const reg=!!PROFILE;
   $('regBox').classList.toggle('hidden',!!RAW||ONLINE!=='ok'||!CANWRITE);
   $('loginBox').classList.toggle('hidden',ONLINE!=='login');$('logoutBtn').classList.toggle('hidden',!FBAUTH||!UID);
@@ -2061,6 +2085,25 @@ function renderLobby(){
   ol.innerHTML=L.length?L.map((p,i)=>`<li class="${p.id===UID?'me':''}"><span class="pos">${i+1}</span><span>${esc(p.nick)}</span><span class="wl">${rum?`${+p.winsRumble||0} vinte su ${+p.gamesRumble||0}`:`${+(fog?p.winsFog:p.wins)||0}V ${+(fog?p.lossesFog:p.losses)||0}S`}</span><b>${Math.round(+(fog?p.eloFog:rum?p.eloRumble:p.elo)||0)}</b></li>`).join(''):
     '<li class="empty">Nessun giocatore ancora. Iscriviti per primo!</li>';
 }
+// ---------- novità (file news.js): testo nelle quattro lingue, carte dei nuovi personaggi, mini-report dei win rate ----------
+let NEWSALL=false;
+function renderNews(){
+  const N=(window.FF_NEWS||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const L=v=>v&&typeof v==='object'&&!Array.isArray(v)?(v[LANG]??v.it):v;
+  const fmt=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString(LANG,{day:'numeric',month:'long',year:'numeric'})}catch(e){return d}};
+  const list=NEWSALL?N:N.slice(0,4);
+  $('newsList').innerHTML=list.length?list.map(n=>`<article class="news">
+    <div class="nhead"><span class="ndate" data-notr>${esc(fmt(n.date))}</span><h4 data-notr>${esc(L(n.title))}</h4></div>
+    ${n.text?`<p data-notr>${esc(L(n.text))}</p>`:''}
+    ${n.list?`<ul data-notr>${L(n.list).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
+    ${n.cards?`<div class="ncards">${n.cards.filter(k=>UNITS[k]).map(k=>`<div class="tcgbtn" role="button" tabindex="0" data-card="${k}:1">${tcgCard(k,1,{compact:true})}</div>`).join('')}</div>`:''}
+    ${n.wr?`<div class="nwr"><div class="box"><b>Più forti</b>${n.wr.top.filter(x=>UNITS[x[0]]).map(x=>`<div class="row"><span>${UNITS[x[0]].n}</span><span>${String(x[1]).replace('.',LANG==='en'?'.':',')}%</span></div>`).join('')}</div>
+      <div class="box"><b>Più deboli</b>${n.wr.bottom.filter(x=>UNITS[x[0]]).map(x=>`<div class="row"><span>${UNITS[x[0]].n}</span><span>${String(x[1]).replace('.',LANG==='en'?'.':',')}%</span></div>`).join('')}</div>
+      <div class="box"><b>In equilibrio</b><div class="row"><span>Personaggi tra 40% e 60%</span><span>${n.wr.ok}/${n.wr.n}</span></div><div class="row"><span>Battaglie simulate</span><span>${Number(n.wr.battles).toLocaleString(LANG)}</span></div></div></div>`:''}
+  </article>`).join(''):'<p class="empty">Nessuna novità.</p>';
+  $('newsMore').classList.toggle('hidden',NEWSALL||N.length<=4);
+}
+$('newsMore').onclick=()=>{NEWSALL=true;renderNews()};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 // Dentro claude.ai si usa il database della pagina; sul sito pubblico si usa Firebase (vedi firebase-config.js).
 let FBAUTH=null;
@@ -2146,15 +2189,33 @@ function startSocial(){
   beat();const t1=setInterval(beat,25000),t2=setInterval(()=>{if(!G)renderSocial()},15000);
   SUBS.push(()=>{clearInterval(t1);clearInterval(t2);SOCIAL=false});
   SUBS.push(DB.collection('presence').onSnapshot(sn=>{PRES=sn.docs.map(d=>({id:d.id,...d.data()}));if(!G)renderSocial()},()=>{}));
-  SUBS.push(DB.collection('friendReq').onSnapshot(sn=>{FREQ=sn.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.to===UID||r.from===UID);settleFriends();if(!G)renderSocial()},()=>{}));
+  let seenReq=null;
+  SUBS.push(DB.collection('friendReq').onSnapshot(sn=>{FREQ=sn.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.to===UID||r.from===UID);settleFriends();
+    const inc=FREQ.filter(r=>r.to===UID&&r.status==='pending');if(seenReq){const nu=inc.filter(r=>!seenReq.has(r.id));if(nu.length)toast(`📨 ${nu[0].fromNick} ti ha mandato una richiesta di amicizia.`)}seenReq=new Set(inc.map(r=>r.id));
+    if(!G)renderSocial();else{const n=inc.length;$('reqBadge').classList.toggle('hidden',!n)}},()=>{}));
   SUBS.push(DB.doc('invites/'+UID).onSnapshot(sn=>{const d=sn.exists&&sn.data();if(d&&+d.at>Date.now()-120000&&d.from!==UID&&+d.at!==LASTINV)showInvite(d)},()=>{}));
   const join=new URLSearchParams(location.search).get('join');
   if(join&&/^[A-Za-z0-9]{5}$/.test(join)){try{const u=new URL(location.href);u.searchParams.delete('join');history.replaceState(null,'',u)}catch(e){}
     if(!G){$('codeIn').value=join.toUpperCase();joinRoom()}}
 }
 addEventListener('pagehide',()=>{if(SOCIAL&&DB&&UID){try{DB.doc('presence/'+UID).update({at:0})}catch(e){}}if(QUEUE)stopQueue()});
+function nickKey(n){return String(n||'').trim().toLowerCase().replace(/ /g,'_')}
+async function findPlayer(nick){
+  const k=nickKey(nick);if(!k)return null;
+  const known=[...myFriends(),...((RAW&&RAW.recent)||[])].find(x=>nickKey(x.nick)===k);if(known)return known;
+  const on=PRES.find(p=>nickKey(p.nick)===k);if(on)return{id:on.id,nick:on.nick};
+  try{const n=await DB.doc('nicks/'+k).get();const id=n.exists&&n.data().uid;if(!id)return null;const p=await DB.doc('players/'+id).get();return{id,nick:p.exists?p.data().nick:nick}}catch(e){return null}
+}
+async function rememberOpponents(list){
+  if(!RAW||!DB)return;const old=(RAW.recent||[]).filter(x=>x&&x.id);
+  const add=list.filter(x=>x&&x.id&&x.id!==UID).map(x=>({id:x.id,nick:String(x.nick||'').slice(0,16)}));
+  const rec=[...add,...old.filter(o=>!add.some(a=>a.id===o.id))].slice(0,10);
+  try{await DB.doc('players/'+UID).update({recent:rec})}catch(e){}
+}
 function renderSocial(){
   if(!$('socialPanel')||!PROFILE)return;
+  {const sug=[...((RAW&&RAW.recent)||[]),...myFriends()].filter((x,i,a)=>x&&x.nick&&a.findIndex(y=>y.id===x.id)===i);
+   $('recentList').innerHTML=sug.map(x=>`<option value="${esc(x.nick)}"></option>`).join('');$('friendInv').classList.toggle('hidden',!LOBBY)}
   const on=PRES.filter(p=>isOn(p)).sort((a,b)=>(b.id===UID)-(a.id===UID)||String(a.nick).localeCompare(String(b.nick)));
   $('onlineCount').textContent=on.length;
   const inv=id=>LOBBY&&id!==UID?`<button class="linkbtn" data-invite="${esc(id)}">Invita</button>`:'';
@@ -2163,6 +2224,7 @@ function renderSocial(){
   $('friendList').innerHTML=fr.length?fr.map(f=>`<li><span class="pos"><i class="dot${isOn(f.p)?' on':''}"></i></span><span>${esc(f.nick)}</span><span class="wl">${isOn(f.p)?(f.p.busy?'in partita':'online'):'offline'}</span><b>${isOn(f.p)&&!f.p.busy?inv(f.id):''}</b></li>`).join(''):'<li class="empty">Ancora nessun amico: aggiungili dalla lista online o dalla lobby.</li>';
   const req=FREQ.filter(r=>r.to===UID&&r.status==='pending');
   $('reqBox').classList.toggle('hidden',!req.length);
+  $('reqBadge').classList.toggle('hidden',!req.length);$('reqBadge').textContent=req.length===1?'📨 1 richiesta di amicizia':`📨 ${req.length} richieste di amicizia`;
   $('reqList').innerHTML=req.map(r=>`<li><span class="pos">📨</span><span>${esc(r.fromNick)}</span><span class="wl"></span><b><button class="linkbtn" data-accept="${esc(r.id)}">Accetta</button><button class="linkbtn" data-refuse="${esc(r.id)}">Rifiuta</button></b></li>`).join('');
 }
 async function addFriendLocal(id,nick){if(isFriend(id))return;const list=[...myFriends(),{id,nick:String(nick||'').slice(0,16)}];try{await DB.doc('players/'+UID).update({friends:list})}catch(e){}}
@@ -2181,8 +2243,8 @@ async function answerFriend(rid,ok){
   try{await DB.doc('friendReq/'+rid).update({status:ok?'accepted':'refused'})}catch(e){}
   lobbyMsg(ok?`Tu e ${r.fromNick} ora siete amici.`:'');
 }
-async function sendInvite(id){
-  if(!LOBBY||!PROFILE)return;const p=PRES.find(x=>x.id===id)||myFriends().find(x=>x.id===id)||{};
+async function sendInvite(id,nick){
+  if(!LOBBY||!PROFILE)return;const p=PRES.find(x=>x.id===id)||myFriends().find(x=>x.id===id)||{nick};
   try{await DB.doc('invites/'+id).set({from:UID,fromNick:PROFILE.nick,room:LOBBY.code,label:LOBBY.label,at:Date.now()});lobbyMsg(`Invito mandato a ${p.nick||'un amico'}.`)}catch(e){lobbyMsg('Invito non inviato, riprova.')}
 }
 let INVNOW=null;
@@ -2240,6 +2302,30 @@ async function joinMatched(code){
 function stopQueue(){if(!QUEUE)return;clearInterval(QUEUE.t);QUEUE.un&&QUEUE.un();const q=QUEUE;QUEUE=null;
   DB.doc('queue/'+UID).set({nick:PROFILE?PROFILE.nick:'',variant:q.variant,ranked:q.ranked,at:0,room:null}).catch(()=>{});renderMM();if(!G)renderLobby()}
 $('quickFriendly').onclick=()=>quickMatch(false);
+$('reqBadge').onclick=()=>{$('socialPanel').scrollIntoView({behavior:'smooth',block:'start'})};
+async function byName(act){const nick=$('friendIn').value.trim();if(!nick)return;
+  const p=await findPlayer(nick);if(!p){lobbyMsg(`Nessun giocatore con il nickname ${nick}.`);return}
+  if(p.id===UID){lobbyMsg('Quello sei tu!');return}
+  if(act==='friend'){if(isFriend(p.id)){lobbyMsg(`${p.nick} è già tuo amico.`);return}await sendFriend(p.id,p.nick)}
+  else await sendInvite(p.id,p.nick);
+  $('friendIn').value=''}
+$('friendAdd').onclick=()=>byName('friend');
+$('friendInv').onclick=()=>byName('invite');
+$('friendIn').addEventListener('keydown',e=>{if(e.key==='Enter')byName(LOBBY?'invite':'friend')});
+// ---------- chat della partita online ----------
+function startChat(code){
+  $('chatPanel').classList.remove('hidden');$('chatLog').innerHTML='<p class="empty">Scrivi qualcosa ai tuoi avversari.</p>';
+  const un=DB.collection(`rooms/${code}/chat`).onSnapshot(sn=>{
+    const ms=sn.docs.map(d=>d.data()).filter(m=>m&&m.text).sort((a,b)=>a.at-b.at).slice(-60);if(!ms.length)return;
+    const el=$('chatLog'),bottom=el.scrollTop+el.clientHeight>=el.scrollHeight-20;
+    el.innerHTML=ms.map(m=>`<div class="m${m.by===UID?' me':''}" data-notr><b>${esc(m.nick)}</b>${esc(m.text)}</div>`).join('');
+    if(bottom)el.scrollTop=el.scrollHeight},()=>{});
+  G.unsub.push(()=>{un();$('chatPanel').classList.add('hidden')});
+}
+async function sendChat(){const t=$('chatIn').value.trim().slice(0,200);if(!t||!G||!G.room||!PROFILE)return;$('chatIn').value='';
+  try{await DB.doc(`rooms/${G.room}/chat/${Date.now()}_${UID}`).set({by:UID,nick:PROFILE.nick,text:t,at:Date.now()})}catch(e){toast('Messaggio non inviato.')}}
+$('chatSend').onclick=sendChat;
+$('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});
 $('quickRanked').onclick=()=>quickMatch(true);
 $('mmCancel').onclick=()=>stopQueue();
 async function createRoom(ranked){
@@ -2294,6 +2380,7 @@ function handleRoom(d){
 function startPvp(code,d,me){
   const opp=String((me?d.hostNick:d.guestNick)||'Avversario').slice(0,16);
   newMatch({mode:'pvp',variant:d.variant,win:[1,2,3,5,7].includes(+d.win)?+d.win:3,me,room:code,ranked:!!d.ranked,seed:+d.seed||1,oppName:opp,oppElo:+(me?d.hostElo:d.guestElo)||1000});
+  startChat(code);rememberOpponents([{id:me?d.host:d.guest,nick:opp}]);
   toast(`Partita ${d.ranked?'classificata':'amichevole'} contro ${opp}, a ${[1,2,3,5,7].includes(+d.win)?+d.win:3} prese. Il tuo market è privato: l'avversario vede la tua squadra solo in battaglia.`);
 }
 function cleanBoard(list){
@@ -2592,6 +2679,7 @@ function startRumbleOnline(code,d,meIdx){
     for(const d of G.rmb.docs) if(d.round===G.round&&!d.afk) setDeadline(d.at);
     rumbleTry()},()=>{});
   G.unsub.push(un);
+  startChat(code);rememberOpponents(d.players.filter(p=>!p.bot).map(p=>({id:p.uid,nick:p.nick})));
   const nb=d.players.filter(p=>p.bot).length;
   toast(`Royal Rumble con ${d.players.length} giocatori${nb?` (di cui ${nb} bot)`:''}. Ogni round affronti un avversario a caso.`);
 }
