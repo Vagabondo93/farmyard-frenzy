@@ -1398,7 +1398,7 @@ function spawn(b,side,id){
 }
 function makeSim(seed){
   const S={t:0,units:[],eggs:[0,1].map(s=>({side:s,home:HOME[s],x:HOME[s].x,y:HOME[s].y,state:'home',carrier:null,dropT:0})),
-    traps:[],fakes:[],fx:[],bribes:[0,0],clouds:[],plots:G.mode==='duo'?PLOTS:[],nav:null,mist:G.mode==='duo',fogs:G.mode==='duo'?DUO_MIST:FOGS,bridges:[...BRIDGES],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:G.mode==='duo'?Math.min(90,ROUND_T+18+(G.round-1)*3):Math.min(70,ROUND_T+(G.round-1)*3)};
+    traps:[],fakes:[],fx:[],bribes:[0,0],clouds:[],plots:G.mode==='duo'?PLOTS:[],nav:null,rings:[],mist:G.mode==='duo',fogs:G.mode==='duo'?DUO_MIST:FOGS,bridges:[...BRIDGES],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:G.mode==='duo'?Math.min(90,ROUND_T+18+(G.round-1)*3):Math.min(70,ROUND_T+(G.round-1)*3)};
   let id=1;
   for(let s=0;s<2;s++) for(const b of (G.players[s].ovr||G.players[s].board).filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
   for(const u of [...S.units]) if(u.def.pack) for(let i=0;i<u.def.pack;i++)
@@ -1772,11 +1772,11 @@ function step(S,dt){
     if(u.def.alarm){u.alarmCd=(u.alarmCd||0)-dt;
       if(u.alarmCd<=0&&live.some(e=>e.alive&&e.side!==u.side&&canCarry(e)&&!e.underground&&e.invis<=0&&!e.disguised&&dist(u,e)<u.def.alarm)){
         u.alarmCd=4;for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'&&a.role!=='thief'&&(u.def.alarmAll||dist(a,u)<220)){a.boostT=Math.max(a.boostT,u.def.alarmT||3);a.boostMul=1.35}
-        fx(S,u.x,u.y-24,'QUA QUA!','#fff6c4');log(S,`${nm(u)} dà l'allarme`)}}
+        (S.rings=S.rings||[]).push({x:u.x,y:u.y,r:u.def.alarmAll?420:220,t:0,col:'255,246,196'});fx(S,u.x,u.y-24,'QUA QUA!','#fff6c4');log(S,`${nm(u)} dà l'allarme`)}}
     if(u.def.bugle){if(u.bugleT===undefined)u.bugleT=1;u.bugleT-=dt;
       if(u.bugleT<=0){u.bugleT=u.def.bugleRepeat||1e9;const T=u.def.bugle+(u.star===2?2:0);
         for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'){a.boostT=Math.max(a.boostT,T);a.boostMul=Math.max(a.boostMul||1,1.35)}
-        fx(S,u.x,u.y-24,'CARICA!','#ffe680');log(S,`${nm(u)} suona la carica`)}}
+        (S.rings=S.rings||[]).push({x:u.x,y:u.y,r:320,t:0,col:'255,230,128'});fx(S,u.x,u.y-24,'CARICA!','#ffe680');log(S,`${nm(u)} suona la carica`)}}
     if(u.def.heal){const r=u.def.healR||90,amt=u.def.heal*(u.star===2?1.5:1)*dt;
       for(const a of live) if(a.alive&&a.side===u.side&&a!==u&&a.role!=='static'&&(u.def.healAll||a.def.tags.includes('Animale'))&&a.hp<a.maxHp&&dist(a,u)<r) a.hp=Math.min(a.maxHp,a.hp+amt)}
     if(u.def.aura){for(const e of live) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&dist(u,e)<u.def.aura.r) damage(e,u.def.aura.dps*dt,S,u)}
@@ -2036,6 +2036,15 @@ function render(){
   if(S.fog) drawFog();
   if(S.mist) drawFog(DUO_MIST);
   for(const h of S.units) if(h.alive&&h.def.aura) drawBees(X(h.x),h.y,h.def.aura.r,h.id);
+  // aree d'effetto sempre attive, appena visibili (esche, Veterinario); in Nebbia solo quelle che vedi
+  for(const h of S.units){if(!h.alive||!(h.def.lure||h.def.healR))continue;
+    if((S.fog||S.mist)&&h.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,h)))continue;
+    const r=h.def.healR||h.def.lure,col=h.def.healR?'120,220,140':h.def.lureTag==='Animale'?'242,200,80':'255,236,200';
+    ctx.save();ctx.fillStyle=`rgba(${col},.06)`;ctx.strokeStyle=`rgba(${col},.32)`;ctx.lineWidth=1.2;ctx.setLineDash([3,7]);ctx.beginPath();ctx.arc(X(h.x),h.y,r,0,7);ctx.fill();ctx.stroke();ctx.restore()}
+  // aree che si attivano (allarme dell'Oca, carica del Trombettiere): un'onda che si allarga
+  if(S.rings) for(const g of S.rings){g.t+=1/60;const k=Math.min(1,g.t/.8);if(k>=1)continue;
+    ctx.save();ctx.strokeStyle=`rgba(${g.col},${.7*(1-k)})`;ctx.fillStyle=`rgba(${g.col},${.12*(1-k)})`;ctx.lineWidth=4*(1-k)+1;ctx.beginPath();ctx.arc(X(g.x),g.y,20+(g.r-20)*k,0,7);ctx.fill();ctx.stroke();ctx.restore()}
+  if(S.rings&&S.rings.length>8)S.rings=S.rings.filter(g=>g.t<.8);
   for(const f of S.fakes) if(f.state==='home'){drawEgg(X(f.x),f.y-4,.85,false);
     if(f.side===G.me){ctx.font='bold 9px Nunito,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.strokeText('finto',X(f.x),f.y+14);ctx.fillText('finto',X(f.x),f.y+14)}}
   for(const c of S.clouds){ctx.save();ctx.globalAlpha=Math.min(1,c.t)*.35;ctx.fillStyle='#9bbf3a';ctx.beginPath();ctx.arc(X(c.x),c.y,c.r,0,7);ctx.fill();
@@ -2173,7 +2182,7 @@ function renderAll(){
   const field=p.board.filter(b=>!b.bench),bench=p.board.filter(b=>b.bench);
   $('boardCount').textContent=`${field.length}/${MAXB} · tocca un'unità per darle un ordine`;
   $('benchCount').textContent=`${bench.length}/${MAXBENCH} · non scende in campo, ma conta per le copie ★★`;
-  const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+b.star+' stelle':''}">${tcgCard(b.type,b.star,{compact:true,foot:
+  const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+'★'.repeat(b.star):''}">${tcgCard(b.type,b.star,{compact:true,foot:
      `<span class="oc ${b.order?'':'none'}">${b.order?OIC(ORDERS[b.order])+' '+ORDERS[b.order].n:'nessun ordine'}</span>
       <span class="acts"><button class="sell" data-card="${b.type}:${b.star}">Scheda</button>${shop?`<button class="sell" data-swap="${b.uid}">${b.bench?'↑ In campo':'↓ Panchina'}</button><button class="sell" data-sell="${b.uid}">Vendi (+1)</button>`:''}</span>`})}</div>`;
   let h=field.map(card).join('');
