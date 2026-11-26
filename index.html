@@ -169,6 +169,17 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .herobar{display:flex;align-items:center;gap:8px 26px;padding:0 26px 20px;flex-wrap:wrap}
 .herologo{width:clamp(220px,30%,380px);height:auto;margin-top:-9%;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));flex:0 0 auto}
 .herotxt{flex:1 1 280px;min-width:0;padding-top:14px}
+.tipbox{flex:1 1 300px;max-width:440px;margin-top:14px;background:rgba(255,248,220,.1);border:1px solid rgba(255,240,190,.28);border-radius:16px;padding:12px 14px;color:#f4f8e6;align-self:center}
+.tiphead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tiphead b{color:#ffe07a;font-size:15px}
+.tipkind{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff7d6}
+.tipkind.syn{background:#3f7d2c}.tipkind.ctr{background:#9a3b2a}.tipkind.early{background:#2d6a8a}.tipkind.late{background:#6b4a9a}.tipkind.sit{background:#8a6a1f}
+.tipnav{margin-left:auto;display:flex;gap:4px}.tipnav button{width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px;line-height:1;cursor:pointer}
+.tipnav button:hover{background:rgba(255,255,255,.3)}
+.tipbody{display:flex;gap:10px;align-items:flex-start;margin-top:8px;transition:opacity .35s}.tipbody.fade{opacity:0}
+.tipics{display:flex;gap:4px;flex:0 0 auto}.tipic{width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,.22);display:grid;place-items:center;font-size:24px;cursor:pointer;overflow:hidden}
+.tipic img{width:100%;height:100%;object-fit:cover}.tipic.ord{cursor:default}
+.tipbody p{margin:0;font-size:14px;line-height:1.4;color:#eef5dc}
+@media (max-width:640px){.tipbox{max-width:none;text-align:left}}
 .hero h2{font-size:clamp(26px,3.6vw,40px);line-height:1.05;color:#fff7d6;text-shadow:0 3px 0 rgba(0,0,0,.25)}
 .hero p{margin:8px 0 0;max-width:560px;color:#eaf3d6;font-size:15.5px}
 @media (max-width:640px){.heroimg{aspect-ratio:16/9;object-position:58% 50%}.herobar{justify-content:center;text-align:center;padding:0 16px 18px}.herologo{width:72%;margin-top:-16%}.herotxt{padding-top:4px}.hero p{margin-inline:auto}}
@@ -333,6 +344,11 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
         <img class="herologo" src="logo.webp" alt="Farmyard Frenzy: The Golden Egg">
         <div class="herotxt"><h2>Due uova d'oro.<br>Due pollai. Zero pietà.</h2>
           <p>Arruola tacchini-scudo, faine ladre e galli con l'elmo. Dai l'ordine, poi guardali scatenarsi. Vince chi legge la mossa dell'altro.</p></div>
+        <aside class="tipbox hidden" id="tipBox" aria-live="polite">
+          <div class="tiphead"><b>💡 Lo sapevi?</b><span class="tipkind" id="tipKind"></span>
+            <span class="tipnav"><button id="tipPrev" aria-label="Consiglio precedente">‹</button><button id="tipNext" aria-label="Consiglio successivo">›</button></span></div>
+          <div class="tipbody" id="tipBody"></div>
+        </aside>
       </div>
     </div>
     <div class="panel" id="profilePanel">
@@ -552,6 +568,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 </div>
 
 <script src="news.js"></script>
+<script src="tips.js"></script>
 <script src="lang/en.js"></script>
 <script src="lang/es.js"></script>
 <script src="lang/fr.js"></script>
@@ -1325,7 +1342,9 @@ function makeSim(seed){
   let id=1;
   for(let s=0;s<2;s++) for(const b of (G.players[s].ovr||G.players[s].board).filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
   for(const u of [...S.units]) if(u.def.pack) for(let i=0;i<u.def.pack;i++)
-    S.units.push(spawn({type:u.type,star:1,order:u.order,px:(u.side?W-u.x:u.x)+(i?-22:22),py:clamp(u.y+(i?32:-32),30,H-30)},u.side,id++));
+    {// i compagni di branco si dispongono a ventaglio intorno al primo, senza sovrapporsi
+    const OFF=[[22,-32],[-22,32],[-22,-32],[22,32],[-40,0],[40,0]][i%6];
+    S.units.push(spawn({type:u.type,star:1,order:u.order,px:(u.side?W-u.x:u.x)+OFF[0],py:clamp(u.y+OFF[1],30,H-30)},u.side,id++))}
   for(const u of S.units) if(u.def.fakeEgg){const n=u.def.fakes||1;
     for(let i=0;i<n;i++){const x=clamp(u.x+(i?-u.face*34:0),20,W-20),y=clamp(u.y+22,24,H-24);S.fakes.push({side:u.side,owner:u.id,x,y,hx:x,hy:y,state:'home',carrier:null})}}
   S.nextId=id;
@@ -2145,6 +2164,23 @@ function renderLobby(){
   ol.innerHTML=L.length?L.map((p,i)=>`<li class="${p.id===UID?'me':''}"><span class="pos">${i+1}</span><span>${esc(p.nick)}</span><span class="wl">${rum?`${+p.winsRumble||0} vinte su ${+p.gamesRumble||0}`:`${+(fog?p.winsFog:p.wins)||0}V ${+(fog?p.lossesFog:p.losses)||0}S`}</span><b>${Math.round(+(fog?p.eloFog:rum?p.eloRumble:p.elo)||0)}</b></li>`).join(''):
     '<li class="empty">Nessun giocatore ancora. Iscriviti per primo!</li>';
 }
+// ---------- "Lo sapevi?" (file tips.js): uno a caso all'apertura, poi cambia da solo ----------
+let TIPI=-1,TIPT=null,TIPHOVER=false;
+const TIPKIND={syn:'Sinergia',ctr:'Counter naturale',early:'Forte a inizio partita',late:'Forte a fine partita',sit:'Situazionale'};
+function showTip(step){
+  const T=(window.FF_TIPS||[]).filter(t=>t.cards.every(k=>k.startsWith('o:')?ORDERS[k.slice(2)]:UNITS[k]));if(!T.length)return;
+  TIPI=TIPI<0?Math.floor(Math.random()*T.length):(TIPI+step+T.length)%T.length;
+  const t=T[TIPI],box=$('tipBox'),body=$('tipBody');box.classList.remove('hidden');
+  const draw=()=>{$('tipKind').className='tipkind '+t.kind;$('tipKind').textContent=TIPKIND[t.kind]||'';
+    const ic=t.cards.map(k=>{if(k.startsWith('o:')){const o=ORDERS[k.slice(2)];return `<span class="tipic ord" title="${esc(o.n)}">${o.i}</span>`}
+      const d=UNITS[k];return `<span class="tipic" role="button" tabindex="0" data-card="${k}:1" title="${esc(d.n)}">${IC(d)}</span>`}).join('');
+    body.innerHTML=`<div class="tipics">${ic}</div><p data-notr>${esc(t[LANG]||t.it)}</p>`;body.classList.remove('fade')};
+  if(step){body.classList.add('fade');setTimeout(draw,300)}else draw();
+}
+$('tipPrev').onclick=()=>{showTip(-1);startTipsTimer()};$('tipNext').onclick=()=>{showTip(1);startTipsTimer()};
+function startTipsTimer(){clearInterval(TIPT);TIPT=setInterval(()=>{if(!TIPHOVER&&!document.hidden&&!$('lobby').classList.contains('hidden'))showTip(1)},15000)}
+$('tipBox').addEventListener('mouseenter',()=>TIPHOVER=true);$('tipBox').addEventListener('mouseleave',()=>TIPHOVER=false);
+startTipsTimer();setTimeout(()=>showTip(0),0);
 // ---------- novità (file news.js): testo nelle quattro lingue, carte dei nuovi personaggi, mini-report dei win rate ----------
 let NEWSALL=false;
 function renderNews(){

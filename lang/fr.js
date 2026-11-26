@@ -819,5 +819,14 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Messaggio non inviato, riprova.": "Message non envoyé, réessaie.",
 "Grazie! La segnalazione è arrivata.": "Merci ! Ton signalement est arrivé.",
 "Invio non riuscito, riprova.": "Envoi échoué, réessaie.",
-"La stanza è stata chiusa.": "Le salon a été fermé."
+"La stanza è stata chiusa.": "Le salon a été fermé.",
+"💡 Lo sapevi?": "💡 Le savais-tu ?",
+"Lo sapevi?": "Le savais-tu ?",
+"Consiglio precedente": "Conseil précédent",
+"Consiglio successivo": "Conseil suivant",
+"Sinergia": "Synergie",
+"Counter naturale": "Contre naturel",
+"Forte a inizio partita": "Fort en début de partie",
+"Forte a fine partita": "Fort en fin de partie",
+"Situazionale": "Situationnel"
 };

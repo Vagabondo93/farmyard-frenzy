@@ -819,5 +819,14 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Messaggio non inviato, riprova.": "Message not sent, try again.",
 "Grazie! La segnalazione è arrivata.": "Thanks! Your report has arrived.",
 "Invio non riuscito, riprova.": "Sending failed, try again.",
-"La stanza è stata chiusa.": "The room has been closed."
+"La stanza è stata chiusa.": "The room has been closed.",
+"💡 Lo sapevi?": "💡 Did you know?",
+"Lo sapevi?": "Did you know?",
+"Consiglio precedente": "Previous tip",
+"Consiglio successivo": "Next tip",
+"Sinergia": "Synergy",
+"Counter naturale": "Natural counter",
+"Forte a inizio partita": "Strong early game",
+"Forte a fine partita": "Strong late game",
+"Situazionale": "Situational"
 };

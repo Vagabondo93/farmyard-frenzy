@@ -819,5 +819,14 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Messaggio non inviato, riprova.": "Mensaje no enviado, inténtalo de nuevo.",
 "Grazie! La segnalazione è arrivata.": "¡Gracias! Tu aviso ha llegado.",
 "Invio non riuscito, riprova.": "Envío fallido, inténtalo de nuevo.",
-"La stanza è stata chiusa.": "La sala se ha cerrado."
+"La stanza è stata chiusa.": "La sala se ha cerrado.",
+"💡 Lo sapevi?": "💡 ¿Sabías que…?",
+"Lo sapevi?": "¿Sabías que…?",
+"Consiglio precedente": "Consejo anterior",
+"Consiglio successivo": "Consejo siguiente",
+"Sinergia": "Sinergia",
+"Counter naturale": "Counter natural",
+"Forte a inizio partita": "Fuerte al principio",
+"Forte a fine partita": "Fuerte al final",
+"Situazionale": "Situacional"
 };
