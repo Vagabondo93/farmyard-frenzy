@@ -32,6 +32,10 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
       return out.concat([...window.__canvas])}))seen.add(t)};
     await grab();
     for(let i=0;i<6;i++){await p.click('#tutNext');await grab()}
+    // l'ultima scheda apre il tutorial guidato: leggo i primi fumetti e le scritte sul campo, poi esco
+    await p.waitForSelector('#coach:not(.hidden)');
+    for(let i=0;i<4;i++){await p.waitForTimeout(250);await grab();await p.click('#coachNext')}
+    await p.click('[data-buy="0"]');await p.waitForTimeout(250);await grab();await p.click('#coachExit');await p.waitForSelector('#lobby:not(.hidden)');await grab();
     await p.click('#botBtn').catch(()=>{});await p.waitForTimeout(400);await grab();
     for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(cs[0])await cs[0].click();await grab()}
     const c=await p.$('[data-card]:visible');if(c){await c.click();await p.waitForTimeout(200);await grab();await p.keyboard.press('Escape')}
