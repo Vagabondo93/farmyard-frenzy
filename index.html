@@ -559,7 +559,8 @@ if(LANG!=='it'){
 const W=960,H=540;
 const HOME=[{x:62,y:H/2},{x:W-62,y:H/2}];
 const SIDE=[{name:'Tu',col:'#2f6fe0',soft:'rgba(47,111,224,.18)'},{name:'Bot',col:'#d23f2d',soft:'rgba(210,63,45,.18)'}];
-const COST={1:2,2:3,3:4},costOf=k=>UNITS[k].cost??COST[UNITS[k].t], ORDER_COST=1, REROLL=1, MAXB=7, MAXBENCH=5, WIN=3, ROUND_T=40, STEP=1/60, MAX_ROUNDS=15;
+const COST={1:2,2:3,3:4},costOf=k=>UNITS[k].cost??COST[UNITS[k].t],STAR2_ROUND=15,
+  shopCost=(p,i)=>{const c=costOf(p.shop[i]);if((p.shopStar||[])[i]!==2)return c;const d=c*2;return d<5?d+2:d}, ORDER_COST=1, REROLL=1, MAXB=7, MAXBENCH=5, WIN=3, ROUND_T=40, STEP=1/60, MAX_ROUNDS=15;
 
 const SCARE="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20x%3D%2730%27%20y%3D%2726%27%20width%3D%274%27%20height%3D%2737%27%20rx%3D%271%27%20fill%3D%27%237a5230%27/%3E%3Crect%20x%3D%277%27%20y%3D%2729%27%20width%3D%2750%27%20height%3D%274%27%20rx%3D%272%27%20fill%3D%27%237a5230%27/%3E%3Cpath%20d%3D%27M7%2027l-5-3M7%2031H1M7%2035l-5%203M57%2027l5-3M57%2031h6M57%2035l5%203%27%20stroke%3D%27%23e5b94a%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M17%2029h30l-4%2020H21z%27%20fill%3D%27%23d2452f%27/%3E%3Cpath%20d%3D%27M19%2035h26M20%2042h24M28%2029v20M36%2029v20%27%20stroke%3D%27%238e2a20%27%20stroke-width%3D%271.6%27/%3E%3Cpath%20d%3D%27M26%2049l-3%207M32%2049v8M38%2049l3%207%27%20stroke%3D%27%23e5b94a%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27/%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2720%27%20r%3D%279.5%27%20fill%3D%27%23d9b27a%27%20stroke%3D%27%23a8834e%27%20stroke-width%3D%271%27/%3E%3Cpath%20d%3D%27M27%2018l3%203m0-3l-3%203M34%2018l3%203m0-3l-3%203%27%20stroke%3D%27%233b2a1a%27%20stroke-width%3D%271.5%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M27.5%2025q4.5%202.5%209%200%27%20stroke%3D%27%233b2a1a%27%20stroke-width%3D%271.4%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M17%2013h30l-6-3-3-8h-12l-3%208z%27%20fill%3D%27%23e9bd45%27%20stroke%3D%27%23b8892a%27%20stroke-width%3D%271%27/%3E%3Crect%20x%3D%2725%27%20y%3D%278.5%27%20width%3D%2714%27%20height%3D%272.4%27%20fill%3D%27%23d2452f%27/%3E%3C/svg%3E";
 const SCAREIMG=new Image();SCAREIMG.src=SCARE;
@@ -1121,8 +1122,10 @@ function rollUnit(rng,round){
 }
 function rollShop(p,rng,round){
   // market bloccato: restano le carte non comprate, si riempiono solo gli spazi vuoti, poi si sblocca
-  if(p.locked&&p.shop){p.shop=p.shop.map(t=>t||rollUnit(rng,round));p.locked=false}
-  else p.shop=Array.from({length:5},()=>rollUnit(rng,round));
+  if(p.locked&&p.shop){const st=p.shopStar||[];p.shopStar=p.shop.map((t,i)=>t?(st[i]||1):1);p.shop=p.shop.map(t=>t||rollUnit(rng,round));p.locked=false}
+  else{p.shop=Array.from({length:5},()=>rollUnit(rng,round));p.shopStar=[1,1,1,1,1];
+    // dal round 15 una delle carte è già ★★ (costa il doppio, +2 se resta sotto 5 oro)
+    if(round>=STAR2_ROUND){const i=Math.floor(rng()*5),t=p.shop[i];if(t&&!(G&&G.rmb&&!G.rmb.noCount&&(G.rmb.counts[t]||0)<3))p.shopStar[i]=2}}
   const ks=Object.keys(ORDERS); const a=ks[Math.floor(rng()*ks.length)]; let b=a;
   while(b===a) b=ks[Math.floor(rng()*ks.length)];
   p.orders=[a,b];
@@ -1136,8 +1139,14 @@ function defaultPos(type,n,rng){
 function buyUnit(p,i,rng){
   const type=p.shop[i]; if(!type) return 'none';
   const RC=G&&G.rmb&&!p.ghost;
-  if(RC&&(G.rmb.counts[type]||0)<=0){p.shop[i]=null;return 'soldout'}
-  const c=costOf(type); if(p.gold<c) return 'gold';
+  const two=(p.shopStar||[])[i]===2;
+  if(RC&&(G.rmb.counts[type]||0)<(two?3:1)){p.shop[i]=null;return 'soldout'}
+  const c=shopCost(p,i); if(p.gold<c) return 'gold';
+  if(two){const onF=p.board.filter(b=>!b.bench).length,twos=p.board.filter(b=>b.type===type&&b.star===2);
+    if(p.board.length>=MAXB+MAXBENCH&&twos.length<2) return 'full';
+    p.gold-=c;p.shop[i]=null;p.shopStar[i]=1;if(RC)G.rmb.counts[type]-=3;
+    if(twos.length>=2){const k3=twos[0];k3.star=3;const rm=twos.slice(1,3);p.board=p.board.filter(b=>!rm.includes(b));return 'merged3'}
+    p.board.push({uid:++p.uidc,type,star:2,order:null,bench:onF>=MAXB,...defaultPos(type,onF,rng)});return onF>=MAXB?'bench':'ok'}
   const same=p.board.filter(b=>b.type===type&&b.star===1);
   if(p.board.length>=MAXB+MAXBENCH&&same.length<2) return 'full';
   p.gold-=c; p.shop[i]=null; if(RC) G.rmb.counts[type]--;
@@ -1161,7 +1170,7 @@ function startShop(){
   if(G.mode==='rumble'){rumbleShop();return}
   for(let s=0;s<2;s++){const p=G.players[s];p.gold=Math.min(10,(G.variant==='fog'?6:3)+G.round)+(G.lost[s]?1:0)+((G.bribeGold||[])[s]||0);rollShop(p,s?G.brng:G.rng,G.round)}
   if(G.mode!=='pvp') botTurn(G.players[1],G.brng,G.lastComp[0]); else pvpWatch();
-  hideBanner(); toast(G.round===1?'Hai 4 oro: compra due unità da 2. Un ladro per attaccare e un guardiano per difendere è un buon inizio.':'');
+  hideBanner(); if(G.round===Math.max(MAX_ROUNDS,G.win*5)){toast('Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.')}else toast(G.round===1?'Hai 4 oro: compra due unità da 2. Un ladro per attaccare e un guardiano per difendere è un buon inizio.':'');
   renderAll();
 }
 
@@ -1186,7 +1195,7 @@ function botTurn(p,rng,ec,sk=.7){
     return s;
   };
   for(let k=0;k<14;k++){
-    const opts=p.shop.map((t,i)=>t&&{i,t,s:score(t),c:costOf(t)}).filter(o=>o&&o.c<=p.gold).sort((a,b)=>b.s-a.s);
+    const opts=p.shop.map((t,i)=>t&&{i,t,s:score(t),c:shopCost(p,i)}).filter(o=>o&&o.c<=p.gold).sort((a,b)=>b.s-a.s);
     const best=opts[0];
     if(!best){ if(p.gold>=REROLL+2&&rng()<.6){p.gold-=REROLL;rollShop(p,rng,G.round);continue} break }
     const merge=p.board.filter(b=>b.type===best.t&&b.star===1).length===2;
@@ -1763,7 +1772,9 @@ function endRound(){
   if(lostB.length) text+=` Esche distrutte: ${lostB.join(', ')}.`;
   if(G.bribeGold[me]) text+=` Umani corrotti: +${G.bribeGold[me]} oro nel prossimo market.`;
   flushLog();
-  const done=G.score[0]>=G.win||G.score[1]>=G.win||G.round>=Math.max(MAX_ROUNDS,G.win*5);
+  const last=Math.max(MAX_ROUNDS,G.win*5);
+  // supplementari: dal round 15 vince chi è in vantaggio a fine round; pari solo al doppio dei round
+  const done=G.score[0]>=G.win||G.score[1]>=G.win||(G.round>=last&&G.score[0]!==G.score[1])||G.round>=last*2;
   if(done){
     const res=G.score[me]>G.score[1-me]?1:G.score[me]<G.score[1-me]?0:.5;
     finishMatch(res,`${title}. Finale ${G.score[me]}–${G.score[1-me]}.`);
@@ -1835,9 +1846,9 @@ function renderAll(){
   const selU=p.board.find(b=>b.uid===G.sel);
   $('shop').innerHTML=p.shop.map((t,i)=>{
     if(!t) return `<div class="tcgbtn sold" aria-hidden="true"></div>`;
-    const d=UNITS[t],c=costOf(t),n=p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
+    const d=UNITS[t],two=(p.shopStar||[])[i]===2,c=shopCost(p,i),n=two?0:p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
-    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,1,{foot:`${hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
+    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,two?2:1,{foot:`${two?'<span class="merge">★★ già pronta</span>':hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
   $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.';
   $('orders').innerHTML=Object.entries(ORDERS).map(([k,d])=>`<button class="ord${selU&&selU.order===k?' cur':''}" data-ord="${k}" ${!shop||p.gold<ORDER_COST||!selU?'disabled':''}>
       <span class="cost">${ORDER_COST}</span><span class="ic">${d.i}</span>
