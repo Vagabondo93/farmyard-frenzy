@@ -1404,12 +1404,17 @@ const canCarry=u=>u.turned||u.def.tags.includes('Ladro');
 // ---------- 2 contro 2: campi arati invalicabili (solo chi vola o scava ci passa) ----------
 // il campo è alto 760; i campi sono simmetrici a destra e sinistra, così le due squadre partono alla pari
 const DUO_H=760,PLOTS=[
-  {x:200,y:236,w:560,h:40},{x:200,y:484,w:560,h:40},{x:440,y:330,w:80,h:100},
-  {x:330,y:70,w:40,h:100},{x:590,y:70,w:40,h:100},{x:330,y:590,w:40,h:100},{x:590,y:590,w:40,h:100},
-  // laghetti: l'Oca ci passa a nuoto (più lenta), chi vola e la Talpa sottoterra ci passano sopra o sotto
-  {x:262,y:336,w:96,h:88,water:true},{x:602,y:336,w:96,h:88,water:true}];
+  // simmetrico tra destra e sinistra (le squadre partono alla pari), diverso tra alto e basso:
+  // in alto la prateria, larga e scoperta, con un grande laghetto al centro (l'Oca ci taglia in mezzo)
+  {x:425,y:66,w:110,h:84,water:true},
+  {x:190,y:210,w:580,h:36},
+  // al centro la corsia di mezzo, con il blocco centrale e un varco stretto verso il basso
+  {x:445,y:330,w:70,h:100},
+  {x:190,y:520,w:262,h:36},{x:508,y:520,w:262,h:36},
+  // in basso il boschetto: corsia tortuosa a zig-zag e coperta dalla nebbia, lenta ma nascosta
+  {x:300,y:556,w:40,h:128},{x:620,y:556,w:40,h:128},{x:450,y:648,w:60,h:112}];
 // zone di nebbia: chi ci sta dentro si vede solo da vicino (come il bosco della modalità Nebbia)
-const DUO_MIST=[{x:480,y:138,r:86},{x:480,y:622,r:86},{x:140,y:138,r:62},{x:820,y:138,r:62},{x:140,y:622,r:62},{x:820,y:622,r:62}];
+const DUO_MIST=[{x:330,y:388,r:70},{x:630,y:388,r:70},{x:225,y:668,r:84},{x:735,y:668,r:84},{x:400,y:640,r:62},{x:560,y:640,r:62}];
 const PLOT_R=12;
 function inPlot(x,y,S,m=PLOT_R,sw=false){for(const p of S.plots)if(!(sw&&p.water)&&x>p.x-m&&x<p.x+p.w+m&&y>p.y-m&&y<p.y+p.h+m)return p;return null}
 // spinge fuori dal campo arato verso il bordo più vicino
