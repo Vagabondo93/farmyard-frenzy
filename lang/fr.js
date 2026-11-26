@@ -763,5 +763,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "DIFENDI": "DÉFENDS",
 "RUBA": "VOLE",
 "{0} personaggi": "{0} personnages",
-"Benvenuto in Farmyard Frenzy! Ogni squadra ha un uovo d'oro nel suo nido. Tu compri i personaggi al market e li schieri, poi gli automi combattono da soli: devono rubare l'uovo avversario e difendere il tuo. Ti guido in una partita di prova di due round.": "Bienvenue dans Farmyard Frenzy ! Chaque équipe a un œuf d'or dans son nid. Tu achètes des personnages à la boutique et tu les places, puis les automates se battent tout seuls : ils doivent voler l'œuf adverse et défendre le tien. Je te guide dans une partie d'essai de deux manches."
+"Benvenuto in Farmyard Frenzy! Ogni squadra ha un uovo d'oro nel suo nido. Tu compri i personaggi al market e li schieri, poi gli automi combattono da soli: devono rubare l'uovo avversario e difendere il tuo. Ti guido in una partita di prova di due round.": "Bienvenue dans Farmyard Frenzy ! Chaque équipe a un œuf d'or dans son nid. Tu achètes des personnages à la boutique et tu les places, puis les automates se battent tout seuls : ils doivent voler l'œuf adverse et défendre le tien. Je te guide dans une partie d'essai de deux manches.",
+"TRASCINA": "GLISSE"
 };

@@ -1721,7 +1721,11 @@ function render(){
     {const st=COACH&&COACH_STEPS[COACH.i];if(st&&st.egg!=null){const h=HOME[st.egg],pu=4*Math.sin(performance.now()/200);
       ctx.save();ctx.strokeStyle='#f2c230';ctx.lineWidth=5;ctx.beginPath();ctx.arc(h.x,h.y-4,58+pu,0,7);ctx.stroke();
       ctx.font='bold 20px Nunito,sans-serif';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(0,0,0,.65)';ctx.fillStyle='#ffe680';
-      const lb=st.egg===0?'DIFENDI':'RUBA';ctx.strokeText(lb,h.x+(st.egg?-30:30),h.y-78);ctx.fillText(lb,h.x+(st.egg?-30:30),h.y-78);ctx.restore()}}
+      const lb=st.egg===0?'DIFENDI':'RUBA';ctx.strokeText(lb,h.x+(st.egg?-30:30),h.y-78);ctx.fillText(lb,h.x+(st.egg?-30:30),h.y-78);ctx.restore()}
+     const cu=st&&st.unit&&G.players[G.me].board.find(b=>b.type===st.unit&&!b.bench);
+     if(cu){const pu=3*Math.sin(performance.now()/200);ctx.save();ctx.strokeStyle='#f2c230';ctx.lineWidth=4;ctx.beginPath();ctx.arc(cu.px,cu.py,28+pu,0,7);ctx.stroke();
+      ctx.font='bold 18px Nunito,sans-serif';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(0,0,0,.65)';ctx.fillStyle='#ffe680';
+      ctx.strokeText('TRASCINA',cu.px,cu.py-40);ctx.fillText('TRASCINA',cu.px,cu.py-40);ctx.restore()}}
     const p=ME();
     ctx.fillStyle='rgba(22,30,14,.55)';ctx.fillRect(W/2+2,0,W/2,H);
     for(const b of p.board.filter(b=>!b.bench).sort((a,b)=>a.py-b.py)) drawToken(b.px,b.py,0,b.type,b.star,b.order,{sel:G.sel===b.uid});
@@ -2633,7 +2637,7 @@ const COACH_STEPS=[
  {el:'[data-buy="0"]',t:"Compra la Faina: è una ladra veloce che va a rubare l'uovo nemico. Tocca la sua carta.",wait:()=>ME().board.some(b=>b.type==='faina')},
  {el:'[data-buy="1"]',t:"Ora compra il Tacchino: un difensore che resta vicino al tuo uovo e rallenta i ladri.",wait:()=>ME().board.some(b=>b.type==='tacchino')},
  {el:'#board',t:"Questa è la tua squadra: le unità che compri scendono in campo, fino a 7. Le altre vanno in panchina.",next:true},
- {el:'#field',t:"Trascina la Faina sul campo un po' più avanti, verso il centro: ognuno parte da dove lo metti.",start:()=>{const f=ME().board.find(b=>b.type==='faina');COACH.px=f?f.px:0},wait:()=>{const f=ME().board.find(b=>b.type==='faina');return f&&Math.abs(f.px-COACH.px)>25},next:'Salta'},
+ {el:'#field',unit:'faina',t:"Trascina la Faina sul campo un po' più avanti, verso il centro: ognuno parte da dove lo metti.",start:()=>{const f=ME().board.find(b=>b.type==='faina');COACH.px=f?f.px:0},wait:()=>{const f=ME().board.find(b=>b.type==='faina');return f&&Math.abs(f.px-COACH.px)>25},next:'Salta'},
  {el:'#readyBtn',t:"Quando sei pronto premi Pronto: le squadre si rivelano e gli automi giocano da soli.",wait:()=>G.phase!=='shop'},
  {el:'#speedBox',t:"Durante la battaglia puoi accelerare il tempo. Passa il mouse o tocca un'unità per vedere cosa sta facendo.",when:()=>G.phase==='battle',next:true},
  {el:'#log',t:"Qui la cronaca racconta cosa succede. Guarda come va a finire!",wait:()=>['result','over'].includes(G.phase)},
@@ -2677,7 +2681,13 @@ function coachTick(){
   if(tg&&!tg.classList.contains('coach-hl')){document.querySelectorAll('.coach-hl').forEach(e=>e.classList.remove('coach-hl'));tg.classList.add('coach-hl')}
   // il fumetto sta sotto il punto da guardare, o sopra se sotto non c'è spazio
   const r=tg?tg.getBoundingClientRect():{left:innerWidth/2-150,right:innerWidth/2+150,top:80,bottom:80,width:300,height:0},bw=box.offsetWidth,bh=box.offsetHeight;
-  let top=tg?r.bottom+12:Math.max(8,innerHeight/2-bh/2);if(top+bh>innerHeight-8)top=Math.max(8,r.top-bh-12);if(r.height>innerHeight*.6)top=Math.max(8,Math.min(innerHeight-bh-8,r.top+16));
+  let top=tg?r.bottom+12:Math.max(8,innerHeight/2-bh/2);if(top+bh>innerHeight-8)top=Math.max(8,r.top-bh-12);
+  // sul campo il fumetto non deve coprire ciò che indica: sopra o sotto il campo, altrimenti nella metà opposta
+  if(tg&&st.el==='#field'){let fy=null;
+    if(st.unit){const u=ME().board.find(b=>b.type===st.unit&&!b.bench);if(u)fy=r.top+u.py/H*r.height}
+    else if(st.egg!=null)fy=r.top+HOME[st.egg].y/H*r.height;
+    if(r.bottom+12+bh<innerHeight-8)top=r.bottom+12;else if(r.top-bh-12>8)top=r.top-bh-12;
+    else top=fy!=null&&fy<innerHeight/2?innerHeight-bh-8:8}
   const left=Math.max(8,Math.min(innerWidth-bw-8,r.left+r.width/2-bw/2));
   box.style.top=top+'px';box.style.left=left+'px';
 }
