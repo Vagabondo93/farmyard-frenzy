@@ -186,7 +186,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Topi, Faina, Ladro": "Ratones, Garduña, Ladrón",
 "Spazzino, Gazza, Falco": "Barrendero, Urraca, Halcón",
 "Trombettiere": "Corneta",
-"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.": "Sigue a quien tiene el rol de ladrón en tu equipo (Ladrón, Garduña, Urraca, Ratones…) unos pasos por detrás; si están bajo tierra sigue a quien ataca. Tras un segundo toca a la carga: todos los aliados van un 35% más rápido durante 6 s (8 s con ★★). Si tu equipo se queda sin ladrones, va él a robar el huevo.",
+"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro, anche quando la Talpa è sottoterra. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.": "Sigue a quien tiene el rol de ladrón en tu equipo (Ladrón, Garduña, Urraca, Ratones…) unos pasos por detrás, incluso cuando el Topo está bajo tierra. Tras un segundo toca a la carga: todos los aliados van un 35% más rápido durante 6 s (8 s con ★★). Si tu equipo se queda sin ladrones, va él a robar el huevo.",
 "Talpa, ladri lenti": "Topo, ladrones lentos",
 "Chi lo raggiunge": "Quien lo alcanza",
 "Arnia": "Colmena",

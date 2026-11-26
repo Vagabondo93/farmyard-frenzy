@@ -186,7 +186,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Topi, Faina, Ladro": "Souris, Fouine, Voleur",
 "Spazzino, Gazza, Falco": "Balayeur, Pie, Faucon",
 "Trombettiere": "Clairon",
-"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.": "Suit ceux qui ont le rôle de voleur dans ton équipe (Voleur, Fouine, Pie voleuse, Souris…) quelques pas en arrière ; s'ils sont sous terre, il suit les attaquants. Au bout d'une seconde il sonne la charge : tous les alliés vont 35 % plus vite pendant 6 s (8 s en ★★). Si ton équipe n'a plus de voleurs, il va lui-même voler l'œuf.",
+"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro, anche quando la Talpa è sottoterra. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.": "Suit ceux qui ont le rôle de voleur dans ton équipe (Voleur, Fouine, Pie voleuse, Souris…) quelques pas en arrière, même quand la Taupe est sous terre. Au bout d'une seconde il sonne la charge : tous les alliés vont 35 % plus vite pendant 6 s (8 s en ★★). Si ton équipe n'a plus de voleurs, il va lui-même voler l'œuf.",
 "Talpa, ladri lenti": "Taupe, voleurs lents",
 "Chi lo raggiunge": "Ceux qui l'atteignent",
 "Arnia": "Ruche",

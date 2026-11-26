@@ -1002,7 +1002,7 @@ const UNITS={
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
    d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 100.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
  trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:45,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:6,
-   d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
+   d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro, anche quando la Talpa è sottoterra. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
  arnia:{n:'Arnia',i:'🍯',t:1,hidden:true,tags:['Oggetto'],hp:60,dmg:0,spd:0,role:'static',aura:{r:100,dps:5,slow:.6}},
  germoglio:{n:'Germoglio',i:'🌱',t:1,hidden:true,tags:['Oggetto','Esca'],hp:25,dmg:0,spd:0,role:'static',lure:110,lureTag:'Animale',eat:.75},
  monete:{n:'Monete',i:'🪙',t:1,hidden:true,tags:['Oggetto','Esca'],hp:40,dmg:0,spd:0,role:'static',lure:120,lureTag:'Umano',eat:1.5,bribe:220},
@@ -1307,7 +1307,7 @@ function allyThief(u,S){
   const foe=S.eggs[1-u.side];
   if(foe.state==='carried'){const c=S.units.find(x=>x.id===foe.carrier);if(c&&c.alive)return c}
   let best=null,bd=1e9;
-  for(const x of S.units) if(x.alive&&x.side===u.side&&canCarry(x)&&!x.underground){const d=dist(u,x);if(d<bd){bd=d;best=x}}
+  for(const x of S.units) if(x.alive&&x.side===u.side&&canCarry(x)&&x!==u){const d=dist(u,x);if(d<bd){bd=d;best=x}} // anche la Talpa sottoterra: chi la scorta le cammina sopra
   return best;
 }
 // l'alleato più avanzato verso l'uovo nemico (per chi accompagna l'attacco quando non ci sono ladri)

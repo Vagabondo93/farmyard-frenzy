@@ -186,7 +186,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Topi, Faina, Ladro": "Mice, Marten, Thief",
 "Spazzino, Gazza, Falco": "Sweeper, Magpie, Falcon",
 "Trombettiere": "Bugler",
-"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.": "Follows whoever has the thief role in your team (Thief, Marten, Magpie, Mice…) a few steps behind; if they are underground it follows the attackers. After one second it sounds the charge: all allies go 35% faster for 6 s (8 s at ★★). If your team runs out of thieves, it goes to steal the egg itself.",
+"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro, anche quando la Talpa è sottoterra. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.": "Follows whoever has the thief role in your team (Thief, Marten, Magpie, Mice…) a few steps behind, even when the Mole is underground. After one second it sounds the charge: all allies go 35% faster for 6 s (8 s at ★★). If your team runs out of thieves, it goes to steal the egg itself.",
 "Talpa, ladri lenti": "Mole, slow thieves",
 "Chi lo raggiunge": "Whoever reaches him",
 "Arnia": "Beehive",
