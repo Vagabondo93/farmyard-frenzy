@@ -1,6 +1,6 @@
 # Prompt per rifare sei icone a figura intera
 
-Poliziotto, Bracconiere, Coltivatore, Benefattore, Avicoltore e Trombettiere sono usciti tagliati sotto la vita.
+Poliziotto, Bracconiere, Coltivatore, Benefattore, Apicoltore e Trombettiere sono usciti tagliati sotto la vita.
 Da incollare in ChatGPT, se possibile nella stessa chat delle icone precedenti.
 
 ```
@@ -19,7 +19,7 @@ Make a SHEET of 6 icons in a 3×2 grid, well spaced, transparent background, no 
 2. Poacher (Bracconiere) – the same shady poacher with patched hood and stubble, holding a jaw trap; full body with ragged trousers and muddy boots, crouching slightly as if sneaking.
 3. Grower (Coltivatore) – the same smiling farmer with straw hat, overalls and red neckerchief, a hoe in one hand and a sprout in the other; full body with overalls down to his work boots.
 4. Benefactor (Benefattore) – the same plump rich gentleman with top hat, monocle and moustache, holding a bag of gold coins and tossing a few coins; full body with long coat, trousers and shiny shoes.
-5. Poultry Farmer (Avicoltore) – the same red-bearded farmer with green jacket, plaid shirt and brown overalls, holding a hen under one arm and raising a fist, with a basket of eggs and a chick near his feet; full body down to his boots.
+5. Beekeeper (Apicoltore) – the same bearded beekeeper in a white suit and veiled hat, yellow gloves, holding a smoking bee smoker, with a few smiling bees around him; full body with white trousers tucked into boots.
 6. Bugler (Trombettiere) – the same little military bugler with plumed cap and cream uniform, blowing a brass bugle; full body with white trousers and boots, one foot slightly forward as if marching.
 ```
 
