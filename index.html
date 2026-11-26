@@ -1413,11 +1413,12 @@ const DUO_MIST=[{x:480,y:138,r:86},{x:480,y:622,r:86},{x:140,y:138,r:62},{x:820,
 const PLOT_R=12;
 function inPlot(x,y,S,m=PLOT_R,sw=false){for(const p of S.plots)if(!(sw&&p.water)&&x>p.x-m&&x<p.x+p.w+m&&y>p.y-m&&y<p.y+p.h+m)return p;return null}
 // spinge fuori dal campo arato verso il bordo più vicino
-function pushOut(o,S,sw=false){const p=inPlot(o.x,o.y,S,PLOT_R,sw);if(!p)return false;const m=PLOT_R+.5;
+// margini: dentro se più vicino di 12 al campo, il percorso passa ad almeno 13, chi viene spinto fuori finisce a 14,5
+function pushOut(o,S,sw=false){const p=inPlot(o.x,o.y,S,PLOT_R,sw);if(!p)return false;const m=PLOT_R+2.5;
   const c=[[p.x-m-o.x,0],[p.x+p.w+m-o.x,0],[0,p.y-m-o.y],[0,p.y+p.h+m-o.y]].sort((a,b)=>Math.abs(a[0]+a[1])-Math.abs(b[0]+b[1]));
   for(const v of c){const nx=o.x+v[0],ny=o.y+v[1];if(nx>14&&nx<W-14&&ny>16&&ny<H-16){o.x=nx;o.y=ny;return true}}return false}
 // il segmento a→b attraversa un campo arato?
-function segHit(ax,ay,bx,by,S,sw=false){const m=PLOT_R-1;
+function segHit(ax,ay,bx,by,S,sw=false){const m=PLOT_R+1; // un po' più largo della spinta fuori, così chi segue il percorso non ci rimbalza contro
   for(const p of S.plots){if(sw&&p.water)continue;let t0=0,t1=1;const dx=bx-ax,dy=by-ay;let ok=true;
     for(const [q,r] of [[-dx,ax-(p.x-m)],[dx,(p.x+p.w+m)-ax],[-dy,ay-(p.y-m)],[dy,(p.y+p.h+m)-ay]]){
       if(q===0){if(r<0){ok=false;break}}else{const t=r/q;if(q<0){if(t>t1){ok=false;break}if(t>t0)t0=t}else{if(t<t0){ok=false;break}if(t<t1)t1=t}}}
@@ -1433,12 +1434,15 @@ function navGraph(S,sw){const key=sw?'navSw':'nav';if(S[key])return S[key];const
 function plotNav(u,tx,ty,S){const sw=!!u.def.swim;
   if(inPlot(tx,ty,S,PLOT_R,sw)){const o={x:tx,y:ty};pushOut(o,S,sw);tx=o.x;ty=o.y}
   if(!segHit(u.x,u.y,tx,ty,S,sw)){u.nav=null;return{x:tx,y:ty}}
+  u.navT=S.t;
   const c=u.nav;if(c&&Math.abs(c.tx-tx)+Math.abs(c.ty-ty)<24&&S.t<c.until&&Math.hypot(c.wp.x-u.x,c.wp.y-u.y)>6)return c.wp;
   const {N,E}=navGraph(S,sw),n=N.length,D=new Array(n+1).fill(Infinity),first=new Array(n+1).fill(-1),done=new Array(n+1).fill(false);
-  for(let i=0;i<n;i++)if(!segHit(u.x,u.y,N[i].x,N[i].y,S,sw)){D[i]=Math.hypot(N[i].x-u.x,N[i].y-u.y);first[i]=i}
+  for(let i=0;i<n;i++){const d0=Math.hypot(N[i].x-u.x,N[i].y-u.y);
+    if(d0<9){D[i]=0;first[i]=d0<1.5?-2:i} // vicino a un angolo: prima ci arriva esattamente, poi la tappa è il nodo dopo
+    else if(!segHit(u.x,u.y,N[i].x,N[i].y,S,sw)&&d0<D[i]){D[i]=d0;first[i]=i}}
   for(;;){let k=-1;for(let i=0;i<=n;i++)if(!done[i]&&D[i]<Infinity&&(k<0||D[i]<D[k]))k=i;if(k<0||k===n)break;done[k]=true;
-    for(let j=0;j<n;j++)if(E[k][j]&&D[k]+E[k][j]<D[j]){D[j]=D[k]+E[k][j];first[j]=first[k]}
-    if(!segHit(N[k].x,N[k].y,tx,ty,S,sw)){const v=D[k]+Math.hypot(tx-N[k].x,ty-N[k].y);if(v<D[n]){D[n]=v;first[n]=first[k]}}}
+    for(let j=0;j<n;j++)if(E[k][j]&&D[k]+E[k][j]<D[j]){D[j]=D[k]+E[k][j];first[j]=first[k]===-2?j:first[k]}
+    if(!segHit(N[k].x,N[k].y,tx,ty,S,sw)){const v=D[k]+Math.hypot(tx-N[k].x,ty-N[k].y);if(v<D[n]){D[n]=v;first[n]=first[k]===-2?-3:first[k]}}}
   if(first[n]<0)return{x:tx,y:ty};
   const wp=N[first[n]];u.nav={tx,ty,wp,until:S.t+.4};return wp}
 function drawPond(p){const cx=p.x+p.w/2,cy=p.y+p.h/2,rx=p.w/2+4,ry=p.h/2+4;ctx.save();
@@ -1752,7 +1756,9 @@ function step(S,dt){
   for(const u of live) if(u.alive&&u.def.spawns&&u.stun<=0){
     u.spT=(u.spT??1.5)-dt; if(u.spT>0) continue;
     const sp=u.def.spawns,mine=S.units.filter(x=>x.alive&&x.owner===u.id);
-    if(mine.length<sp.max&&!mine.some(x=>dist(x,u)<45)){const m=spawn({type:sp.type,star:1,order:null,px:u.side?W-u.x:u.x,py:clamp(u.y+8,20,H-20)},u.side,S.nextId++);m.owner=u.id;S.units.push(m);
+    // nel 2 contro 2 niente staccionate attaccate a campi arati e laghetti: chiuderebbero il passaggio
+    const nearPlot=sp.type==='staccionata'&&S.plots&&S.plots.length&&[-1,0,1].some(k=>inPlot(u.x,clamp(u.y+8,20,H-20)+k*36,S,32));
+    if(!nearPlot&&mine.length<sp.max&&!mine.some(x=>dist(x,u)<45)){const m=spawn({type:sp.type,star:1,order:null,px:u.side?W-u.x:u.x,py:clamp(u.y+8,20,H-20)},u.side,S.nextId++);m.owner=u.id;S.units.push(m);
       if(sp.type==='staccionata'&&u.def.wallHp){m.hp=m.maxHp=u.def.wallHp}
       fx(S,u.x,u.y-22,sp.type==='monete'?'lascia monete':sp.type==='staccionata'?'costruisce una staccionata':'pianta un germoglio','#ffe6a8')}
     u.spT=sp.every-(u.star===2?1:0);
@@ -1898,7 +1904,7 @@ function drawToken(x,y,side,type,star,order,o={}){
   const lx=o.lunge>0?o.face*5:0;
   ctx.globalAlpha=o.invis?.38:o.disguised?.6:1;
   if(o.sel){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,yy,21,0,7);ctx.stroke()}
-  ctx.fillStyle=SIDE[side].col;ctx.beginPath();ctx.arc(x+lx,yy,16,0,7);ctx.fill();
+  ctx.fillStyle=o.col||SIDE[side].col;ctx.beginPath();ctx.arc(x+lx,yy,16,0,7);ctx.fill();
   ctx.fillStyle=o.hit>0?'#ffb4a8':'#fff8e6';ctx.beginPath();ctx.arc(x+lx,yy,12.5,0,7);ctx.fill();
   ctx.font='17px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
   const im=IMG[type]; if(im&&im.complete&&im.naturalWidth){const z=28;if(o.face===-1){ctx.save();ctx.translate(x+lx,yy);ctx.scale(-1,1);ctx.drawImage(im,-z/2,-z/2,z,z);ctx.restore()}else ctx.drawImage(im,x+lx-z/2,yy-z/2,z,z)} else ctx.fillText(d.i,x+lx,yy+1);
@@ -1942,6 +1948,16 @@ function drawFog(list){
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(f.x,f.y,f.r+8,0,7);ctx.fill()}
   ctx.restore();
 }
+// 2 contro 2: ogni giocatore ha il suo colore (la tua squadra in blu e azzurro, gli avversari in rosso e arancio)
+const DUO_COL=['#2f6fe0','#d23f2d','#17a7b8','#e8892a'];
+function duoColOf(i){const D=G.duo;if(!D)return null;const mine=teamOf(i)===G.me,first=i<2;return DUO_COL[mine?(first?0:2):(first?1:3)]}
+function duoOwner(u){return u.buid==null?null:Math.floor(u.buid/100)}
+function drawDuoLegend(){const D=G.duo;if(!D)return;ctx.save();ctx.font='bold 12px Nunito,sans-serif';ctx.textBaseline='middle';
+  const rows=[0,1,2,3].sort((a,b)=>(teamOf(b)===G.me)-(teamOf(a)===G.me)||a-b);let x=24;
+  for(const i of rows){const nm=(i===D.me?'Tu':D.P[i].name).slice(0,14),w=ctx.measureText(nm).width+28;
+    ctx.fillStyle='rgba(20,26,14,.62)';ctx.beginPath();ctx.roundRect(x,H-36,w,22,11);ctx.fill();
+    ctx.fillStyle=duoColOf(i);ctx.beginPath();ctx.arc(x+11,H-25,6,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='left';ctx.fillText(nm,x+21,H-25);x+=w+6}
+  ctx.restore()}
 function render(){
   drawField();
   if(!G) return;
@@ -1959,7 +1975,7 @@ function render(){
     const p=ME();
     ctx.fillStyle='rgba(22,30,14,.55)';ctx.fillRect(W/2+2,0,W/2,H);
     if(G.duo){const al=G.duo.P[G.duo.me^2];ctx.save();ctx.globalAlpha=.42;
-      for(const b of al.board.filter(b=>!b.bench)) drawToken(b.px,b.py,0,b.type,b.star,b.order,{});ctx.restore();
+      for(const b of al.board.filter(b=>!b.bench)) drawToken(b.px,b.py,0,b.type,b.star,b.order,{col:duoColOf(G.duo.me^2)});ctx.restore();
       if(al.board.some(b=>!b.bench)){ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillText(`In trasparenza: la squadra di ${al.name}${al.bot?'':' (round scorso)'}`,W*.25,18)}}
     for(const b of p.board.filter(b=>!b.bench).sort((a,b)=>a.py-b.py)) drawToken(b.px,b.py,0,b.type,b.star,b.order,{sel:G.sel===b.uid});
     ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
@@ -1987,7 +2003,7 @@ function render(){
   for(const u of us){
     if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
-    drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
+    drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.lb>0){ctx.font='11px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.fillText('💨',X(u.x)-(F?-1:1)*u.face*18,u.y-22)}
@@ -1996,6 +2012,7 @@ function render(){
   ctx.textAlign='center';ctx.textBaseline='middle';
   for(const f of S.fx){ctx.globalAlpha=Math.min(1,f.t*2);ctx.font='bold 13px Nunito,sans-serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';
     const y=f.y-(1.1-f.t)*24;ctx.strokeText(f.text,X(f.x),y);ctx.fillStyle=f.col;ctx.fillText(f.text,X(f.x),y);ctx.globalAlpha=1}
+  if(G.duo) drawDuoLegend();
   const frac=Math.max(0,1-S.t/S.T);
   ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(W/2-120,8,240,8);ctx.fillStyle=frac>.25?'#fff6c4':'#ffb0a0';ctx.fillRect(W/2-120,8,240*frac,8);
   ctx.font='bold 12px Nunito,sans-serif';ctx.fillStyle='#fff';ctx.fillText(Math.ceil(Math.max(0,S.T-S.t))+' s'+(isMP()&&mpSpeed(S)>1?`  ·  ⏩ ×${mpSpeed(S)}`:''),W/2,26);
@@ -2237,6 +2254,7 @@ function showTip(e){
   let h;
   if(u.trap) h='<b>🪤 Trappola</b><br>Blocca il primo nemico che ci passa sopra e gli fa 15 danni. Il nemico non la vede.';
   else{const d=UNITS[u.type],st=[];
+    if(G.duo&&duoOwner(u)!=null&&G.duo.P[duoOwner(u)]){const i=duoOwner(u);st.push(i===G.duo.me?'tua':`di ${G.duo.P[i].name}`)}
     if(u.hp!==undefined) st.push(`Vita ${Math.ceil(u.hp)}/${Math.ceil(u.maxHp)}`);
     if(u.carrying!=null) st.push('🥚 porta l\'uovo');
     if(u.disguised) st.push('travestita'); if(u.fake) st.push('porta un uovo (finto)'); if(u.boostT>0) st.push('di corsa'); if(u.lives>0) st.push('una vita in più');

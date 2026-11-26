@@ -873,5 +873,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 " e ": " y ",
 "2 contro 2: un solo uovo per squadra, ognuno con il suo market. Campo più alto e round più lunghi, con campi arati che solo chi vola e la Talpa sottoterra attraversano, laghetti dove passa a nuoto l'Oca e banchi di nebbia dove si vede solo da vicino. Per ora solo amichevole.": "2 contra 2: un solo huevo por equipo, cada uno con su tienda. Campo más alto y rondas más largas, con campos arados que solo cruzan los voladores y el Topo bajo tierra, estanques que la Oca cruza a nado y bancos de niebla donde solo se ve de cerca. De momento solo amistosa.",
 "2 contro 2: tu e {0} contro {1}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.": "2 contra 2: tú y {0} contra {1}. Un solo huevo por equipo; campos arados y estanques hay que rodearlos (los voladores y el Topo bajo tierra pasan, la Oca nada), en la niebla solo se ve de cerca.",
-"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Sigue al animal aliado más cercano y cura a todos los animales aliados a menos de 100: 10 de vida por segundo, 15 con ★★."
+"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.": "Sigue al animal aliado más cercano y cura a todos los animales aliados a menos de 100: 10 de vida por segundo, 15 con ★★.",
+"tua": "tuya",
+"di {0}": "de {0}"
 };

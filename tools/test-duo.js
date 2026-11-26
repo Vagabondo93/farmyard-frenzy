@@ -12,6 +12,11 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   s.listen(0,'127.0.0.1',()=>res(s))})}
 const phase=p=>p.evaluate(()=>window.__g()?.phase);
 const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}};
+// unità che girano intorno a un ostacolo ma restano ferme nello stesso punto per più di 2 s
+const stuck=p=>p.evaluate(()=>{const S=window.__g().sim;if(!S)return 0;const M=window.__pos=window.__pos||{};let n=0;
+  for(const u of S.units){if(!u.alive||!u.nav||!(S.t-(u.navT||-9)<.1)||u.stun>0||u.snare>0||u.sleep>0||u.eatT>0){delete M[u.id];continue}
+    const m=M[u.id];if(m&&Math.abs(m.x-u.x)<1&&Math.abs(m.y-u.y)<1){if(S.t-m.t>2){n++;m.t=S.t}}else M[u.id]={x:u.x,y:u.y,t:S.t}}
+  return n});
 const inside=p=>p.evaluate(()=>{const S=window.__g().sim;if(!S)return 0;let n=0;
   for(const u of S.units) if(u.alive&&!u.def.flying&&!u.underground) for(const q of S.plots) if(!(q.water&&u.def.swim)&&u.x>q.x+2&&u.x<q.x+q.w-2&&u.y>q.y+2&&u.y<q.y+q.h-2) n++;return n});
 (async()=>{
@@ -24,12 +29,13 @@ const inside=p=>p.evaluate(()=>{const S=window.__g().sim;if(!S)return 0;let n=0;
   {const p=await ctx.newPage();p.on('pageerror',e=>errs.push('bot: '+e.message));await p.goto(url+'?u=solo');await p.waitForTimeout(500);
     await p.evaluate(()=>openPlay('bot','duo'));await p.click('#duoBot');await p.waitForSelector('#game:not(.hidden)');
     ok(await p.evaluate(()=>window.__g().duo.P.length===4&&document.getElementById('field').style.aspectRatio.replace(/\s/g,'')==='960/760'),'4 giocatori e campo alto 760');
-    let bad=0;
-    for(let r=0;r<2;r++){await buy(p);await p.click('#readyBtn');await p.waitForFunction(()=>window.__g().phase==='battle',null,{timeout:20000});
+    let bad=0,blk=0;
+    for(let r=0;r<4;r++){await buy(p);await p.click('#readyBtn');await p.waitForFunction(()=>window.__g().phase==='battle',null,{timeout:20000});
       if(await p.isVisible('[data-speed="4"]'))await p.click('[data-speed="4"]');
-      while(!['result','over'].includes(await phase(p))){bad+=await inside(p);await p.waitForTimeout(200)}
+      while(!['result','over'].includes(await phase(p))){bad+=await inside(p);blk+=await stuck(p);await p.waitForTimeout(100)}
       if(await phase(p)==='over')break;await p.click('#bBtn')}
     ok(bad===0,`nessuna unità a piedi dentro i campi arati (${bad})`);
+    ok(blk===0,`nessuna unità ferma per più di 2 s mentre aggira un ostacolo (${blk})`);
     const back=await p.evaluate(()=>{const g=window.__g();return g.duo.P.map(x=>x.board.length).join(',')});ok(true,'unità dei 4 giocatori: '+back);
     await p.close()}
   // --- online: anna (blu) crea, bruno (rosso) entra, i 2 posti liberi vanno ai bot
