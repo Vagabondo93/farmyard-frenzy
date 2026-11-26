@@ -2,6 +2,13 @@
 // Campi: date 'AAAA-MM-GG'; title e text in {it,en,es,fr}; list (elenco puntato) per lingua;
 // cards: chiavi dei personaggi da mostrare; wr: mini-report dei win rate simulati.
 window.FF_NEWS=[
+{date:'2026-11-27',
+ title:{it:'Lobby, fase di ban e posta',en:'Lobby, ban phase and mail',es:'Sala, fase de bloqueo y correo',fr:'Salon, phase de bannissement et courrier'},
+ list:{it:['La lobby ora è una finestra con la chat per parlare prima di iniziare.','Nelle partite classificate c\'è una fase di ban a turni a tempo: 2 personaggi a testa in 1 contro 1, 1 a testa nella Royal Rumble.','Nuova casella di posta: mandi messaggi agli altri giocatori e puoi inviare idee e bug a chi sviluppa il gioco.','Le staccionate della Carpentiera ora sono tratti dritti, dall\'alto verso il basso.'],
+       en:['The lobby is now a window with a chat to talk before the match starts.','Ranked matches have a timed, turn-based ban phase: 2 characters each in 1 vs 1, 1 each in the Royal Rumble.','New mailbox: send messages to other players and send ideas and bugs to the game\'s developer.','The Carpenter\'s fences are now straight sections, running top to bottom.'],
+       es:['La sala ahora es una ventana con chat para hablar antes de empezar.','En las partidas clasificatorias hay una fase de bloqueo por turnos con tiempo: 2 personajes cada uno en 1 contra 1, 1 cada uno en la Royal Rumble.','Nuevo buzón: envía mensajes a otros jugadores y manda ideas y errores a quien desarrolla el juego.','Las vallas de la Carpintera ahora son tramos rectos, de arriba abajo.'],
+       fr:['Le salon est maintenant une fenêtre avec un chat pour discuter avant de commencer.','Les parties classées ont une phase de bannissement au tour par tour, chronométrée : 2 personnages chacun en 1 contre 1, 1 chacun dans le Royal Rumble.','Nouvelle boîte aux lettres : envoie des messages aux autres joueurs et des idées ou des bugs à la personne qui développe le jeu.','Les clôtures de la Charpentière sont maintenant des sections droites, de haut en bas.']},
+ cards:['carpentiera']},
 {date:'2026-11-26',
  title:{it:'Win rate simulati: 37 personaggi su 38 in equilibrio',en:'Simulated win rates: 37 of 38 characters balanced',es:'Win rate simulados: 37 de 38 personajes equilibrados',fr:'Win rate simulés : 37 personnages sur 38 équilibrés'},
  text:{it:'Abbiamo simulato 18.000 battaglie tra squadre casuali con lo stesso oro, in Classica e in Nebbia, a inizio, metà e fine partita. Dopo i nuovi costi quasi tutti i personaggi vincono tra il 40% e il 60% delle battaglie decise.',

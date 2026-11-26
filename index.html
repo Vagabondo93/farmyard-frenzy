@@ -59,7 +59,21 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 .chatlog{max-height:180px;overflow-y:auto;display:grid;gap:4px;margin-bottom:8px;font-size:14px;line-height:1.35}
 .chatlog .m b{margin-right:6px}.chatlog .m.me b{color:var(--rdef)}.chatlog .empty{margin:0}
 .reqbadge{justify-self:start;background:color-mix(in srgb,#f2c230 35%,var(--chip))}
+.lobbybox{max-width:640px;max-height:92vh;overflow-y:auto}
+.lobbyinv,.lobbychat,.banbox{display:grid;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
+#lobbyFriends{display:flex;flex-wrap:wrap;gap:6px}
+.banpool{display:flex;flex-wrap:wrap;gap:6px}.banpool .pchip{border:0;font:inherit}.banpool .pchip.banned{opacity:.45;text-decoration:line-through}
+.banpool .pchip:disabled{cursor:default}
+.mailbox{max-width:560px;max-height:90vh;overflow-y:auto}.mailbox textarea,.mailbox select,.mailbox input{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.maillist{list-style:none;margin:0;padding:0;display:grid;gap:8px}.maillist li{background:var(--chip);border-radius:12px;padding:10px 12px;display:grid;gap:4px}
+.maillist li.unread{border-left:4px solid #f2c230}.maillist .mh{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}.maillist .mt{white-space:pre-wrap;overflow-wrap:anywhere}
+.mailn{background:var(--bad);color:#fff;border-radius:999px;padding:0 6px;font-size:12px;margin-left:2px}
 .newspanel{grid-column:1/-1}
+/* home: profilo, amici e classifica in alto; novità sotto */
+.lobby{grid-template-areas:"hero" "profile" "play" "social" "rank" "news"}
+.lobby>.hero{grid-area:hero}#profilePanel{grid-area:profile}#playPanel{grid-area:play}#socialPanel{grid-area:social}#rankPanel{grid-area:rank}.lobby>.newspanel{grid-area:news}
+@media (min-width:760px){.lobby{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"hero hero" "profile play" "social play" "rank rank" "news news";grid-template-rows:auto auto 1fr auto auto}}
+@media (min-width:1150px){.lobby{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"hero hero hero" "profile play rank" "social play rank" "news news news";grid-template-rows:auto auto 1fr auto}}
 .news{display:grid;gap:8px;padding:12px 0;border-top:1px dashed var(--line)}.news:first-child{border-top:0;padding-top:0}
 .news .nhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.news .ndate{color:var(--muted);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
 .news h4{margin:0;font-size:18px}.news p{margin:0;max-width:75ch;line-height:1.5}.news ul{margin:0;padding-left:20px;line-height:1.5}
@@ -306,6 +320,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <span class="pill hidden" id="roundPill">Round 1</span>
       <span class="pill hidden" id="phasePill">Market</span>
       <select id="langSel" class="langsel" aria-label="Lingua" data-notr><option value="it">🇮🇹 Italiano</option><option value="en">🇬🇧 English</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option></select>
+      <button class="btn hidden" id="mailBtn" aria-label="Posta">✉️ <span class="mailn hidden" id="mailN"></span></button>
       <span class="pill" id="eloPill">Ospite</span>
       <button class="btn hidden" id="menuBtn">Menu</button>
     </div>
@@ -320,7 +335,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
           <p>Arruola tacchini-scudo, faine ladre e galli con l'elmo. Dai l'ordine, poi guardali scatenarsi. Vince chi legge la mossa dell'altro.</p></div>
       </div>
     </div>
-    <div class="panel">
+    <div class="panel" id="profilePanel">
       <h3>Il tuo profilo</h3>
       <div id="loginBox" class="hidden" style="display:grid;gap:8px">
         <button class="btn primary" id="loginGoogle">Accedi con Google</button>
@@ -347,7 +362,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       </div>
       <p class="empty" id="onlineNote" style="margin:0">Connessione al server di gioco…</p>
     </div>
-    <div class="panel">
+    <div class="panel" id="playPanel">
       <h3>Gioca</h3>
       <div class="playgrid">
         <label class="winrow" for="modeSel">Modalità
@@ -368,17 +383,23 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
         <button class="btn" id="rumbleOnline" disabled>👑 Crea Royal Rumble online (fino a 8)</button>
         <div class="field-row"><input id="codeIn" maxlength="5" placeholder="Codice stanza" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.1em"><button class="btn" id="joinBtn" disabled>Entra</button></div>
       </div>
-      <div id="roomBox" class="hidden" style="display:grid;gap:4px">
+      <div id="roomBox" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="roomTitle"><div class="mbox lobbybox">
+        <div class="row" style="align-items:center"><h2 id="roomTitle" style="margin:0">Lobby</h2><button class="linkbtn" id="lobbyLeave">Esci dalla lobby</button></div>
         <span>Stanza <span id="roomKind"></span> creata. Manda questo codice al tuo avversario:</span>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="code" id="roomCode"></span><button class="btn" id="copyBtn">Copia</button><button class="btn" id="linkBtn">🔗 Copia link d'invito</button></div>
         <span class="empty" id="roomWait">In attesa che entri l'avversario…</span>
         <ol class="rank hidden" id="lobbyMembers"></ol>
         <button class="btn primary hidden" id="pvpStart">Avvia la partita</button>
-        <span class="empty" id="inviteHint">Puoi invitare gli amici online dal riquadro «Giocatori online».</span>
         <div id="rumbleBox" class="hidden" style="display:grid;gap:6px"><ol class="rank" id="rumbleList"></ol>
           <label class="hidden" id="rumbleFillRow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rumbleFill"> Riempi i posti liberi con bot (fino a 8, bravura adattiva, l'Elo conta)</label>
           <button class="btn primary hidden" id="rumbleStart">Avvia la Royal Rumble</button></div>
-      </div>
+        <div id="banBox" class="hidden banbox"><b id="banText"></b><div class="banpool" id="banPool"></div></div>
+        <div class="lobbyinv" id="lobbyInv"><b>Invita</b><div id="lobbyFriends"></div>
+          <div class="field-row"><input id="lobbyInvIn" list="recentList" maxlength="16" placeholder="Nickname di un giocatore" autocomplete="off"><button class="btn" id="lobbyInvBtn">Invita</button></div></div>
+        <div class="lobbychat"><b>💬 Chat</b><div class="chatlog" id="lobbyChatLog"></div>
+          <div class="field-row"><input id="lobbyChatIn" maxlength="200" placeholder="Scrivi un messaggio…" autocomplete="off"><button class="btn" id="lobbyChatSend">Invia</button></div></div>
+        <p class="toast" id="lobbyMsg2" aria-live="polite" style="margin:0"></p>
+      </div></div>
       <p class="toast" id="lobbyMsg" aria-live="polite" style="margin:0"></p>
     </div>
     <div class="panel newspanel" id="newsPanel">
@@ -395,7 +416,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <datalist id="recentList"></datalist>
       <ol class="rank" id="friendList"></ol>
     </div>
-    <div class="panel">
+    <div class="panel" id="rankPanel">
       <h3>Classifica <span class="seg" role="tablist"><button class="on" data-rt="classic">Classica</button><button data-rt="fog">🌫️ Nebbia</button><button data-rt="rumble">👑 Rumble</button></span></h3>
       <ol class="rank" id="rankList"><li class="empty">Caricamento…</li></ol>
     </div>
@@ -415,6 +436,26 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
     <div class="coachtop"><span class="pill" id="coachStep"></span><button class="linkbtn" id="coachExit">Esci dal tutorial</button></div>
     <p id="coachT"></p>
     <button class="btn primary hidden" id="coachNext">Avanti ›</button>
+  </div>
+
+  <div class="modal hidden" id="mailModal" role="dialog" aria-modal="true" aria-labelledby="mailT">
+    <div class="mbox mailbox">
+      <div class="row" style="align-items:center"><h2 id="mailT" style="margin:0">✉️ Posta</h2><button class="linkbtn" id="mailClose">Chiudi</button></div>
+      <div class="seg" role="tablist"><button class="on" data-mt="in">In arrivo</button><button data-mt="new">Scrivi</button><button data-mt="fb">Idee e bug</button></div>
+      <div id="mailIn"><ol class="maillist" id="mailList"></ol></div>
+      <div id="mailNew" class="hidden" style="display:grid;gap:8px">
+        <label for="mailTo" style="font-weight:700">A chi</label><input id="mailTo" list="recentList" maxlength="16" placeholder="Nickname di un giocatore" autocomplete="off">
+        <label for="mailText" style="font-weight:700">Messaggio</label><textarea id="mailText" rows="4" maxlength="600"></textarea>
+        <button class="btn primary" id="mailSend">Invia il messaggio</button>
+      </div>
+      <div id="mailFb" class="hidden" style="display:grid;gap:8px">
+        <p class="empty" style="margin:0">Hai un'idea o hai trovato un bug? Scrivilo qui: arriva direttamente a chi sviluppa il gioco.</p>
+        <select id="fbKind"><option value="idea">💡 Idea</option><option value="bug">🐞 Bug</option><option value="altro">💬 Altro</option></select>
+        <textarea id="fbText" rows="5" maxlength="2000" placeholder="Descrivi l'idea, oppure cosa stavi facendo quando è successo il problema."></textarea>
+        <button class="btn primary" id="fbSend">Invia</button>
+      </div>
+      <p class="toast" id="mailMsg" aria-live="polite" style="margin:0"></p>
+    </div>
   </div>
 
   <div class="modal hidden" id="invModal" role="dialog" aria-modal="true" aria-labelledby="invT">
@@ -1117,9 +1158,10 @@ function newMatch(o={}){
   const seed=(Date.now()&0xffffff)^0x5bd1;
   G={round:1,score:[0,0],phase:'shop',players:[mkPlayer(),mkPlayer()],lastComp:[null,null],rng:mulberry(seed),
      brng:mulberry(seed^0x9e37),sel:null,sim:null,speed:1,lost:[false,false],acc:0,revealT:0,logN:0,
-     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online)?mulberry((o.seed||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
+     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online)?mulberry((o.seed||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||!!o.ranked),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
   if(G.mode==='rumble') initRumble(o);
   G.tutorial=!!o.tutorial;
+  if(o.bans&&o.bans.length) G.pool=G.pool.filter(k=>!o.bans.includes(k));
   $('log').innerHTML='<div class="empty">Gli eventi della battaglia appariranno qui.</div>';
   showGame(true);startShop();
 }
@@ -1395,8 +1437,13 @@ function moveTo(u,tx,ty,dt,S){
   const s=Math.min(d,sp*dt); u.x+=dx/d*s; u.y+=dy/d*s;
   // staccionate nemiche: chi va a terra ci gira intorno (o, se armato, le abbatte)
   if(!u.def.flying&&!u.underground) for(const w of S.units) if(w.alive&&w.def.wall&&w.side!==u.side){
-    const ox=u.x-w.x,oy=u.y-w.y,od=Math.hypot(ox,oy)||.01,Rr=w.def.wall+10;
-    if(od<Rr){u.x=w.x+ox/od*Rr;u.y=w.y+oy/od*Rr;const px=-oy/od,py=ox/od,sg=((tx-u.x)*px+(ty-u.y)*py)>=0?1:-1;u.x+=px*sg*s*.6;u.y+=py*sg*s*.6;u.wallHit=w}}
+    // staccionata rettangolare, dall'alto verso il basso: chi la urta scivola verso l'estremità più comoda
+    const bx=FENCE_W+10,by=w.def.wall*FENCE_L+10,ox=u.x-w.x,oy=u.y-w.y;
+    if(Math.abs(ox)<bx&&Math.abs(oy)<by){
+      if(bx-Math.abs(ox)<=by-Math.abs(oy)){u.x=w.x+(ox>=0?bx:-bx);
+        const sg=Math.abs(ty-w.y)>by?Math.sign(ty-w.y):(oy>=0?1:-1);u.y+=sg*s*.9}
+      else u.y=w.y+(oy>=0?by:-by);
+      u.wallHit=w}}
   if(Math.abs(dx)>3) u.face=dx>0?1:-1;
   u.x=clamp(u.x,14,W-14); u.y=clamp(u.y,16,H-16);
 }
@@ -1499,7 +1546,7 @@ function think(u,S,dt){
     else{u.buildT=(u.buildT||0)+dt;if(!u.buildFx){u.buildFx=1;fx(S,u.x,u.y-24,'costruisce un ponte','#ffe6a8')}
       if(u.buildT<u.def.bridge)return;u.built=true;if(!S.bridges.some(b=>Math.abs(b-site.y)<2*BW+6)){S.bridges.push(site.y);log(S,`${nm(u)} costruisce un nuovo ponte`)}
       u.role='hold';u.hold=site;u.leash=120;return}}
-  {const wh=u.wallHit;u.wallHit=null;if(wh&&wh.alive&&u.dmg>0&&u.carrying===null&&canTarget(u,wh)){if(dist(u,wh)<=u.def.rng+wh.def.wall+6){if(u.cd<=0)attack(u,wh,S)}else moveTo(u,wh.x,wh.y,dt,S);return}}
+  {const wh=u.wallHit;u.wallHit=null;if(wh&&wh.alive&&u.dmg>0&&u.carrying===null&&canTarget(u,wh)){if(Math.hypot(Math.max(0,Math.abs(u.x-wh.x)-FENCE_W),Math.max(0,Math.abs(u.y-wh.y)-wh.def.wall*FENCE_L))<=u.def.rng+6){if(u.cd<=0)attack(u,wh,S)}else moveTo(u,wh.x,wh.y,dt,S);return}}
   if(u.chargeT>0&&u.chDir){moveTo(u,u.x+u.chDir.x*60,u.y+u.chDir.y*60,dt,S);return}
   if(u.wait>0){u.wait-=dt;return}
   if(u.eatT>0){u.eatT-=dt;return}
@@ -1656,6 +1703,18 @@ function drawField(){
   }
   drawFence();
 }
+// staccionata della carpentiera: un tratto verticale con paletti quadrati e due traverse
+const FENCE_W=6,FENCE_L=1.6;
+function drawWall(x,y,hh,life,col){
+  ctx.save();ctx.lineCap='butt';
+  ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(x-FENCE_W+3,y-hh+4,FENCE_W*2,hh*2);
+  for(const dx of [-3,3]){ctx.strokeStyle='#5a3a1a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+dx,y-hh);ctx.lineTo(x+dx,y+hh);ctx.stroke();
+    ctx.strokeStyle=life<.5?'#a87444':'#c08a50';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+dx,y-hh);ctx.lineTo(x+dx,y+hh);ctx.stroke()}
+  const n=Math.max(2,Math.round(hh*2/22));
+  for(let k=0;k<=n;k++){const py=y-hh+k*hh*2/n;ctx.fillStyle='#6b4423';ctx.fillRect(x-FENCE_W,py-FENCE_W,FENCE_W*2,FENCE_W*2);
+    ctx.fillStyle='#9a6838';ctx.fillRect(x-FENCE_W+2,py-FENCE_W+2,FENCE_W*2-4,FENCE_W*2-4);ctx.strokeStyle='#4a2e14';ctx.lineWidth=1;ctx.strokeRect(x-FENCE_W,py-FENCE_W,FENCE_W*2,FENCE_W*2);
+    if(col&&(k===0||k===n)){ctx.fillStyle=col;ctx.fillRect(x-3,py-3,6,6)}}
+  ctx.restore()}
 function drawFence(){
   // staccionata vista dall'alto: due traverse per lato e paletti quadrati, con un'ombra sul prato
   const rail=(x1,y1,x2,y2)=>{ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x1+2,y1+3);ctx.lineTo(x2+2,y2+3);ctx.stroke();
@@ -1774,10 +1833,11 @@ function render(){
   for(const c of S.clouds){ctx.save();ctx.globalAlpha=Math.min(1,c.t)*.35;ctx.fillStyle='#9bbf3a';ctx.beginPath();ctx.arc(X(c.x),c.y,c.r,0,7);ctx.fill();
     if(CLOUDIMG.complete&&CLOUDIMG.naturalWidth){ctx.globalAlpha=Math.min(1,c.t)*.75;const z=c.r*1.6;ctx.drawImage(CLOUDIMG,X(c.x)-z/2,c.y-z/2,z,z);ctx.restore();continue}
     ctx.globalAlpha=Math.min(1,c.t)*.5;ctx.fillStyle='#c9e07a';for(let k=0;k<5;k++){const a=k*1.26+S.t*.6;ctx.beginPath();ctx.arc(X(c.x)+Math.cos(a)*c.r*.5,c.y+Math.sin(a)*c.r*.4,c.r*.28,0,7);ctx.fill()}ctx.restore()}
-  for(const w of S.units) if(w.alive&&w.def.wall){ctx.save();ctx.strokeStyle='#7a5230';ctx.lineWidth=5;ctx.setLineDash([7,4]);ctx.beginPath();ctx.arc(X(w.x),w.y,w.def.wall,0,7);ctx.stroke();ctx.restore()}
+  for(const w of S.units) if(w.alive&&w.def.wall) drawWall(X(w.x),w.y,w.def.wall*FENCE_L,w.hp/w.maxHp,SIDE[C(w.side)].col);
   const us=S.units.filter(u=>u.alive).sort((a,b)=>(a.def.flying-b.def.flying)||(a.y-b.y));
   for(const u of us){
     if(S.fog&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
+    if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
     drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
@@ -2053,14 +2113,14 @@ function showGame(on){
 }
 function showLobby(){
   if(G&&G.unsub) G.unsub.forEach(f=>f());
-  G=null; if(roomUnsub){roomUnsub();roomUnsub=null}LOBBY=null;$('chatPanel').classList.add('hidden');
+  G=null; if(roomUnsub){roomUnsub();roomUnsub=null}closeLobbyUI();$('chatPanel').classList.add('hidden');
   $('roomBox').classList.add('hidden'); hideBanner(); showGame(false); renderLobby();
 }
 function renderTop(){$('eloPill').textContent=PROFILE?`${PROFILE.nick} · Elo ${Math.round(PROFILE.elo)} · 🌫️ ${Math.round(PROFILE.eloFog??1000)} · 👑 ${Math.round(PROFILE.eloRumble??1000)}`:'Ospite'}
 function variant(){return $('modeSel').value==='fog'?'fog':'classic'}
 function eloOf(v){return PROFILE?Math.round(v==='fog'?(PROFILE.eloFog??1000):v==='rumble'?(PROFILE.eloRumble??1000):PROFILE.elo):1000}
 let RANKTAB='classic',BOARDF=[],BOARDR=[];
-function lobbyMsg(m){$('lobbyMsg').textContent=m}
+function lobbyMsg(m){$('lobbyMsg').textContent=m;const b=$('lobbyMsg2');if(b)b.textContent=m}
 function renderLobby(){
   renderTop();renderNews();
   const reg=!!PROFILE;
@@ -2193,6 +2253,7 @@ function startSocial(){
   SUBS.push(DB.collection('friendReq').onSnapshot(sn=>{FREQ=sn.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.to===UID||r.from===UID);settleFriends();
     const inc=FREQ.filter(r=>r.to===UID&&r.status==='pending');if(seenReq){const nu=inc.filter(r=>!seenReq.has(r.id));if(nu.length)toast(`📨 ${nu[0].fromNick} ti ha mandato una richiesta di amicizia.`)}seenReq=new Set(inc.map(r=>r.id));
     if(!G)renderSocial();else{const n=inc.length;$('reqBadge').classList.toggle('hidden',!n)}},()=>{}));
+  startMail();
   SUBS.push(DB.doc('invites/'+UID).onSnapshot(sn=>{const d=sn.exists&&sn.data();if(d&&+d.at>Date.now()-120000&&d.from!==UID&&+d.at!==LASTINV)showInvite(d)},()=>{}));
   const join=new URLSearchParams(location.search).get('join');
   if(join&&/^[A-Za-z0-9]{5}$/.test(join)){try{const u=new URL(location.href);u.searchParams.delete('join');history.replaceState(null,'',u)}catch(e){}
@@ -2221,6 +2282,7 @@ function renderSocial(){
   const inv=id=>LOBBY&&id!==UID?`<button class="linkbtn" data-invite="${esc(id)}">Invita</button>`:'';
   $('onlineList').innerHTML=on.length?on.slice(0,40).map(p=>`<li class="${p.id===UID?'me':''}"><span class="pos"><i class="dot on"></i></span><span>${esc(p.nick)}${p.id===UID?' (tu)':''}</span><span class="wl">${p.busy?'in partita':'Elo '+(+p.elo||1000)}</span><b>${p.id!==UID&&!isFriend(p.id)&&!reqPending(p.id)?`<button class="linkbtn" data-friend="${esc(p.id)}" data-nick="${esc(p.nick)}">＋ Amico</button>`:''}${p.busy?'':inv(p.id)}</b></li>`).join(''):'<li class="empty">Nessuno online in questo momento.</li>';
   const fr=myFriends().map(f=>({...f,p:PRES.find(x=>x.id===f.id)})).sort((a,b)=>isOn(b.p)-isOn(a.p));
+  {const lf=$('lobbyFriends');if(lf)lf.innerHTML=LOBBY?fr.filter(f=>isOn(f.p)&&!f.p.busy).map(f=>`<button class="btn" data-invite="${esc(f.id)}">Invita ${esc(f.nick)}</button>`).join('')||'<span class="empty">Nessun amico online da invitare: scrivi un nickname qui sotto o manda il link.</span>':''}
   $('friendList').innerHTML=fr.length?fr.map(f=>`<li><span class="pos"><i class="dot${isOn(f.p)?' on':''}"></i></span><span>${esc(f.nick)}</span><span class="wl">${isOn(f.p)?(f.p.busy?'in partita':'online'):'offline'}</span><b>${isOn(f.p)&&!f.p.busy?inv(f.id):''}</b></li>`).join(''):'<li class="empty">Ancora nessun amico: aggiungili dalla lista online o dalla lobby.</li>';
   const req=FREQ.filter(r=>r.to===UID&&r.status==='pending');
   $('reqBox').classList.toggle('hidden',!req.length);
@@ -2264,6 +2326,86 @@ document.addEventListener('click',e=>{
 $('linkBtn').onclick=()=>{const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('join',$('roomCode').textContent);
   try{navigator.clipboard.writeText(u.toString()).then(()=>lobbyMsg('Link copiato: chi lo apre entra direttamente nella stanza.'),()=>lobbyMsg('Copia non riuscita: '+u))}catch(e){lobbyMsg(u.toString())}};
 // partita rapida: si entra in coda; in classificata si cerca un Elo simile, con una tolleranza che cresce con l'attesa
+// Fase di ban (classificate): a turno, 20 s a testa; 2 personaggi a testa nell'1 contro 1, 1 per giocatore nella Rumble.
+const BAN_MS=20000;
+function banStart(d){const order=d.type==='rumble'?(d.players||[]).filter(p=>!p.bot).map(p=>p.uid):[d.host,d.guest,d.host,d.guest];
+  return{status:'banning',banOrder:order,bans:[],banAt:Date.now()}}
+function lobbyPool(d){return makePool(d.variant==='fog'?'fog':'classic',mulberry((+d.seed||1)^0x51ed27),d.type==='rumble'||!!d.ranked)}
+function nickOf(d,uid){if(d.type==='rumble'){const p=(d.players||[]).find(x=>x.uid===uid);return p?p.nick:'?'}return uid===d.host?d.hostNick:d.guestNick}
+function renderBan(d,code){
+  if(!LOBBY)return;LOBBY.ban=d;$('banBox').classList.remove('hidden');$('pvpStart').classList.add('hidden');$('rumbleStart').classList.add('hidden');$('rumbleFillRow').classList.add('hidden');
+  const pool=lobbyPool(d),banned=(d.bans||[]).map(b=>b.k),turn=d.banOrder[(d.bans||[]).length],mine=turn===UID;
+  $('banPool').innerHTML=pool.map(k=>{const u=UNITS[k],b=banned.includes(k);return `<button class="mini pchip r-${roleOf(k)}${b?' banned':''}" data-ban="${k}" ${!mine||b?'disabled':''}>${IC(u)} ${u.n}</button>`}).join('');
+  if(!LOBBY.banT)LOBBY.banT=setInterval(banTick,500);banTick();
+}
+function banTick(){
+  const L=LOBBY,d=L&&L.ban;if(!d||d.status!=='banning'){if(L&&L.banT){clearInterval(L.banT);L.banT=null}return}
+  const n=(d.bans||[]).length,turn=d.banOrder[n],left=Math.max(0,Math.ceil((d.banAt+BAN_MS-Date.now())/1000));
+  $('banText').textContent=turn===UID?`Fase di ban: tocca a te, scegli un personaggio da escludere dalla partita (${left} s).`:`Fase di ban: tocca a ${nickOf(d,turn)} (${left} s).`;
+  if(left<=0&&(L.host||turn===UID)&&!L.autoBan){L.autoBan=n;const pool=lobbyPool(d).filter(k=>!(d.bans||[]).some(b=>b.k===k));doBan(L.code,pool[Math.floor(Math.random()*pool.length)],true).finally(()=>{if(L.autoBan===n)L.autoBan=null})}
+}
+async function doBan(code,k,auto){
+  const ref=DB.doc('rooms/'+code);try{const l=await ref.acquire({holder:UID,ttlMs:3000});if(!l.acquired)return;
+    const cur=(await ref.get()).data();if(!cur||cur.status!=='banning')return;const bans=cur.bans||[],who=cur.banOrder[bans.length];
+    if(!auto&&who!==UID)return;if(auto&&Date.now()<cur.banAt+BAN_MS)return;if(bans.some(b=>b.k===k))return;
+    const nb=[...bans,{by:who,k}],up={bans:nb,banAt:Date.now()};if(nb.length>=cur.banOrder.length)up.status='playing';
+    await ref.update(up)}catch(e){lobbyMsg('Ban non riuscito, riprova.')}
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ban]');if(b&&LOBBY&&LOBBY.ban){b.disabled=true;doBan(LOBBY.code,b.dataset.ban,false)}});
+function lobbyChat(code){
+  if(LOBBY&&LOBBY.chatUn)return;$('lobbyChatLog').innerHTML='<p class="empty">Scrivi qualcosa agli altri giocatori.</p>';
+  const un=DB.collection(`rooms/${code}/chat`).onSnapshot(sn=>{const ms=sn.docs.map(d=>d.data()).filter(m=>m&&m.text).sort((a,b)=>a.at-b.at).slice(-60);if(!ms.length)return;
+    const el=$('lobbyChatLog');el.innerHTML=ms.map(m=>`<div class="m${m.by===UID?' me':''}" data-notr><b>${esc(m.nick)}</b>${esc(m.text)}</div>`).join('');el.scrollTop=el.scrollHeight},()=>{});
+  if(LOBBY)LOBBY.chatUn=un;
+}
+async function sendLobbyChat(){const t=$('lobbyChatIn').value.trim().slice(0,200);if(!t||!LOBBY||!PROFILE)return;$('lobbyChatIn').value='';
+  try{await DB.doc(`rooms/${LOBBY.code}/chat/${Date.now()}_${UID}`).set({by:UID,nick:PROFILE.nick,text:t,at:Date.now()})}catch(e){lobbyMsg('Messaggio non inviato.')}}
+$('lobbyChatSend').onclick=sendLobbyChat;$('lobbyChatIn').addEventListener('keydown',e=>{if(e.key==='Enter')sendLobbyChat()});
+$('lobbyInvBtn').onclick=async()=>{const nick=$('lobbyInvIn').value.trim();if(!nick)return;const p=await findPlayer(nick);if(!p){lobbyMsg(`Nessun giocatore con il nickname ${nick}.`);return}if(p.id===UID){lobbyMsg('Quello sei tu!');return}await sendInvite(p.id,p.nick);$('lobbyInvIn').value=''};
+function closeLobbyUI(){const L=LOBBY;if(L){if(L.chatUn)L.chatUn();if(L.banT)clearInterval(L.banT)}LOBBY=null;$('roomBox').classList.add('hidden');$('banBox').classList.add('hidden');renderSocial()}
+async function leaveLobby(){
+  const L=LOBBY;if(roomUnsub){roomUnsub();roomUnsub=null}closeLobbyUI();if(!L)return;
+  try{const ref=DB.doc('rooms/'+L.code),d=(await ref.get()).data();if(d&&d.status==='waiting'){
+    if(L.host)await ref.update({status:'closed'});
+    else if(L.kind==='pvp')await ref.update({guest:null,guestNick:null,guestElo:null});
+    else await ref.update({players:(d.players||[]).filter(p=>p.uid!==UID)})}}catch(e){}
+  lobbyMsg('Sei uscito dalla lobby.');
+}
+$('lobbyLeave').onclick=leaveLobby;
+// ---------- posta: messaggi tra giocatori, idee e bug per chi sviluppa ----------
+let MAIL=[],MAILTAB='in';
+function startMail(){
+  $('mailBtn').classList.remove('hidden');
+  SUBS.push(DB.collection(`mail/${UID}/inbox`).onSnapshot(sn=>{MAIL=sn.docs.map(d=>({id:d.id,...d.data()})).filter(m=>m&&m.text).sort((a,b)=>b.at-a.at);
+    const un=MAIL.filter(m=>!m.read).length;$('mailN').textContent=un;$('mailN').classList.toggle('hidden',!un);renderMail()},()=>{}));
+  SUBS.push(()=>$('mailBtn').classList.add('hidden'));
+}
+function renderMail(){
+  if($('mailModal').classList.contains('hidden'))return;
+  for(const b of document.querySelectorAll('[data-mt]'))b.classList.toggle('on',b.dataset.mt===MAILTAB);
+  $('mailIn').classList.toggle('hidden',MAILTAB!=='in');$('mailNew').classList.toggle('hidden',MAILTAB!=='new');$('mailFb').classList.toggle('hidden',MAILTAB!=='fb');
+  const fmt=t=>{try{return new Date(t).toLocaleString(LANG,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
+  $('mailList').innerHTML=MAIL.length?MAIL.slice(0,50).map(m=>`<li class="${m.read?'':'unread'}"><div class="mh"><b data-notr>${esc(m.fromNick)}</b><span data-notr>${esc(fmt(m.at))}</span></div><div class="mt" data-notr>${esc(m.text)}</div><div><button class="linkbtn" data-reply="${esc(m.fromNick)}">Rispondi</button></div></li>`).join(''):'<li class="empty">Nessun messaggio.</li>';
+  if(MAILTAB==='in') for(const m of MAIL) if(!m.read) DB.doc(`mail/${UID}/inbox/${m.id}`).update({read:true}).catch(()=>{});
+}
+function openMail(tab){MAILTAB=tab||'in';$('mailMsg').textContent='';$('mailModal').classList.remove('hidden');renderMail()}
+$('mailBtn').onclick=()=>openMail('in');
+$('mailClose').onclick=()=>$('mailModal').classList.add('hidden');
+document.addEventListener('click',e=>{const t=e.target.closest('[data-mt]');if(t){MAILTAB=t.dataset.mt;renderMail();return}
+  const r=e.target.closest('[data-reply]');if(r){MAILTAB='new';renderMail();$('mailTo').value=r.dataset.reply;$('mailText').focus()}});
+$('mailSend').onclick=async()=>{
+  const to=$('mailTo').value.trim(),text=$('mailText').value.trim().slice(0,600);if(!to||!text||!PROFILE)return;
+  const p=await findPlayer(to);if(!p){$('mailMsg').textContent=`Nessun giocatore con il nickname ${to}.`;return}
+  if(p.id===UID){$('mailMsg').textContent='Quello sei tu!';return}
+  try{await DB.doc(`mail/${p.id}/inbox/${Date.now()}_${UID}`).set({from:UID,fromNick:PROFILE.nick,text,at:Date.now(),read:false});$('mailText').value='';$('mailMsg').textContent=`Messaggio inviato a ${p.nick}.`}
+  catch(e){$('mailMsg').textContent='Messaggio non inviato, riprova.'}
+};
+$('fbSend').onclick=async()=>{
+  const text=$('fbText').value.trim().slice(0,2000);if(!text||!PROFILE)return;
+  try{await DB.doc(`feedback/${Date.now()}_${UID}`).set({by:UID,nick:PROFILE.nick,kind:$('fbKind').value,text,at:Date.now(),lang:LANG,page:location.href.slice(0,200),agent:navigator.userAgent.slice(0,200)});
+    $('fbText').value='';$('mailMsg').textContent='Grazie! La segnalazione è arrivata.'}
+  catch(e){$('mailMsg').textContent='Invio non riuscito, riprova.'}
+};
 async function quickMatch(ranked){
   if(!PROFILE||!DB||QUEUE||G)return;const v=variant();
   QUEUE={ranked,variant:v,since:Date.now(),busy:false};
@@ -2288,7 +2430,9 @@ async function mmTick(){
     let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>CODECH[Math.floor(Math.random()*CODECH.length)]).join('');if(!(await DB.doc('rooms/'+code).get()).exists)break}
     const d={host:UID,hostNick:PROFILE.nick,hostElo:me,guest:o.id,guestNick:o.nick,guestElo:+o.elo||1000,ranked:QUEUE.ranked,variant:QUEUE.variant,win:QUEUE.variant==='fog'?7:winTarget(),
       seed:Math.floor(Math.random()*2e9),status:'playing',forfeit:null,created:now,quick:true};
+    if(d.ranked)Object.assign(d,banStart(d));
     await DB.doc('rooms/'+code).set(d);await ref.update({room:code});stopQueue();
+    if(d.ranked){$('roomKind').textContent='classificata';$('lobbyMembers').classList.add('hidden');$('pvpStart').classList.add('hidden');LOBBY={code,kind:'pvp',label:'partita classificata',host:true};watchPvpLobby(code,true);return}
     if(roomUnsub) roomUnsub();roomUnsub=DB.doc('rooms/'+code).onSnapshot(x=>{const r=x.exists&&x.data();if(r)handleRoom(r)},()=>{});
     startPvp(code,d,0);
   }catch(e){}finally{if(QUEUE)QUEUE.busy=false}
@@ -2296,6 +2440,7 @@ async function mmTick(){
 async function joinMatched(code){
   let d=null;try{d=(await DB.doc('rooms/'+code).get()).data()}catch(e){}
   if(!d||!QUEUE)return;stopQueue();
+  if(d.ranked&&d.status==='banning'){$('roomKind').textContent='classificata';LOBBY={code,kind:'pvp',label:'partita classificata',host:false};watchPvpLobby(code,false);return}
   if(roomUnsub) roomUnsub();roomUnsub=DB.doc('rooms/'+code).onSnapshot(x=>{const r=x.exists&&x.data();if(r)handleRoom(r)},()=>{});
   startPvp(code,d,1);
 }
@@ -2360,8 +2505,8 @@ async function joinRoom(){
   LOBBY={code,kind:'pvp',label:d.ranked?'partita classificata':'partita amichevole',host:false};watchPvpLobby(code,false);
 }
 function watchPvpLobby(code,host){
-  if(roomUnsub) roomUnsub();renderSocial();
-  $('pvpStart').onclick=async()=>{try{await DB.doc('rooms/'+code).update({status:'playing'})}catch(e){lobbyMsg('Avvio non riuscito.')}};
+  if(roomUnsub) roomUnsub();if(!LOBBY)LOBBY={code,kind:'pvp',label:'partita classificata',host};LOBBY.code=code;$('roomCode').textContent=code;$('roomBox').classList.remove('hidden');lobbyChat(code);renderSocial();
+  $('pvpStart').onclick=async()=>{try{const ref=DB.doc('rooms/'+code),cur=(await ref.get()).data();await ref.update(cur.ranked?banStart(cur):{status:'playing'})}catch(e){lobbyMsg('Avvio non riuscito.')}};
   roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
     if(d.status==='waiting'&&!G){
       const ms=[{id:d.host,nick:d.hostNick,elo:d.hostElo},d.guest?{id:d.guest,nick:d.guestNick,elo:d.guestElo}:null].filter(Boolean);
@@ -2369,7 +2514,9 @@ function watchPvpLobby(code,host){
       $('pvpStart').classList.toggle('hidden',!host);$('pvpStart').disabled=!d.guest;
       $('roomWait').textContent=host?(d.guest?'Il tuo avversario è entrato: premi Avvia quando siete pronti.':'In attesa che entri l\'avversario…'):'Sei nella stanza: la partita parte quando chi l\'ha creata preme Avvia.';
     }
-    if(d.status==='playing'&&d.guest&&!G){LOBBY=null;startPvp(code,d,d.host===UID?0:1)}
+    if(d.status==='banning'&&!G) renderBan(d,code);
+    if(d.status==='closed'&&!G&&!host){closeLobbyUI();lobbyMsg('La stanza è stata chiusa.')}
+    if(d.status==='playing'&&d.guest&&!G){closeLobbyUI();startPvp(code,d,d.host===UID?0:1)}
     handleRoom(d)},()=>{});
 }
 function memberLi(m){const fr=isFriend(m.id),me=m.id===UID;
@@ -2379,7 +2526,7 @@ function handleRoom(d){
 }
 function startPvp(code,d,me){
   const opp=String((me?d.hostNick:d.guestNick)||'Avversario').slice(0,16);
-  newMatch({mode:'pvp',variant:d.variant,win:[1,2,3,5,7].includes(+d.win)?+d.win:3,me,room:code,ranked:!!d.ranked,seed:+d.seed||1,oppName:opp,oppElo:+(me?d.hostElo:d.guestElo)||1000});
+  newMatch({mode:'pvp',bans:(d.bans||[]).map(b=>b.k),variant:d.variant,win:[1,2,3,5,7].includes(+d.win)?+d.win:3,me,room:code,ranked:!!d.ranked,seed:+d.seed||1,oppName:opp,oppElo:+(me?d.hostElo:d.guestElo)||1000});
   startChat(code);rememberOpponents([{id:me?d.host:d.guest,nick:opp}]);
   toast(`Partita ${d.ranked?'classificata':'amichevole'} contro ${opp}, a ${[1,2,3,5,7].includes(+d.win)?+d.win:3} prese. Il tuo market è privato: l'avversario vede la tua squadra solo in battaglia.`);
 }
@@ -2659,7 +2806,7 @@ function watchRumbleRoom(code,host){
   roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
     const ps=d.players||[];
     const fillN=d.status==='waiting'&&d.fill?8-ps.length:0;
-    if(!LOBBY){LOBBY={code,kind:'rumble',label:'Royal Rumble',host};renderSocial()}$('lobbyMembers').classList.add('hidden');$('pvpStart').classList.add('hidden');
+    if(!LOBBY&&!G&&d.status!=='playing'){LOBBY={code,kind:'rumble',label:'Royal Rumble',host};lobbyChat(code);renderSocial()}$('lobbyMembers').classList.add('hidden');$('pvpStart').classList.add('hidden');
     $('rumbleList').innerHTML=ps.map((p,i)=>p.bot?`<li><span class="pos">${i+1}</span><span>🤖 ${esc(p.nick)}</span><span class="wl">bot</span><b></b></li>`:memberLi({id:p.uid,nick:p.nick,elo:p.elo}).replace('<span class="pos">·</span>',`<span class="pos">${i+1}</span>`)).join('')+
       (fillN>0?`<li><span class="pos">+</span><span>🤖 ${fillN} bot di riempimento</span><span class="wl">bravura adattiva</span><b></b></li>`:'');
     const waiting=d.status==='waiting';$('rumbleFillRow').classList.toggle('hidden',!waiting);
@@ -2669,12 +2816,15 @@ function watchRumbleRoom(code,host){
     $('rumbleStart').onclick=async()=>{try{const ref=DB.doc('rooms/'+code),cur=(await ref.get()).data(),hp=cur.players||[],up={status:'playing'};
       if(cur.fill&&hp.length<8){const avg=hp.reduce((a,p)=>a+(+p.elo||1000),0)/hp.length;
         up.players=[...hp,...BOTN.slice(0,8-hp.length).map(n=>({uid:null,nick:n,bot:true}))];up.botBase=clamp((avg-800)/600,0,1)}
+      Object.assign(up,banStart({...cur,type:'rumble',players:up.players||hp}));
       await ref.update(up)}catch(e){lobbyMsg('Avvio non riuscito.')}};
-    if(d.status==='playing'&&!G){const meIdx=ps.findIndex(p=>p.uid===UID);if(meIdx<0)return;startRumbleOnline(code,d,meIdx)}
+    if(d.status==='banning'&&!G) renderBan(d,code);
+    if(d.status==='closed'&&!G&&!host){closeLobbyUI();lobbyMsg('La stanza è stata chiusa.')}
+    if(d.status==='playing'&&!G){const meIdx=ps.findIndex(p=>p.uid===UID);if(meIdx<0)return;closeLobbyUI();startRumbleOnline(code,d,meIdx)}
   },()=>{});
 }
 function startRumbleOnline(code,d,meIdx){
-  newMatch({mode:'rumble',online:true,room:code,seed:+d.seed||1,botBase:d.botBase==null?.5:+d.botBase,players:d.players.map(p=>({name:String(p.nick||'Giocatore').slice(0,16),uid:p.uid||null,bot:!!p.bot})),meIdx});
+  newMatch({mode:'rumble',online:true,bans:(d.bans||[]).map(b=>b.k),room:code,seed:+d.seed||1,botBase:d.botBase==null?.5:+d.botBase,players:d.players.map(p=>({name:String(p.nick||'Giocatore').slice(0,16),uid:p.uid||null,bot:!!p.bot})),meIdx});
   const un=DB.collection(`rooms/${code}/rr`).onSnapshot(s=>{if(!G||!G.rmb)return;G.rmb.docs=s.docs.map(x=>x.data());
     for(const d of G.rmb.docs) if(d.round===G.round&&!d.afk) setDeadline(d.at);
     rumbleTry()},()=>{});

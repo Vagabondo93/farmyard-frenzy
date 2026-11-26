@@ -9,6 +9,7 @@ function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{l
   let body=fs.readFileSync(p);if(f==='/index.html')body=body.toString().replace('let G;','let G;window.__g=()=>G;');
   r.writeHead(200,{'Content-Type':f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.js')?'text/javascript':'application/octet-stream'});r.end(body)});
   s.listen(0,'127.0.0.1',()=>res(s))})}
+const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const b=await chromium.launch(),errs=[];
   // 1) senza configurazione: modalità offline
@@ -31,7 +32,7 @@ function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{l
   await P[0].waitForTimeout(400);ok((await P[0].textContent('#rankList')).includes('Bruno'),'classifica condivisa: Anna vede Bruno');
   await P[0].click('#roomRanked');await P[0].waitForSelector('#roomBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
-  for(const p of P) await p.waitForSelector('#game:not(.hidden)');
+  await doBans(P);for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){
     for(const p of P){for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}await p.click('#readyBtn')}
     for(const p of P){await p.bringToFront();await p.waitForFunction(()=>['battle','result','over'].includes(window.__g().phase),null,{timeout:60000});if(await p.evaluate(()=>window.__g().phase==='battle')&&await p.isVisible('[data-speed="4"]'))await p.click('[data-speed="4"]')}

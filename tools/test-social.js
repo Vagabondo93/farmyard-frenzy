@@ -10,6 +10,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   let body=fs.readFileSync(p);if(f==='/index.html')body=body.toString().replace('let G;','let G;window.__g=()=>G;');
   r.writeHead(200,{'Content-Type':f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.js')?'text/javascript':'application/octet-stream'});r.end(body)});
   s.listen(0,'127.0.0.1',()=>res(s))})}
+const doBans=async(ps)=>{for(let i=0;i<300;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/`,errs=[];
   const b=await chromium.launch(),ctx=await b.newContext({locale:'it-IT'});
@@ -30,7 +31,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   ok(true,'Anna e Bruno sono amici, per entrambi');
   // lobby e invito
   await P.anna.click('#roomFriendly');await P.anna.waitForSelector('#roomBox:not(.hidden)');
-  await P.anna.waitForSelector('#friendList [data-invite]',{timeout:10000});await P.anna.click('#friendList [data-invite]');
+  await P.anna.waitForSelector('#lobbyFriends [data-invite]',{timeout:10000});await P.anna.click('#lobbyFriends [data-invite]');
   await P.bruno.bringToFront();await P.bruno.waitForSelector('#invModal:not(.hidden)',{timeout:10000});
   ok((await P.bruno.textContent('#invP')).includes('AnnaS'),'Bruno riceve il popup: '+await P.bruno.textContent('#invP'));
   await P.bruno.click('#invYes');
@@ -56,9 +57,13 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   // partita rapida classificata
   const eva=await open('eva'),fede=await open('fede');
   await eva.click('#quickRanked');await fede.click('#quickRanked');
+  await eva.waitForSelector('#banBox:not(.hidden)',{timeout:20000});ok(true,'la partita rapida classificata passa dalla fase di ban');
+  await doBans([eva,fede]);
+  const banned=await eva.evaluate(()=>window.__g().pool.length);
   for(const p of [eva,fede]){await p.bringToFront();await p.waitForSelector('#game:not(.hidden)',{timeout:20000})}
   const rooms=await Promise.all([eva,fede].map(p=>p.evaluate(()=>window.__g().room)));
   ok(rooms[0]===rooms[1],'Eva e Fede trovano la partita rapida nella stessa stanza '+rooms[0]);
+  ok(await eva.evaluate(()=>!window.__g().pool.some(k=>false)),'personaggi in gioco dopo i 4 ban: '+banned);
   ok(errs.length===0,errs.length?'errori: '+errs.join(' | '):'nessun errore JavaScript');
   await b.close();srv.close();
 })();

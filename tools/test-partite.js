@@ -24,6 +24,7 @@ async function playRound(pages){
     if(await phase(p)==='battle'&&await p.isVisible('[data-speed="4"]')) await p.click('[data-speed="4"]')}
   for(const p of pages){await p.bringToFront();await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000})}
 }
+const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/test.html`,errs=[];
   const b=await chromium.launch();
@@ -47,7 +48,7 @@ async function playRound(pages){
   console.log('1 contro 1 online (classificata)');
   await P[0].click('#roomRanked');await P[0].waitForSelector('#roomBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
-  for(const p of P.slice(0,2)) await p.waitForSelector('#game:not(.hidden)');
+  await doBans(P.slice(0,2));for(const p of P.slice(0,2)) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){await playRound(P.slice(0,2));
     const s=await Promise.all(P.slice(0,2).map(p=>p.evaluate(()=>JSON.stringify([window.__g().score,window.__g().sim.t.toFixed(3)]))));
     ok(s[0]===s[1],`round ${r+1}: stesso risultato sui due schermi ${s[0]}`);
@@ -57,7 +58,7 @@ async function playRound(pages){
   await P[0].click('#rumbleOnline');await P[0].waitForSelector('#rumbleBox:not(.hidden)');const code=await P[0].textContent('#roomCode');
   for(const p of P.slice(1)){await p.fill('#codeIn',code);await p.click('#joinBtn');await p.waitForTimeout(500)}
   await P[0].waitForFunction(()=>document.querySelectorAll('#rumbleList li').length===3,null,{timeout:20000});
-  await P[0].click('#rumbleStart');for(const p of P) await p.waitForSelector('#game:not(.hidden)');
+  await P[0].click('#rumbleStart');await doBans(P);for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<3;r++){const live=[];for(const p of P) if(await phase(p)!=='over') live.push(p);
     await playRound(live);
     const s=await Promise.all(live.map(p=>p.evaluate(()=>window.__g().rmb.P.map(x=>x.lives+(x.out?'x':'')).join(' '))));

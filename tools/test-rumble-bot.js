@@ -12,6 +12,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   s.listen(0,'127.0.0.1',()=>res(s))})}
 const phase=p=>p.evaluate(()=>window.__g()?.phase);
 const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}};
+const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/`,errs=[];
   const b=await chromium.launch(),ctx=await b.newContext({locale:'it-IT'});
@@ -25,7 +26,7 @@ const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:n
   await P[0].check('#rumbleFill');
   await P[1].waitForFunction(()=>document.getElementById('rumbleList').textContent.includes('6 bot'),null,{timeout:10000});
   ok(true,'l\'opzione si vede anche nella lobby di chi è entrato');
-  await P[0].click('#rumbleStart');for(const p of P) await p.waitForSelector('#game:not(.hidden)');
+  await P[0].click('#rumbleStart');await doBans(P);for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   ok(await P[0].evaluate(()=>window.__g().rmb.P.length===8&&window.__g().rmb.P.filter(p=>p.bot).length===6),'la Rumble parte con 2 giocatori e 6 bot');
   for(let r=0;r<3;r++){
     for(const p of P){await buy(p);await p.click('#readyBtn')}
