@@ -397,9 +397,10 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
       <div id="playModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="playT"><div class="mbox playbox">
         <div class="row" style="align-items:center"><h2 id="playT" style="margin:0">Gioca</h2><button class="linkbtn" id="playClose">Chiudi</button></div>
         <div class="ptabs"><button data-pt="bot">🤖<b>Contro il bot</b><small>Allenamento, non conta l'Elo</small></button><button data-pt="friendly">🤝<b>Amichevole</b><small>Con amici o giocatori a caso</small></button><button data-pt="ranked">🏆<b>Classificata</b><small>Conta l'Elo, con fase di ban</small></button></div>
-        <div class="psec"><span class="plbl">Modalità</span><div class="seg pmodes"><button data-pm="classic">Classica</button><button data-pm="fog">🌫️ Nebbia</button><button data-pm="rumble">👑 Royal Rumble</button></div></div>
+        <div class="psec"><span class="plbl">Modalità</span><div class="seg pmodes"><button data-pm="classic">Classica</button><button data-pm="fog">🌫️ Nebbia</button><button data-pm="rumble">👑 Royal Rumble</button><button data-pm="duo">👥 2 contro 2</button></div></div>
         <select id="modeSel" class="hidden" aria-hidden="true"><option value="classic" selected>Classica</option><option value="fog">🌫️ Nebbia · 7 uova</option></select>
         <p class="empty hidden" id="modeHint" style="margin:0">Nebbia: si parte con 7 oro, servono 7 prese e al centro un bosco nasconde chi non è in linea di vista. Ha la sua classifica.</p>
+        <p class="empty hidden" id="duoHint" style="margin:0">2 contro 2: un solo uovo per squadra, ognuno con il suo market. Campo più alto e round più lunghi, con campi arati che solo chi vola e la Talpa sottoterra attraversano, laghetti dove passa a nuoto l'Oca e banchi di nebbia dove si vede solo da vicino. Per ora solo amichevole.</p>
         <p class="empty hidden" id="rumbleHint" style="margin:0">Royal Rumble: fino a 8 giocatori, ognuno con 3 uova. A ogni round affronti un avversario diverso; vince l'ultimo che resta con almeno un uovo.</p>
         <label class="winrow" id="winRow" for="winSel">Prese per vincere
           <select id="winSel"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="5">5</option><option value="7">7</option></select>
@@ -415,6 +416,8 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
           <button class="btn primary" id="quickRanked" disabled>⚡ Cerca un avversario (Elo simile)</button>
           <button class="btn" id="roomRanked" disabled>🏆 Crea una stanza classificata</button>
           <button class="btn primary" id="rumbleOnline" disabled>👑 Crea Royal Rumble online (fino a 8)</button>
+          <button class="btn primary" id="duoBot">👥 Inizia: tu e un bot contro 2 bot</button>
+          <button class="btn primary" id="duoOnline" disabled>👥 Crea stanza 2 contro 2 e invita</button>
           <div id="mmBox" class="hidden mmbox"><span id="mmText">Cerco un avversario…</span><button class="btn" id="mmCancel">Annulla</button></div>
         </div>
       </div></div>
@@ -675,7 +678,7 @@ if(LANG!=='it'){
 {const sel=document.getElementById('langSel');sel.value=LANG;sel.setAttribute('aria-label',tr('Lingua'));
   sel.onchange=()=>{if(typeof G!=='undefined'&&G&&!G.finished){toast(tr('Puoi cambiare lingua dal menu, fuori dalla partita.'));sel.value=LANG;return}
     try{localStorage.setItem('ff-lang',sel.value)}catch(e){}const u=new URL(location.href);u.searchParams.delete('lang');location.href=u.toString()}}
-const W=960,H=540;
+const W=960;let H=540; // l'altezza cambia nel 2 contro 2 (campo più alto)
 const HOME=[{x:62,y:H/2},{x:W-62,y:H/2}];
 const SIDE=[{name:'Tu',col:'#2f6fe0',soft:'rgba(47,111,224,.18)'},{name:'Bot',col:'#d23f2d',soft:'rgba(210,63,45,.18)'}];
 const COST={1:2,2:3,3:4},costOf=k=>UNITS[k].cost??COST[UNITS[k].t],STAR2_ROUND=15,
@@ -1203,8 +1206,10 @@ function newMatch(o={}){
   const seed=(Date.now()&0xffffff)^0x5bd1;
   G={round:1,score:[0,0],phase:'shop',players:[mkPlayer(),mkPlayer()],lastComp:[null,null],rng:mulberry(seed),
      brng:mulberry(seed^0x9e37),sel:null,sim:null,speed:1,lost:[false,false],acc:0,revealT:0,logN:0,
-     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online||o.poolSeed)?mulberry(((o.poolSeed||o.seed)||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||!!o.ranked||!!o.big),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
+     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online||o.poolSeed)?mulberry(((o.poolSeed||o.seed)||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||o.mode==='duo'||!!o.ranked||!!o.big,o.bans||[],o.picks||[]),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
+  setField(G.mode==='duo'?DUO_H:540);
   if(G.mode==='rumble') initRumble(o);
+  if(G.mode==='duo') initDuo(o);
   G.tutorial=!!o.tutorial;
   if(o.bans&&o.bans.length) G.pool=G.pool.filter(k=>!o.bans.includes(k));
   if(o.picks) for(const k of o.picks) if(UNITS[k]&&!G.pool.includes(k)) G.pool.push(k);
@@ -1218,22 +1223,24 @@ const COUNTERS=[{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo'
   {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco','oca']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
   ];
 const POOLQ={thief:3,def:3,atk:3,sup:3,ctl:2},POOLQR={thief:4,def:4,atk:4,sup:3,ctl:3};
-function makePool(variant,rng,big){
-  const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly&&!(variant==='fog'&&UNITS[k].classicOnly),pool=[],Q=big?POOLQR:POOLQ;
+// ex: personaggi bannati (mai nel pool); force: personaggi scelti nella fase di scelta (sempre nel pool)
+function makePool(variant,rng,big,ex=[],force=[]){
+  const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly&&!(variant==='fog'&&UNITS[k].classicOnly)&&!ex.includes(k),pool=[],Q=big?POOLQR:POOLQ;
   for(const r of Object.keys(Q)){
     const all=Object.keys(UNITS).filter(k=>ok(k)&&roleOf(k)===r);
     for(let i=all.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
-    const first=all.find(k=>UNITS[k].t===1);const pick=first?[first]:[];
+    const pick=all.filter(k=>force.includes(k));if(!pick.some(k=>UNITS[k].t===1)){const first=all.find(k=>UNITS[k].t===1&&!pick.includes(k));if(first)pick.push(first)}
     for(const k of all){if(pick.length>=Q[r])break;if(!pick.includes(k))pick.push(k)}
     pool.push(...pick);
   }
-  if(variant==='fog') for(const k in UNITS) if(UNITS[k].fogOnly) pool.push(k);
+  if(variant==='fog') for(const k in UNITS) if(UNITS[k].fogOnly&&!ex.includes(k)) pool.push(k);
+  for(const k of force) if(UNITS[k]&&!pool.includes(k)&&!ex.includes(k)) pool.push(k);
   // l'Avicoltore esce solo se nella partita ci sono almeno 2 volanti
-  if(pool.includes('avicoltore')){const fl=['corvo','gazza','falco','gufo'].filter(k=>!pool.includes(k));
+  if(pool.includes('avicoltore')){const fl=['corvo','gazza','falco','gufo'].filter(k=>!pool.includes(k)&&!ex.includes(k));
     while(pool.filter(k=>UNITS[k].flying).length<2&&fl.length)pool.push(fl.splice(Math.floor(rng()*fl.length),1)[0])}
   // ogni meccanica speciale deve avere almeno un contro nella selezione
   for(let pass=0;pass<4;pass++) for(const r of COUNTERS) if(r.if.some(k=>pool.includes(k))&&!r.need.some(k=>pool.includes(k))){
-    const c=r.need.filter(k=>variant==='fog'||!UNITS[k].fogOnly);pool.push(c[Math.floor(rng()*c.length)])}
+    const c=r.need.filter(k=>(variant==='fog'||!UNITS[k].fogOnly)&&!ex.includes(k)&&!(variant==='fog'&&UNITS[k].classicOnly));if(c.length)pool.push(c[Math.floor(rng()*c.length)])}
   return pool;
 }
 const avail=(k,round)=>(UNITS[k].minRound||1)<=round&&(UNITS[k].t<3||round>=3);
@@ -1289,12 +1296,13 @@ function sellUnit(p,uid){const b=p.board.find(x=>x.uid===uid);if(b&&G&&G.rmb&&!p
 
 // Tempo per il Pronto nelle partite con più giocatori: nessun limite al primo round, poi 60 s (+5 s per round, max 120)
 // che partono quando il primo giocatore preme Pronto.
-const isMP=()=>!!(G&&(G.mode==='pvp'||(G.rmb&&G.rmb.online)));
+const isMP=()=>!!(G&&(G.mode==='pvp'||(G.rmb&&G.rmb.online)||(G.duo&&G.duo.online)));
 const turnLimit=r=>r<=1?null:Math.min(120,60+5*(r-2));
 function setDeadline(at){const T=turnLimit(G.round);if(T&&at&&(!G.deadline||at+T*1000<G.deadline))G.deadline=at+T*1000}
 function startShop(){
   G.phase='shop';G.deadline=null;G.oppDoc=null;G.myAt=null;G.afkSent=false;for(const p of G.players)p.ovr=null;
   if(G.mode==='rumble'){rumbleShop();return}
+  if(G.mode==='duo'){duoShop();return}
   for(let s=0;s<2;s++){const p=G.players[s];p.gold=Math.min(10,(G.variant==='fog'?6:3)+G.round)+(G.lost[s]?1:0)+((G.bribeGold||[])[s]||0);rollShop(p,s?G.brng:G.rng,G.round)}
   if(G.tutorial) tutorialShop(); else if(G.mode!=='pvp') botTurn(G.players[1],G.brng,G.lastComp[0]); else pvpWatch();
   hideBanner(); if(G.round===Math.max(MAX_ROUNDS,G.win*5)){toast('Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.')}else toast(G.round===1?'Hai 4 oro: compra due unità da 2. Un ladro per attaccare e un guardiano per difendere è un buon inizio.':'');
@@ -1368,7 +1376,7 @@ function spawn(b,side,id){
 }
 function makeSim(seed){
   const S={t:0,units:[],eggs:[0,1].map(s=>({side:s,home:HOME[s],x:HOME[s].x,y:HOME[s].y,state:'home',carrier:null,dropT:0})),
-    traps:[],fakes:[],fx:[],bribes:[0,0],clouds:[],bridges:[...BRIDGES],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:Math.min(70,ROUND_T+(G.round-1)*3)};
+    traps:[],fakes:[],fx:[],bribes:[0,0],clouds:[],plots:G.mode==='duo'?PLOTS:[],nav:null,mist:G.mode==='duo',fogs:G.mode==='duo'?DUO_MIST:FOGS,bridges:[...BRIDGES],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:G.mode==='duo'?Math.min(90,ROUND_T+18+(G.round-1)*3):Math.min(70,ROUND_T+(G.round-1)*3)};
   let id=1;
   for(let s=0;s<2;s++) for(const b of (G.players[s].ovr||G.players[s].board).filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
   for(const u of [...S.units]) if(u.def.pack) for(let i=0;i<u.def.pack;i++)
@@ -1385,10 +1393,71 @@ function log(S,html){S.log.push(html)}
 function fx(S,x,y,text,col){S.fx.push({x,y,text,col:col||'#fff',t:1.1})}
 const canCarry=u=>u.turned||u.def.tags.includes('Ladro');
 // Modalità Nebbia: un ruscello al centro, due ponti in alto e in basso coperti dalla nebbia.
+// ---------- 2 contro 2: campi arati invalicabili (solo chi vola o scava ci passa) ----------
+// il campo è alto 760; i campi sono simmetrici a destra e sinistra, così le due squadre partono alla pari
+const DUO_H=760,PLOTS=[
+  {x:200,y:236,w:560,h:40},{x:200,y:484,w:560,h:40},{x:440,y:330,w:80,h:100},
+  {x:330,y:70,w:40,h:100},{x:590,y:70,w:40,h:100},{x:330,y:590,w:40,h:100},{x:590,y:590,w:40,h:100},
+  // laghetti: l'Oca ci passa a nuoto (più lenta), chi vola e la Talpa sottoterra ci passano sopra o sotto
+  {x:262,y:336,w:96,h:88,water:true},{x:602,y:336,w:96,h:88,water:true}];
+// zone di nebbia: chi ci sta dentro si vede solo da vicino (come il bosco della modalità Nebbia)
+const DUO_MIST=[{x:480,y:138,r:86},{x:480,y:622,r:86},{x:140,y:138,r:62},{x:820,y:138,r:62},{x:140,y:622,r:62},{x:820,y:622,r:62}];
+const PLOT_R=12;
+function inPlot(x,y,S,m=PLOT_R,sw=false){for(const p of S.plots)if(!(sw&&p.water)&&x>p.x-m&&x<p.x+p.w+m&&y>p.y-m&&y<p.y+p.h+m)return p;return null}
+// spinge fuori dal campo arato verso il bordo più vicino
+function pushOut(o,S,sw=false){const p=inPlot(o.x,o.y,S,PLOT_R,sw);if(!p)return false;const m=PLOT_R+.5;
+  const c=[[p.x-m-o.x,0],[p.x+p.w+m-o.x,0],[0,p.y-m-o.y],[0,p.y+p.h+m-o.y]].sort((a,b)=>Math.abs(a[0]+a[1])-Math.abs(b[0]+b[1]));
+  for(const v of c){const nx=o.x+v[0],ny=o.y+v[1];if(nx>14&&nx<W-14&&ny>16&&ny<H-16){o.x=nx;o.y=ny;return true}}return false}
+// il segmento a→b attraversa un campo arato?
+function segHit(ax,ay,bx,by,S,sw=false){const m=PLOT_R-1;
+  for(const p of S.plots){if(sw&&p.water)continue;let t0=0,t1=1;const dx=bx-ax,dy=by-ay;let ok=true;
+    for(const [q,r] of [[-dx,ax-(p.x-m)],[dx,(p.x+p.w+m)-ax],[-dy,ay-(p.y-m)],[dy,(p.y+p.h+m)-ay]]){
+      if(q===0){if(r<0){ok=false;break}}else{const t=r/q;if(q<0){if(t>t1){ok=false;break}if(t>t0)t0=t}else{if(t<t0){ok=false;break}if(t<t1)t1=t}}}
+    if(ok&&t0<t1)return true}
+  return false}
+// nodi del percorso: gli angoli dei campi arati, un po' fuori; si collegano quelli che si vedono
+function navGraph(S,sw){const key=sw?'navSw':'nav';if(S[key])return S[key];const m=PLOT_R+5,N=[];
+  for(const p of S.plots)if(!(sw&&p.water))for(const [x,y] of [[p.x-m,p.y-m],[p.x+p.w+m,p.y-m],[p.x-m,p.y+p.h+m],[p.x+p.w+m,p.y+p.h+m]])
+    if(x>14&&x<W-14&&y>16&&y<H-16&&!inPlot(x,y,S,PLOT_R,sw))N.push({x,y});
+  const E=N.map((a,i)=>N.map((b,j)=>i!==j&&!segHit(a.x,a.y,b.x,b.y,S,sw)?Math.hypot(a.x-b.x,a.y-b.y):0));
+  return S[key]={N,E}}
+// prossimo punto verso cui andare per raggiungere (tx,ty) a piedi
+function plotNav(u,tx,ty,S){const sw=!!u.def.swim;
+  if(inPlot(tx,ty,S,PLOT_R,sw)){const o={x:tx,y:ty};pushOut(o,S,sw);tx=o.x;ty=o.y}
+  if(!segHit(u.x,u.y,tx,ty,S,sw)){u.nav=null;return{x:tx,y:ty}}
+  const c=u.nav;if(c&&Math.abs(c.tx-tx)+Math.abs(c.ty-ty)<24&&S.t<c.until&&Math.hypot(c.wp.x-u.x,c.wp.y-u.y)>6)return c.wp;
+  const {N,E}=navGraph(S,sw),n=N.length,D=new Array(n+1).fill(Infinity),first=new Array(n+1).fill(-1),done=new Array(n+1).fill(false);
+  for(let i=0;i<n;i++)if(!segHit(u.x,u.y,N[i].x,N[i].y,S,sw)){D[i]=Math.hypot(N[i].x-u.x,N[i].y-u.y);first[i]=i}
+  for(;;){let k=-1;for(let i=0;i<=n;i++)if(!done[i]&&D[i]<Infinity&&(k<0||D[i]<D[k]))k=i;if(k<0||k===n)break;done[k]=true;
+    for(let j=0;j<n;j++)if(E[k][j]&&D[k]+E[k][j]<D[j]){D[j]=D[k]+E[k][j];first[j]=first[k]}
+    if(!segHit(N[k].x,N[k].y,tx,ty,S,sw)){const v=D[k]+Math.hypot(tx-N[k].x,ty-N[k].y);if(v<D[n]){D[n]=v;first[n]=first[k]}}}
+  if(first[n]<0)return{x:tx,y:ty};
+  const wp=N[first[n]];u.nav={tx,ty,wp,until:S.t+.4};return wp}
+function drawPond(p){const cx=p.x+p.w/2,cy=p.y+p.h/2,rx=p.w/2+4,ry=p.h/2+4;ctx.save();
+  ctx.fillStyle='#6b8f3a';ctx.beginPath();ctx.ellipse(cx,cy+2,rx+6,ry+6,0,0,7);ctx.fill();
+  ctx.fillStyle='#8a7a52';ctx.beginPath();ctx.ellipse(cx,cy,rx+2,ry+2,0,0,7);ctx.fill();
+  const g=ctx.createRadialGradient(cx-rx*.3,cy-ry*.3,4,cx,cy,rx);g.addColorStop(0,'#8fd0e6');g.addColorStop(1,'#3f88b0');
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(cx,cy,rx-2,ry-2,0,0,7);ctx.fill();
+  const t=performance.now()/900;ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1.5;
+  for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(cx+Math.sin(t+k*2)*rx*.3,cy-ry*.3+k*ry*.3,10+k*3,3,0,0,Math.PI);ctx.stroke()}
+  ctx.fillStyle='#5fa24a';for(const [dx,dy] of [[-.45,.25],[.35,-.35],[.2,.45]]){ctx.beginPath();ctx.arc(cx+dx*rx,cy+dy*ry,7,.4,Math.PI*2-.2);ctx.lineTo(cx+dx*rx,cy+dy*ry);ctx.fill()}
+  ctx.restore()}
+function drawPlots(){
+  for(const p of PLOTS){if(p.water){drawPond(p);continue}ctx.save();ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.roundRect(p.x+3,p.y+4,p.w,p.h,8);ctx.fill();
+    ctx.fillStyle='#7a4f2a';ctx.beginPath();ctx.roundRect(p.x,p.y,p.w,p.h,8);ctx.fill();ctx.clip();
+    const vert=p.h>p.w;ctx.lineWidth=4;
+    for(let k=-1;k<(vert?p.w:p.h)/9+1;k++){const o=k*9+4;ctx.strokeStyle='#5e3a1c';ctx.beginPath();
+      if(vert){ctx.moveTo(p.x+o,p.y);ctx.lineTo(p.x+o,p.y+p.h)}else{ctx.moveTo(p.x,p.y+o);ctx.lineTo(p.x+p.w,p.y+o)}ctx.stroke();
+      ctx.strokeStyle='rgba(196,140,84,.5)';ctx.lineWidth=1.5;ctx.beginPath();
+      if(vert){ctx.moveTo(p.x+o-3,p.y);ctx.lineTo(p.x+o-3,p.y+p.h)}else{ctx.moveTo(p.x,p.y+o-3);ctx.lineTo(p.x+p.w,p.y+o-3)}ctx.stroke();ctx.lineWidth=4}
+    const r=mulberry(p.x*7+p.y);ctx.fillStyle='#7fb24a';for(let k=0;k<p.w*p.h/900;k++){const x=p.x+6+r()*(p.w-12),y=p.y+6+r()*(p.h-12);ctx.beginPath();ctx.ellipse(x,y,2.4,1.4,r()*3,0,7);ctx.fill()}
+    ctx.restore();ctx.strokeStyle='#4a2e14';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(p.x,p.y,p.w,p.h,8);ctx.stroke()}
+}
 const RX=W/2,RW=22,BRIDGES=[96,H-96],BW=16,FOGS=BRIDGES.map(y=>({x:W/2,y,r:112})),SIGHT=95;let CUR=null;
-function inFog(p){return FOGS.some(f=>Math.hypot(p.x-f.x,p.y-f.y)<f.r)}
+const FOGL=()=>(CUR&&CUR.fogs)||FOGS;
+function inFog(p){return FOGL().some(f=>Math.hypot(p.x-f.x,p.y-f.y)<f.r)}
 function segHits(a,b,f){const dx=b.x-a.x,dy=b.y-a.y,L2=dx*dx+dy*dy||1;let t=((f.x-a.x)*dx+(f.y-a.y)*dy)/L2;t=Math.max(0,Math.min(1,t));return Math.hypot(a.x+dx*t-f.x,a.y+dy*t-f.y)<f.r}
-function fogBlocks(a,b){return FOGS.some(f=>segHits(a,b,f))}
+function fogBlocks(a,b){return FOGL().some(f=>segHits(a,b,f))}
 const BR=()=>(CUR&&CUR.bridges)||BRIDGES;
 const onBridge=u=>BR().some(b=>Math.abs(u.y-b)<BW);
 // percorso a terra: se il bersaglio è oltre il ruscello si passa dal ponte più comodo
@@ -1407,7 +1476,7 @@ function sees(a,t){return dist(a,t)<SIGHT||!fogBlocks(a,t)||(a.def.owlEye&&dist(
 function canTarget(a,t){
   if(!t.alive||t.underground) return false;
   if(t.disguised) return false;
-  if(CUR&&CUR.fog&&!sees(a,t)) return false;
+  if(CUR&&(CUR.fog||CUR.mist)&&!sees(a,t)) return false;
   if(t.invis>0) return false;
   if(t.def.flying&&!(a.def.ranged||a.def.flying||a.def.hitAir)) return false;
   return true;
@@ -1470,11 +1539,14 @@ function moveTo(u,tx,ty,dt,S){
   if(canCarry(u)&&!u.def.flying&&!u.underground&&!u.def.unstoppable)
     for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.block&&(!u.def.agile||e.def.blockAll)&&dist(u,e)<36){sp*=e.def.blockMul||.4;break}
   if(S.fog&&u.def.swim&&Math.abs(u.x-RX)<RW&&!onBridge(u)) sp*=.6; // a nuoto va più piano
+  if(S.plots&&S.plots.length&&u.def.swim&&S.plots.some(p=>p.water&&u.x>p.x&&u.x<p.x+p.w&&u.y>p.y&&u.y<p.y+p.h)) sp*=.6;
   if(S.fog&&!u.def.flying&&!u.def.swim){
     // un bersaglio in acqua (fuori dai ponti) si raggiunge solo dalla riva
     if(Math.abs(tx-RX)<RW+4&&!onBridge({y:ty})) tx=RX+(Math.sign(u.x-RX)||1)*(RW+4);
     const w=riverStep(u,tx,ty);if(w){tx=w.x;ty=w.y}
     if(u.reburrow&&Math.abs(u.x-RX)>RW+30&&u.carrying===null&&!u.fake){u.underground=true;u.reburrow=false}}
+  // campi arati del 2 contro 2: chi va a piedi ci gira intorno
+  if(S.plots&&S.plots.length&&!u.def.flying&&!u.underground){const w=plotNav(u,tx,ty,S);tx=w.x;ty=w.y}
   if(u.def.flying){const a=laneOf(u,S);u.via=null;
     if(a){const K=a.def.lane+(a.star===2?.5:0),da=dist(u,a),dd=Math.hypot(tx-u.x,ty-u.y),dat=Math.hypot(tx-a.x,ty-a.y);
       // conviene passare dall'Avicoltore? si confrontano i tempi: verso di lui si vola K volte più veloci
@@ -1495,6 +1567,7 @@ function moveTo(u,tx,ty,dt,S){
       u.wallHit=w}}
   if(Math.abs(dx)>3) u.face=dx>0?1:-1;
   u.x=clamp(u.x,14,W-14); u.y=clamp(u.y,16,H-16);
+  if(S.plots&&S.plots.length&&!u.def.flying&&!u.underground) pushOut(u,S,!!u.def.swim);
 }
 function dropEgg(u,S){
   const e=S.eggs[u.carrying]; e.state='dropped';e.dropT=0;e.recT=0;e.x=u.x;e.y=u.y;e.carrier=null;u.carrying=null;
@@ -1623,6 +1696,8 @@ function think(u,S,dt){
 function step(S,dt){
   CUR=S;S.t+=dt;
   const live=S.units.filter(u=>u.alive);
+  // nessuno resta dentro un campo arato (spinte, uscite dal tunnel, unità piazzate lì sopra); nemmeno l'uovo caduto
+  if(S.plots&&S.plots.length){for(const u of live) if(!u.def.flying&&!u.underground) pushOut(u,S,!!u.def.swim);for(const e of S.eggs) if(e.state==='dropped') pushOut(e,S)}
   for(const u of live){if(u.def.unstoppable){u.stun=0;u.snare=0}if(u.shellT>0)u.shellT-=dt;if(u.shellCd>0)u.shellCd-=dt;u.cd=Math.max(0,u.cd-dt);if(u.boostT>0)u.boostT-=dt;if(u.chargeT>0)u.chargeT-=dt;if(u.chargeCd>0)u.chargeCd-=dt;if(u.pst>0)u.pst-=dt;if(u.stun>0)u.stun-=dt;if(u.snare>0)u.snare-=dt;if(u.invis>0){u.invis-=dt;if(u.invis<=0)fx(S,u.x,u.y-20,'visibile','#fff6c4')}
     if(u.hit>0)u.hit-=dt;if(u.lunge>0)u.lunge-=dt;if(u.lb>0)u.lb-=dt}
   for(const u of live){ if(!(u.underground||u.invis>0||u.disguised)) continue;
@@ -1734,7 +1809,11 @@ let DPR=1;
 function fitCanvas(){const k=Math.min(3,Math.max(1,(window.devicePixelRatio||1)*(cv.clientWidth||W)/W));
   if(Math.abs(k-DPR)<.05&&cv.width===Math.round(W*DPR))return;DPR=k;cv.width=Math.round(W*k);cv.height=Math.round(H*k);ctx.setTransform(k,0,0,k,0,0)}
 fitCanvas();try{new ResizeObserver(fitCanvas).observe(cv)}catch(e){addEventListener('resize',fitCanvas)}
-const deco=(()=>{const r=mulberry(77);return Array.from({length:70},()=>({x:r()*W,y:r()*H,s:2+r()*3}))})();
+let deco=[];
+function makeDeco(){const r=mulberry(77);deco=Array.from({length:Math.round(70*H/540)},()=>({x:r()*W,y:r()*H,s:2+r()*3}))}
+makeDeco();
+// dimensioni del campo: 960×540 di solito, 960×760 nel 2 contro 2
+function setField(h){if(H===h)return;H=h;HOME[0].y=HOME[1].y=h/2;makeDeco();cv.style.aspectRatio=`${W}/${h}`;DPR=0;fitCanvas()}
 function drawField(){
   for(let i=0;i<16;i++){ctx.fillStyle=i%2?'#76a548':'#6f9e43';ctx.fillRect(i*60,0,60,H)}
   ctx.fillStyle='rgba(47,111,224,.07)';ctx.fillRect(0,0,W/2,H);
@@ -1750,6 +1829,7 @@ function drawField(){
     ctx.fillStyle='#b9854a';ctx.beginPath();ctx.ellipse(h.x,h.y+7,16,6,0,0,7);ctx.fill();
     ctx.strokeStyle='#d9b26a';ctx.lineWidth=1.5;for(let k=-3;k<=3;k++){ctx.beginPath();ctx.moveTo(h.x+k*6-6,h.y+12);ctx.lineTo(h.x+k*6+6,h.y+5);ctx.stroke()}
   }
+  if(G&&G.mode==='duo'){drawPlots();if(G.phase==='shop'||G.phase==='waiting')drawFog(DUO_MIST)}
   drawFence();
 }
 // staccionata della carpentiera: un tratto verticale con paletti quadrati e due traverse
@@ -1840,9 +1920,9 @@ function drawRiver(){
     ctx.strokeStyle='#5a3a1a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(RX-RW-14,b-BW);ctx.lineTo(RX+RW+14,b-BW);ctx.moveTo(RX-RW-14,b+BW);ctx.lineTo(RX+RW+14,b+BW);ctx.stroke();
   }
 }
-function drawFog(){
+function drawFog(list){
   ctx.save();
-  for(const f of FOGS){const g=ctx.createRadialGradient(f.x,f.y,f.r*.15,f.x,f.y,f.r);
+  for(const f of list||FOGS){const g=ctx.createRadialGradient(f.x,f.y,f.r*.15,f.x,f.y,f.r);
     g.addColorStop(0,'rgba(232,238,228,.85)');g.addColorStop(.75,'rgba(216,226,210,.66)');g.addColorStop(1,'rgba(216,226,210,0)');
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(f.x,f.y,f.r+8,0,7);ctx.fill()}
   ctx.restore();
@@ -1863,6 +1943,9 @@ function render(){
       ctx.strokeText('TRASCINA',cu.px,cu.py-40);ctx.fillText('TRASCINA',cu.px,cu.py-40);ctx.restore()}}
     const p=ME();
     ctx.fillStyle='rgba(22,30,14,.55)';ctx.fillRect(W/2+2,0,W/2,H);
+    if(G.duo){const al=G.duo.P[G.duo.me^2];ctx.save();ctx.globalAlpha=.42;
+      for(const b of al.board.filter(b=>!b.bench)) drawToken(b.px,b.py,0,b.type,b.star,b.order,{});ctx.restore();
+      if(al.board.some(b=>!b.bench)){ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillText(`In trasparenza: la squadra di ${al.name}${al.bot?'':' (round scorso)'}`,W*.25,18)}}
     for(const b of p.board.filter(b=>!b.bench).sort((a,b)=>a.py-b.py)) drawToken(b.px,b.py,0,b.type,b.star,b.order,{sel:G.sel===b.uid});
     ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.font='44px "Lilita One",sans-serif';ctx.fillText('?',W*.75,H/2-14);
@@ -1878,6 +1961,7 @@ function render(){
     if(e.state==='dropped'&&e.recT>0){ctx.lineCap='round';ctx.strokeStyle='rgba(0,0,0,.35)';ctx.lineWidth=5;ctx.beginPath();ctx.arc(X(e.x),e.y-4,19,0,7);ctx.stroke();
       ctx.strokeStyle=SIDE[e.side^G.me].col;ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(X(e.x),e.y-4,19,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.recT/3));ctx.stroke()}}
   if(S.fog) drawFog();
+  if(S.mist) drawFog(DUO_MIST);
   for(const f of S.fakes) if(f.state==='home'){drawEgg(X(f.x),f.y-4,.85,false);
     if(f.side===G.me){ctx.font='bold 9px Nunito,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.strokeText('finto',X(f.x),f.y+14);ctx.fillText('finto',X(f.x),f.y+14)}}
   for(const c of S.clouds){ctx.save();ctx.globalAlpha=Math.min(1,c.t)*.35;ctx.fillStyle='#9bbf3a';ctx.beginPath();ctx.arc(X(c.x),c.y,c.r,0,7);ctx.fill();
@@ -1886,7 +1970,7 @@ function render(){
   for(const w of S.units) if(w.alive&&w.def.wall) drawWall(X(w.x),w.y,w.def.wall*FENCE_L,w.hp/w.maxHp,SIDE[C(w.side)].col);
   const us=S.units.filter(u=>u.alive).sort((a,b)=>(a.def.flying-b.def.flying)||(a.y-b.y));
   for(const u of us){
-    if(S.fog&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
+    if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
     drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
@@ -1910,7 +1994,7 @@ function render(){
 // ---------- flusso round ----------
 function startBattle(){
   G.lastComp=[0,1].map(s=>G.players[s].board.filter(b=>!b.bench).map(b=>({...b})));
-  G.sim=makeSim(G.mode==='pvp'?((G.seedBase*31+G.round*7919)>>>0):G.mode==='rumble'?G.rmb.mySeed:Math.floor(G.rng()*1e9));G.phase='reveal';G.revealT=1.8;G.acc=0;G.logN=0;
+  G.sim=makeSim(G.mode==='pvp'||(G.duo&&G.duo.online)?((G.seedBase*31+G.round*7919)>>>0):G.mode==='rumble'?G.rmb.mySeed:Math.floor(G.rng()*1e9));G.phase='reveal';G.revealT=1.8;G.acc=0;G.logN=0;
   $('log').innerHTML='';
   showBanner(`Round ${G.round}`,`Rivelazione delle squadre… Durata: ${G.sim.T} secondi.`,null);
   renderAll();
@@ -1922,9 +2006,9 @@ function endRound(){
   const me=G.me;let title,text;
   if(o.winner!==null){G.score[o.winner]++;G.lost[1-o.winner]=true;
     title=o.winner===me?'Uovo rubato!':'Ti hanno rubato l\'uovo!';
-    text=`${o.by.def.n} ${o.winner===me?'(tuo)':`(di ${G.oppName})`} lo porta nel nido.`+(o.winner!==me?' Ricevi +1 oro nel prossimo market.':'');}
+    text=`${o.by.def.n} ${G.duo?(o.winner===me?'(della tua squadra)':'(squadra avversaria)'):o.winner===me?'(tuo)':`(di ${G.oppName})`} lo porta nel nido.`+(o.winner!==me?' Ricevi +1 oro nel prossimo market.':'');}
   else{title=o.draw?'Round pari!':'Nessuna presa';text=o.reason}
-  const lostB=baitLoss(S,G.players,me,G.mode==='pvp');
+  const lostB=G.duo?duoBaitLoss(S):baitLoss(S,G.players,me,G.mode==='pvp');
   if(lostB.length) text+=` Esche distrutte: ${lostB.join(', ')}.`;
   if(G.bribeGold[me]) text+=` Umani corrotti: +${G.bribeGold[me]} oro nel prossimo market.`;
   flushLog();
@@ -1954,7 +2038,7 @@ async function finishMatch(res,summary){
   if(!G||G.phase==='over'&&G.finished) return;
   G.phase='over';G.finished=true;
   const head=res===1?'Hai vinto la partita!':res===0?`Ha vinto ${G.oppName}`:'Pareggio';
-  const note=G.mode!=='pvp'?' Allenamento contro il bot: Elo invariato.':G.ranked?'':' Partita amichevole: Elo invariato.';
+  const note=G.duo?' Partita 2 contro 2: Elo invariato.':G.mode!=='pvp'?' Allenamento contro il bot: Elo invariato.':G.ranked?'':' Partita amichevole: Elo invariato.';
   showBanner(head,summary+note,'Torna al menu',()=>showLobby());
   if(G.mode==='pvp'){
     G.unsub.forEach(f=>f());G.unsub=[];
@@ -1967,6 +2051,7 @@ async function finishMatch(res,summary){
     }
     try{await DB.doc('rooms/'+G.room).update({status:'done'})}catch(e){}
   }
+  if(G.duo&&G.duo.online){G.unsub.forEach(f=>f());G.unsub=[]}
   if(G) renderAll();
 }
 function flushLog(){
@@ -1983,7 +2068,7 @@ function renderAll(){
   $('sc0').textContent=`Tu ${G.score[G.me]}`;$('sc1').textContent=`${G.score[1-G.me]} ${G.oppName}`;
   $('roundPill').textContent=`Round ${G.round}`;$('goalTxt').textContent=`primo a ${G.win} ${G.win===1?'presa':'prese'}${G.variant==='fog'?' · 🌫️ Nebbia':''}`;
   $('phasePill').textContent={shop:'Market',waiting:'In attesa',reveal:'Rivelazione',battle:'Battaglia',result:'Fine round',over:'Fine partita'}[G.phase];
-  $('menuBtn').textContent=(G.mode==='pvp'||(G.rmb&&G.rmb.online))&&G.phase!=='over'?'Abbandona':'Menu';
+  $('menuBtn').textContent=isMP()&&G.phase!=='over'?'Abbandona':'Menu';
   $('rumblePanel').classList.toggle('hidden',!G.rmb);
   if(G.rmb){const R=G.rmb,me=R.P[R.me],op=pOf(R.opp),alive=R.P.filter(p=>!p.out).length;
     $('sc0').textContent=`Tu 🥚${me.lives}`;$('sc1').textContent=`${op.ghost?'':'🥚'+op.lives+' '}${G.oppName}`;
@@ -2104,7 +2189,7 @@ $('readyBtn').onclick=()=>{
   if(!p.board.some(b=>!b.bench)){toast('Metti almeno un\'unità in campo prima di iniziare.');return}
   if(!p.board.some(b=>!b.bench&&UNITS[b.type].tags.includes('Ladro'))) toast('Attenzione: senza ladri non puoi rubare l\'uovo nemico.');
   G.sel=null;
-  if(G.mode==='pvp') submitTurn(); else if(G.mode==='rumble'&&G.rmb.online) submitRumble(); else startBattle();
+  if(G.mode==='pvp') submitTurn(); else if(G.mode==='rumble'&&G.rmb.online) submitRumble(); else if(G.mode==='duo') (G.duo.online?submitDuo():duoBattle()); else startBattle();
 };
 // drag sul campo
 let drag=null;
@@ -2126,7 +2211,7 @@ function unitAt(m){
   if(!G.sim) return null;
   const X=x=>G.me===1?W-x:x;
   let best=null,bd=22;
-  for(const u of G.sim.units) if(u.alive&&(u.side===G.me||(!u.underground&&u.invis<=0&&(!G.sim.fog||G.sim.units.some(a=>a.alive&&a.side===G.me&&sees(a,u)))))){const d=Math.hypot(X(u.x)-m.x,(u.def.flying&&!u.underground?u.y-12:u.y)-m.y);if(d<bd){bd=d;best=u}}
+  for(const u of G.sim.units) if(u.alive&&(u.side===G.me||(!u.underground&&u.invis<=0&&(!(G.sim.fog||G.sim.mist)||G.sim.units.some(a=>a.alive&&a.side===G.me&&sees(a,u)))))){const d=Math.hypot(X(u.x)-m.x,(u.def.flying&&!u.underground?u.y-12:u.y)-m.y);if(d<bd){bd=d;best=u}}
   if(best) return best;
   if(G.sim.traps.some(t=>t.armed&&t.side===G.me&&Math.hypot(X(t.x)-m.x,t.y-m.y)<14)) return{trap:true};
   return null;
@@ -2182,7 +2267,7 @@ function renderLobby(){
   if(GUEST&&RAW) $('guestNick').textContent=RAW.nick;
   if(reg){$('meNick').textContent=PROFILE.nick;$('meElo').textContent=Math.round(PROFILE.elo);$('meEloF').textContent=Math.round(PROFILE.eloFog??1000);$('meWL').textContent=`${(PROFILE.wins||0)+(PROFILE.winsFog||0)} vittorie · ${(PROFILE.losses||0)+(PROFILE.lossesFog||0)} sconfitte`}
   const can=ONLINE==='ok'&&reg&&CANWRITE;
-  for(const id of ['roomFriendly','roomRanked','joinBtn','rumbleOnline','quickFriendly','quickRanked']) $(id).disabled=!can||!!QUEUE;
+  for(const id of ['roomFriendly','roomRanked','joinBtn','rumbleOnline','quickFriendly','quickRanked','duoOnline']) $(id).disabled=!can||!!QUEUE;
   $('socialPanel').classList.toggle('hidden',!can);if(can)renderSocial();
   $('onlineNote').textContent=ONLINE==='loading'?'Connessione al server di gioco…':
     ONLINE==='login'?'Accedi per giocare online con gli amici: basta mandare il link e un codice stanza.':
@@ -2407,18 +2492,18 @@ function banStart(d){const rum=d.type==='rumble',order=rum?(d.players||[]).filte
   return{status:'banning',banOrder:order,nBan:rum?order.length:4,bans:[],banAt:Date.now()}}
 const nBanOf=d=>d.nBan??(d.banOrder||[]).length;
 // personaggi che si possono scegliere: tutti quelli della modalità, tranne i bannati e quelli già nella pool
-function pickable(d){const fog=d.variant==='fog',pool=lobbyPool(d),used=(d.bans||[]).map(b=>b.k);
-  return Object.keys(UNITS).filter(k=>!UNITS[k].hidden&&(fog?!UNITS[k].classicOnly:!UNITS[k].fogOnly)&&!pool.includes(k)&&!used.includes(k))}
+// ban e scelte si fanno tra tutti i personaggi della modalità; il pool si calcola solo dopo, senza i bannati e con gli scelti
+const allChars=d=>{const fog=d.variant==='fog';return Object.keys(UNITS).filter(k=>!UNITS[k].hidden&&(fog?!UNITS[k].classicOnly:!UNITS[k].fogOnly))};
+function pickable(d){const used=(d.bans||[]).map(b=>b.k);return allChars(d).filter(k=>!used.includes(k))}
 const bansOf=d=>(d.bans||[]).filter(b=>!b.pick).map(b=>b.k),picksOf=d=>(d.bans||[]).filter(b=>b.pick).map(b=>b.k);
 function lobbyPool(d){return makePool(d.variant==='fog'?'fog':'classic',mulberry((+d.seed||1)^0x51ed27),d.type==='rumble'||!!d.ranked||!!d.bansOn)}
 function nickOf(d,uid){if(d.type==='rumble'){const p=(d.players||[]).find(x=>x.uid===uid);return p?p.nick:'?'}return uid===d.host?d.hostNick:d.guestNick}
 function renderBan(d,code){
   if(!LOBBY)return;LOBBY.ban=d;$('banBox').classList.remove('hidden');$('pvpStart').classList.add('hidden');$('rumbleStart').classList.add('hidden');$('rumbleFillRow').classList.add('hidden');
-  const n=(d.bans||[]).length,picking=n>=nBanOf(d),pool=lobbyPool(d),banned=bansOf(d),picked=picksOf(d),turn=d.banOrder[n],mine=turn===UID;
+  const n=(d.bans||[]).length,picking=n>=nBanOf(d),banned=bansOf(d),picked=picksOf(d),turn=d.banOrder[n],mine=turn===UID;
   const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-ban="${k}" ${dis?'disabled':''}>${IC(u)} ${u.n}</button>`};
-  $('banPool').innerHTML=(picking?'<p class="banhd">Pool della partita</p>':'')+pool.map(k=>chip(k,banned.includes(k)?' banned':'',picking||!mine||banned.includes(k))).join('')
-    +picked.map(k=>chip(k,' picked',true)).join('')
-    +(picking?'<p class="banhd">Scegli un personaggio da aggiungere</p>'+pickable(d).map(k=>chip(k,'',!mine)).join(''):'');
+  $('banPool').innerHTML=`<p class="banhd">${picking?'Scegli un personaggio che sarà di sicuro nella partita':'Tutti i personaggi: banna quello che non vuoi in partita'}</p>`
+    +allChars(d).map(k=>chip(k,banned.includes(k)?' banned':picked.includes(k)?' picked':'',!mine||banned.includes(k)||picked.includes(k))).join('');
   if(!LOBBY.banT)LOBBY.banT=setInterval(banTick,500);banTick();
 }
 function banTick(){
@@ -2427,7 +2512,7 @@ function banTick(){
   const picking=n>=nBanOf(d);
   $('banText').textContent=picking?(turn===UID?`Fase di scelta: tocca a te, scegli un personaggio che sarà di sicuro nella partita (${left} s).`:`Fase di scelta: tocca a ${nickOf(d,turn)} (${left} s).`)
     :turn===UID?`Fase di ban: tocca a te, scegli un personaggio da escludere dalla partita (${left} s).`:`Fase di ban: tocca a ${nickOf(d,turn)} (${left} s).`;
-  if(left<=0&&(L.host||turn===UID)&&!L.autoBan){L.autoBan=n;const pool=picking?pickable(d):lobbyPool(d).filter(k=>!(d.bans||[]).some(b=>b.k===k));doBan(L.code,pool[Math.floor(Math.random()*pool.length)],true).finally(()=>{if(L.autoBan===n)L.autoBan=null})}
+  if(left<=0&&(L.host||turn===UID)&&!L.autoBan){L.autoBan=n;const pool=pickable(d);doBan(L.code,pool[Math.floor(Math.random()*pool.length)],true).finally(()=>{if(L.autoBan===n)L.autoBan=null})}
 }
 async function doBan(code,k,auto){
   const ref=DB.doc('rooms/'+code);try{const l=await ref.acquire({holder:UID,ttlMs:3000});if(!l.acquired)return;
@@ -2581,7 +2666,7 @@ async function joinRoom(){
   try{s=await ref.get()}catch(e){lobbyMsg('Connessione non riuscita, riprova.');return}
   const d=s.exists&&s.data();
   if(!d){lobbyMsg('Stanza non trovata: controlla il codice.');return}
-  if(d.type==='rumble'){joinRumble(code,ref,d);return}
+  if(d.type==='rumble'||d.type==='duo'){joinRumble(code,ref,d);return}
   if(d.host===UID){lobbyMsg('È la tua stanza: aspetta che entri l\'avversario.');return}
   if(d.status!=='waiting'||(d.guest&&d.guest!==UID)){lobbyMsg('Questa stanza è già in gioco o chiusa.');return}
   try{await ref.update({guest:UID,guestNick:PROFILE.nick,guestElo:eloOf(d.variant)})}catch(e){lobbyMsg('Non riesco a entrare nella stanza.');return}
@@ -2655,8 +2740,11 @@ let menuArm=0;
 $('menuBtn').onclick=async()=>{
   if(!G) return;
   const onlineR=G.rmb&&G.rmb.online;
-  if((G.mode!=='pvp'&&!onlineR)||G.phase==='over'){showLobby();return}
+  if(!isMP()||G.phase==='over'){showLobby();return}
   if(Date.now()-menuArm>3000){menuArm=Date.now();toast('Premi di nuovo Abbandona entro 3 secondi per lasciare la partita: conta come sconfitta.');return}
+  if(G.duo){const r=G.phase==='shop'?G.round:G.round+1;
+    try{await DB.doc(`rooms/${G.room}/dd/r${r}p${G.duo.me}`).set({round:r,idx:G.duo.me,left:true,board:[],by:UID})}catch(e){}
+    showLobby();return}
   if(onlineR){const R=G.rmb,r=G.phase==='shop'?G.round:G.round+1;
     try{await DB.doc(`rooms/${G.room}/rr/r${r}p${R.me}`).set({round:r,idx:R.me,left:true,board:[],by:UID})}catch(e){}
     showLobby();return}
@@ -2834,6 +2922,84 @@ async function rumbleFinish(place){
       try{await DB.doc('players/'+UID).update({eloRumble:elo,gamesRumble:(PROFILE.gamesRumble||0)+1,winsRumble:(PROFILE.winsRumble||0)+(place===1?1:0),games:(PROFILE.games||0)+1})}catch(e){toast('Non sono riuscito a salvare il risultato.')}}}
   renderAll();
 }
+// ---------- 2 contro 2 ----------
+// 4 giocatori: posti 0 e 2 nella squadra blu, 1 e 3 nella rossa. Ognuno ha il suo market e il suo oro;
+// in battaglia le unità dei due compagni scendono insieme e difendono un solo uovo.
+const teamOf=i=>i%2;
+function initDuo(o){
+  const P=o.players.map((x,i)=>Object.assign(mkPlayer(),{name:x.name,uid:x.uid||null,bot:!!x.bot,brng:mulberry(((G.seedBase||1)*173+i*7919+11)>>>0)}));
+  const me=o.meIdx||0;G.duo={P,me,online:!!o.online,docs:[]};
+  G.me=teamOf(me);G.players=[null,null];G.players[G.me]=P[me];G.players[1-G.me]=P.find((p,i)=>teamOf(i)!==G.me);
+  G.oppName=P.filter((p,i)=>teamOf(i)!==G.me).map(p=>p.name).join(' e ');
+}
+function duoShop(){
+  const D=G.duo;for(const p of D.P){p.ovr=null;p.skip=false}
+  D.P.forEach((p,i)=>{const t=teamOf(i);p.gold=Math.min(10,3+G.round)+(G.lost[t]?1:0)+((G.bribeGold||[])[t]||0);
+    if(i===D.me) rollShop(p,G.rng,G.round);
+    else if(p.bot){rollShop(p,p.brng,G.round);botTurn(p,p.brng,G.lastComp[1-t])}});
+  hideBanner();
+  const al=D.P[D.me^2];
+  toast(G.round===1?`2 contro 2: tu e ${al.name} contro ${G.oppName}. Un solo uovo per squadra; campi arati e laghetti si aggirano (chi vola e la Talpa sottoterra passano, l'Oca nuota), nella nebbia si vede solo da vicino.`:'');
+  renderAll();
+}
+// le due formazioni di squadra: le unità dei compagni insieme (uid diversi per ogni giocatore)
+function duoTeams(){const D=G.duo;
+  return [0,1].map(t=>D.P.flatMap((p,i)=>teamOf(i)!==t||p.skip||p.left?[]:p.board.filter(b=>!b.bench).map(b=>({...b,uid:i*100+(b.uid%100)}))))}
+function duoBattle(){
+  const T=duoTeams();G.players[0].ovr=T[0];G.players[1].ovr=T[1];
+  startBattle();G.lastComp=T.map(x=>x.map(b=>({...b})));
+}
+function duoBaitLoss(S){
+  const out=[],D=G.duo;
+  for(const u of S.units){
+    if(u.alive||u.def.role!=='static'||!u.def.tags.includes('Oggetto')||u.def.hidden||u.buid==null) continue;
+    const i=Math.floor(u.buid/100),p=D.P[i];if(!p) continue;const b=p.board.find(x=>x.uid%100===u.buid%100&&x.type===u.type);if(!b) continue;
+    if(b.star>1){b.star--;if(i===D.me)out.push(`${UNITS[b.type].n} scende a ${'★'.repeat(b.star)}`)}
+    else{p.board=p.board.filter(x=>x!==b);if(i===D.me)out.push(`${UNITS[b.type].n} è andato perso`)}
+  }
+  return out;
+}
+async function submitDuo(){
+  const D=G.duo,round=G.round,me=D.P[D.me];
+  const board=me.board.map(b=>({type:b.type,star:b.star,order:b.order||null,px:b.px,py:b.py,bench:!!b.bench}));
+  G.phase='waiting';renderAll();showBanner('Squadra inviata','In attesa degli altri giocatori…',null);
+  const ref=DB.doc(`rooms/${G.room}/dd/r${round}p${D.me}`);let ex=null;try{ex=await ref.get()}catch(e){}
+  if(ex&&ex.exists&&ex.data().afk){me.skip=true;toast('Eri fuori tempo: questo round la tua squadra non scende in campo.')}
+  else{const at=Date.now();try{await ref.set({round,idx:D.me,board,by:UID,at})}
+    catch(e){G.phase='shop';hideBanner();toast('Invio non riuscito, premi di nuovo Pronto.');renderAll();return}
+    G.myAt=at;setDeadline(at)}
+  duoTry();
+}
+function duoTry(){
+  const D=G&&G.duo;if(!D||G.phase!=='waiting')return;
+  const by={};for(const d of D.docs) if(d.round===G.round) by[d.idx]=d;
+  const miss=D.P.map((p,i)=>i).filter(i=>!D.P[i].bot&&!D.P[i].left&&!by[i]);
+  if(miss.length){$('bText').textContent=`In attesa di: ${miss.map(i=>D.P[i].name).join(', ')}`;return}
+  // squadre ufficiali del round: le stesse per tutti i client
+  D.P.forEach((p,i)=>{if(p.bot||p.left)return;const d=by[i];if(d.left){p.left=true;p.board=[]}else if(d.afk)p.skip=true;else p.board=cleanFull(d.board,i*100)});
+  D.P[D.me].uidc=Math.max(D.P[D.me].uidc,D.me*100+50);
+  duoBattle();
+}
+function startDuoOnline(code,d,meIdx){
+  newMatch({mode:'duo',online:true,room:code,seed:+d.seed||1,win:[1,2,3,5,7].includes(+d.win)?+d.win:3,players:d.players.map(p=>({name:String(p.nick||'Giocatore').slice(0,16),uid:p.uid||null,bot:!!p.bot})),meIdx});
+  const un=DB.collection(`rooms/${code}/dd`).onSnapshot(s=>{if(!G||!G.duo)return;G.duo.docs=s.docs.map(x=>x.data());
+    for(const x of G.duo.docs) if(x.round===G.round&&!x.afk) setDeadline(x.at);
+    duoTry()},()=>{});
+  G.unsub.push(un);
+  startChat(code);rememberOpponents(d.players.filter(p=>!p.bot&&p.uid!==UID).map(p=>({id:p.uid,nick:p.nick})));
+}
+async function createDuo(){
+  if(!PROFILE||!DB) return;lobbyMsg('Creo la stanza…');let code;
+  try{
+    for(let i=0;i<5;i++){code=Array.from({length:5},()=>CODECH[Math.floor(Math.random()*CODECH.length)]).join('');if(!(await DB.doc('rooms/'+code).get()).exists)break}
+    await DB.doc('rooms/'+code).set({type:'duo',host:UID,players:[{uid:UID,nick:PROFILE.nick,elo:eloOf('classic')}],status:'waiting',win:winTarget(),seed:Math.floor(Math.random()*2e9),created:Date.now()});
+  }catch(e){lobbyMsg('Non riesco a creare la stanza, riprova.');return}
+  lobbyMsg('');watchRumbleRoom(code,true);
+}
+function startDuoBot(){
+  const me=PROFILE?PROFILE.nick:'Tu',b=BOTN;
+  newMatch({mode:'duo',win:winTarget(),players:[{name:me},{name:b[0],bot:true},{name:b[1],bot:true},{name:b[2],bot:true}],meIdx:0});
+}
 // --- online ---
 function cleanFull(list,uidBase){
   return (Array.isArray(list)?list:[]).filter(b=>b&&UNITS[b.type]&&!UNITS[b.type].hidden).slice(0,MAXB+MAXBENCH).map((b,i)=>({uid:uidBase+i+1,type:b.type,
@@ -2873,13 +3039,14 @@ async function createRumble(){
   lobbyMsg('');watchRumbleRoom(code,true);
 }
 async function joinRumble(code,ref,d){
-  if(d.status!=='waiting'){lobbyMsg('Questa Royal Rumble è già iniziata.');return}
+  const MX=d.type==='duo'?4:8;
+  if(d.status!=='waiting'){lobbyMsg(d.type==='duo'?'Questa partita 2 contro 2 è già iniziata.':'Questa Royal Rumble è già iniziata.');return}
   if(!(d.players||[]).some(p=>p.uid===UID)){
-    if((d.players||[]).length>=8){lobbyMsg('La stanza è piena (8 giocatori).');return}
+    if((d.players||[]).length>=MX){lobbyMsg(`La stanza è piena (${MX} giocatori).`);return}
     try{let l;for(let t=0;t<8;t++){l=await ref.acquire({holder:UID,ttlMs:1500});if(l.acquired)break;lobbyMsg('Qualcuno sta entrando proprio ora, attendo un attimo…');await new Promise(r=>setTimeout(r,700))}
       if(!l.acquired){lobbyMsg('La stanza è molto affollata in questo momento: riprova tra qualche secondo.');return}
       const cur=(await ref.get()).data();
-      if(cur.status!=='waiting'||(cur.players||[]).length>=8){lobbyMsg('La stanza non è più disponibile.');return}
+      if(cur.status!=='waiting'||(cur.players||[]).length>=MX){lobbyMsg('La stanza non è più disponibile.');return}
       await ref.update({players:[...cur.players,{uid:UID,nick:PROFILE.nick,elo:eloOf('rumble')}]});
     }catch(e){lobbyMsg('Non riesco a entrare nella stanza.');return}
   }
@@ -2890,23 +3057,27 @@ function watchRumbleRoom(code,host){
   $('rumbleBox').classList.remove('hidden');$('roomWait').textContent=host?'Quando siete almeno in 2 puoi avviare. Fino a 8 giocatori.':'In attesa che chi ha creato la stanza avvii la partita…';
   if(roomUnsub) roomUnsub();
   roomUnsub=DB.doc('rooms/'+code).onSnapshot(s=>{const d=s.exists&&s.data();if(!d)return;
-    const ps=d.players||[];
-    const fillN=d.status==='waiting'&&d.fill?8-ps.length:0;
-    if(!LOBBY&&!G&&d.status!=='playing'){LOBBY={code,kind:'rumble',label:'Royal Rumble',host};lobbyChat(code);renderSocial()}$('lobbyMembers').classList.add('hidden');$('pvpStart').classList.add('hidden');
-    $('rumbleList').innerHTML=ps.map((p,i)=>p.bot?`<li><span class="pos">${i+1}</span><span>🤖 ${esc(p.nick)}</span><span class="wl">bot</span><b></b></li>`:memberLi({id:p.uid,nick:p.nick,elo:p.elo}).replace('<span class="pos">·</span>',`<span class="pos">${i+1}</span>`)).join('')+
-      (fillN>0?`<li><span class="pos">+</span><span>🤖 ${fillN} bot di riempimento</span><span class="wl">bravura adattiva</span><b></b></li>`:'');
-    const waiting=d.status==='waiting';$('rumbleFillRow').classList.toggle('hidden',!waiting);
+    const ps=d.players||[],duo=d.type==='duo';
+    const fillN=d.status==='waiting'&&(duo||d.fill)?(duo?4:8)-ps.length:0;
+    if(duo){$('roomKind').textContent=`2 contro 2 a ${+d.win||3} prese`;$('roomWait').textContent=host?'Squadre: blu i posti 1 e 3, rossa i posti 2 e 4. I posti liberi li prendono i bot. Puoi avviare quando siete almeno in 2.':'In attesa che chi ha creato la stanza avvii la partita…'}
+    if(!LOBBY&&!G&&d.status!=='playing'){LOBBY={code,kind:'rumble',label:duo?'partita 2 contro 2':'Royal Rumble',host};lobbyChat(code);renderSocial()}$('lobbyMembers').classList.add('hidden');$('pvpStart').classList.add('hidden');
+    const pos=i=>duo?(i%2?'🔴':'🔵'):i+1;
+    $('rumbleList').innerHTML=ps.map((p,i)=>p.bot?`<li><span class="pos">${pos(i)}</span><span>🤖 ${esc(p.nick)}</span><span class="wl">bot</span><b></b></li>`:memberLi({id:p.uid,nick:p.nick,elo:p.elo}).replace('<span class="pos">·</span>',`<span class="pos">${pos(i)}</span>`)).join('')
+      +(duo?Array.from({length:Math.max(0,fillN)},(_,k)=>`<li><span class="pos">${pos(ps.length+k)}</span><span>🤖 Posto libero: lo prende un bot</span><span class="wl"></span><b></b></li>`).join(''):
+      fillN>0?`<li><span class="pos">+</span><span>🤖 ${fillN} bot di riempimento</span><span class="wl">bravura adattiva</span><b></b></li>`:'');
+    const waiting=d.status==='waiting';$('rumbleFillRow').classList.toggle('hidden',!waiting||duo);
     $('rumbleFill').checked=!!d.fill;$('rumbleFill').disabled=!host;
     $('rumbleFill').onchange=async()=>{try{await DB.doc('rooms/'+code).update({fill:$('rumbleFill').checked})}catch(e){lobbyMsg('Non riesco a cambiare l\'opzione.')}};
     $('rumbleStart').classList.toggle('hidden',!(host&&waiting));$('rumbleStart').disabled=ps.length<2;
     $('rumbleStart').onclick=async()=>{try{const ref=DB.doc('rooms/'+code),cur=(await ref.get()).data(),hp=cur.players||[],up={status:'playing'};
+      if(cur.type==='duo'){up.players=[...hp,...BOTN.slice(0,4-hp.length).map(n=>({uid:null,nick:n,bot:true}))];await ref.update(up);return}
       if(cur.fill&&hp.length<8){const avg=hp.reduce((a,p)=>a+(+p.elo||1000),0)/hp.length;
         up.players=[...hp,...BOTN.slice(0,8-hp.length).map(n=>({uid:null,nick:n,bot:true}))];up.botBase=clamp((avg-800)/600,0,1)}
       Object.assign(up,banStart({...cur,type:'rumble',players:up.players||hp}));
       await ref.update(up)}catch(e){lobbyMsg('Avvio non riuscito.')}};
     if(d.status==='banning'&&!G) renderBan(d,code);
     if(d.status==='closed'&&!G&&!host){closeLobbyUI();lobbyMsg('La stanza è stata chiusa.')}
-    if(d.status==='playing'&&!G){const meIdx=ps.findIndex(p=>p.uid===UID);if(meIdx<0)return;closeLobbyUI();startRumbleOnline(code,d,meIdx)}
+    if(d.status==='playing'&&!G){const meIdx=ps.findIndex(p=>p.uid===UID);if(meIdx<0)return;closeLobbyUI();(duo?startDuoOnline:startRumbleOnline)(code,d,meIdx)}
   },()=>{});
 }
 function startRumbleOnline(code,d,meIdx){
@@ -2921,6 +3092,8 @@ function startRumbleOnline(code,d,meIdx){
 }
 $('rumbleBot').onclick=()=>newMatch({mode:'rumble',players:[{name:PROFILE?PROFILE.nick:'Tu'},...BOTN.map(n=>({name:n,bot:true}))],meIdx:0});
 $('rumbleOnline').onclick=createRumble;
+$('duoBot').onclick=startDuoBot;
+$('duoOnline').onclick=createDuo;
 function setWide(on){document.querySelector('.main').classList.toggle('wide',on);const b=$('sideBtn');b.textContent=on?'Mostra info ⇥':'Campo grande ⇤';b.setAttribute('aria-expanded',String(!on));
   try{localStorage.setItem('ff-wide',on?'1':'0')}catch(e){}}
 $('sideBtn').onclick=()=>setWide(!document.querySelector('.main').classList.contains('wide'));
@@ -3028,12 +3201,13 @@ function renderPlay(){
   for(const b of document.querySelectorAll('[data-pt]'))b.classList.toggle('on',b.dataset.pt===PT);
   for(const b of document.querySelectorAll('[data-pm]'))b.classList.toggle('on',b.dataset.pm===PM);
   $('modeSel').value=PM==='fog'?'fog':'classic';$('modeSel').onchange();
-  const R=PM==='rumble',show=(id,on)=>$(id).classList.toggle('hidden',!on),online=PT!=='bot';
-  show('rumbleHint',R);show('winRow',PM==='classic');show('banRow',PT!=='ranked'&&!R);show('rankNote',PT==='ranked');
+  const R=PM==='rumble',D=PM==='duo',show=(id,on)=>$(id).classList.toggle('hidden',!on),online=PT!=='bot';
+  show('rumbleHint',R);show('duoHint',D);show('winRow',PM==='classic'||D);show('banRow',PT!=='ranked'&&!R&&!D);show('rankNote',PT==='ranked'&&!D);
+  show('duoBot',PT==='bot'&&D);show('duoOnline',PT!=='bot'&&D);
   show('loginNote',online&&!(PROFILE&&ONLINE==='ok'));
-  show('botBtn',PT==='bot'&&!R);show('rumbleBot',PT==='bot'&&R);
-  show('roomFriendly',PT==='friendly'&&!R);show('quickFriendly',PT==='friendly'&&!R);
-  show('quickRanked',PT==='ranked'&&!R);show('roomRanked',PT==='ranked'&&!R);show('rumbleOnline',online&&R);
+  show('botBtn',PT==='bot'&&!R&&!D);show('rumbleBot',PT==='bot'&&R);
+  show('roomFriendly',PT==='friendly'&&!R&&!D);show('quickFriendly',PT==='friendly'&&!R&&!D);
+  show('quickRanked',PT==='ranked'&&!R&&!D);show('roomRanked',PT==='ranked'&&!R&&!D);show('rumbleOnline',online&&R);
 }
 function openPlay(pt,pm){if(pt)PT=pt;if(pm)PM=pm;$('playModal').classList.remove('hidden');renderPlay()}
 window.openPlay=openPlay;
@@ -3051,21 +3225,21 @@ function startBotBans(){
   $('playModal').classList.add('hidden');$('botBanModal').classList.remove('hidden');renderBotBan();
 }
 function renderBotBan(){
-  const d=BB.d,n=d.bans.length,picking=n>=BB.nBan,mine=BB.order[n]==='me',pool=lobbyPool(d),banned=bansOf(d),picked=picksOf(d);
+  const d=BB.d,n=d.bans.length,picking=n>=BB.nBan,mine=BB.order[n]==='me',banned=bansOf(d),picked=picksOf(d);
   const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-bban="${k}" ${dis?'disabled':''}>${IC(u)} ${u.n}</button>`};
-  $('botBanPool').innerHTML=(picking?'<p class="banhd">Pool della partita</p>':'')+pool.map(k=>chip(k,banned.includes(k)?' banned':'',picking||!mine||banned.includes(k))).join('')
-    +picked.map(k=>chip(k,' picked',true)).join('')+(picking?'<p class="banhd">Scegli un personaggio da aggiungere</p>'+pickable(d).map(k=>chip(k,'',!mine)).join(''):'');
+  $('botBanPool').innerHTML=`<p class="banhd">${picking?'Scegli un personaggio che sarà di sicuro nella partita':'Tutti i personaggi: banna quello che non vuoi in partita'}</p>`
+    +allChars(d).map(k=>chip(k,banned.includes(k)?' banned':picked.includes(k)?' picked':'',!mine||banned.includes(k)||picked.includes(k))).join('');
   botBanTick();
 }
 function botBanTick(){
   if(!BB)return;const d=BB.d,n=d.bans.length,picking=n>=BB.nBan,left=Math.max(0,Math.ceil((BB.at+BAN_MS-Date.now())/1000));
   $('botBanText').textContent=BB.order[n]==='me'?(picking?`Fase di scelta: tocca a te, scegli un personaggio che sarà di sicuro nella partita (${left} s).`:`Fase di ban: tocca a te, scegli un personaggio da escludere dalla partita (${left} s).`):'Il bot sta scegliendo…';
   if(BB.order[n]==='bot'&&Date.now()-BB.at>900) botBanDo(botBanChoice());
-  else if(BB.order[n]==='me'&&left<=0){const c=picking?pickable(d):lobbyPool(d).filter(k=>!bansOf(d).includes(k));botBanDo(c[Math.floor(Math.random()*c.length)])}
+  else if(BB.order[n]==='me'&&left<=0){const c=pickable(d);botBanDo(c[Math.floor(Math.random()*c.length)])}
 }
 // il bot banna i personaggi più costosi rimasti e sceglie a caso tra quelli che può aggiungere
 function botBanChoice(){const d=BB.d;if(d.bans.length>=BB.nBan){const c=pickable(d);return c[Math.floor(Math.random()*c.length)]}
-  const c=lobbyPool(d).filter(k=>!bansOf(d).includes(k)).sort((a,b)=>costOf(b)-costOf(a)||Math.random()-.5);return c[Math.floor(Math.random()*Math.min(4,c.length))]}
+  const c=pickable(d).sort((a,b)=>costOf(b)-costOf(a)||Math.random()-.5);return c[Math.floor(Math.random()*Math.min(4,c.length))]}
 function botBanDo(k){
   if(!BB||!k)return;const d=BB.d,pick=d.bans.length>=BB.nBan;d.bans.push(pick?{k,pick:true}:{k});BB.at=Date.now();
   if(d.bans.length>=BB.order.length){const b=BB;clearInterval(b.t);BB=null;$('botBanModal').classList.add('hidden');
@@ -3092,11 +3266,12 @@ function mpTick(){
   const now=Date.now(),left=G.deadline?Math.ceil((G.deadline-now)/1000):null,pill=$('timerPill');
   if(G.phase==='shop'&&left!=null){
     pill.classList.remove('hidden');pill.classList.toggle('urgent',left<=10);pill.textContent=`⏱ ${Math.max(0,left)} s per il Pronto`;
-    if(left<=0){G.sel=null;toast('Tempo scaduto: la tua squadra parte così com\'è.');if(G.mode==='pvp')submitTurn();else submitRumble()}
+    if(left<=0){G.sel=null;toast('Tempo scaduto: la tua squadra parte così com\'è.');if(G.mode==='pvp')submitTurn();else if(G.duo)submitDuo();else submitRumble()}
   } else pill.classList.add('hidden');
   if(G.phase==='waiting'&&G.deadline&&!G.afkSent&&now>G.deadline+15000){
     G.afkSent=true;
     if(G.mode==='pvp'){if(!G.oppDoc)sendAfk(`rooms/${G.room}/turns/r${G.round}s${1-G.me}`,{})}
+    else if(G.duo){const D=G.duo;D.P.forEach((p,i)=>{if(!p.bot&&!D.docs.some(d=>d.round===G.round&&d.idx===i))sendAfk(`rooms/${G.room}/dd/r${G.round}p${i}`,{round:G.round,idx:i})})}
     else{const R=G.rmb;for(const i of R.P.map((p,k)=>k).filter(k=>!R.P[k].out&&!R.P[k].bot))
       if(!R.docs.some(d=>d.round===G.round&&d.idx===i))sendAfk(`rooms/${G.room}/rr/r${G.round}p${i}`,{round:G.round,idx:i})}
   }
