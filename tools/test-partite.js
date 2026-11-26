@@ -28,7 +28,7 @@ async function playRound(pages){
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/test.html`,errs=[];
   const b=await chromium.launch();
   // --- contro i bot
-  {const ctx=await b.newContext();const p=await ctx.newPage();p.on('pageerror',e=>errs.push(e.message));
+  {const ctx=await b.newContext({locale:'it-IT'});const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(e.message));
     await p.goto(url);await p.click('#tutSkip');
     console.log('Partita contro il bot');await p.click('#botBtn');
     for(let r=0;r<3;r++){await playRound([p]);if(await phase(p)==='over')break;await p.click('#bBtn')}
@@ -38,10 +38,10 @@ async function playRound(pages){
     const st=await p.evaluate(()=>window.__g().rmb.P.map(x=>x.lives+(x.out?'x':'')).join(' '));ok(true,'uova dopo 3 round: '+st);
     await ctx.close()}
   // --- online con database finto
-  const ctx=await b.newContext();
+  const ctx=await b.newContext({locale:'it-IT'});
   await ctx.addInitScript({content:fs.readFileSync(path.join(__dirname,'mock-db.js'),'utf8')+";try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=4;"});
   const names=['anna','bruno','carla'],P=[];
-  for(const n of names){const p=await ctx.newPage();p.on('pageerror',e=>errs.push(n+': '+e.message));P.push(p)}
+  for(const n of names){const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(n+': '+e.message));P.push(p)}
   for(let i=0;i<3;i++){const p=P[i];await p.goto(url+'?u='+names[i]);await p.waitForSelector('#nickIn',{state:'visible'});
     await p.fill('#nickIn',names[i]+'X');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)')}
   console.log('1 contro 1 online (classificata)');

@@ -17,6 +17,9 @@ Versione giocabile online (claude.ai): https://claude.ai/artifact/3Xbkd2MF222Dx3
 | `tools/test-partite.js` | Gioca da solo partite contro il bot, Royal Rumble e partite online, e controlla che non ci siano errori. |
 | `tools/test-timer.js` | Controlla il tempo per il Pronto online: conto alla rovescia, partenza automatica, giocatore sparito. |
 | `tools/test-rumble-bot.js` | Royal Rumble online con 2 giocatori e 6 bot di riempimento: controlla che tutti vedano lo stesso risultato. |
+| `lang/en.js`, `lang/es.js`, `lang/fr.js` | Traduzioni in inglese, spagnolo e francese: dizionario «testo italiano → testo tradotto». |
+| `tools/test-lingue.js` | Gioca in ogni lingua e segnala i testi rimasti in italiano. |
+| `tools/i18n-estrai.js` | Elenca tutti i testi visibili del gioco, per trovare quelli nuovi da tradurre. |
 | `tools/mock-db.js` | Database finto usato dai test per simulare più giocatori online su claude.ai. |
 | `tools/test-firebase.js`, `tools/mock-firebase.js` | Test del sito pubblico con un Firebase simulato. |
 | `firebase-config.js`, `firestore.rules`, `firebase.json` | Configurazione di Firebase per il sito pubblico. |
@@ -58,6 +61,27 @@ Test delle partite:
 ```bash
 npm test
 ```
+
+## Lingue
+
+Il gioco è scritto in italiano e si può giocare anche in inglese, spagnolo e francese (menu in alto a destra;
+all'inizio sceglie la lingua del browser). Le traduzioni stanno in `lang/xx.js` come dizionario
+«frase italiana → frase tradotta»; i numeri e i nomi variabili sono segnaposto `{0}`, `{1}`.
+La traduzione avviene solo a schermo, quindi giocatori con lingue diverse possono giocare insieme online.
+
+Quando si aggiunge o si cambia un testo in `index.html`:
+
+```bash
+node tools/i18n-estrai.js index.html > /tmp/testi.json
+```
+
+elenca tutte le frasi; quelle nuove vanno aggiunte nei tre file `lang/`. Poi:
+
+```bash
+node tools/test-lingue.js
+```
+
+controlla che in ogni lingua non resti nulla in italiano. I testi non tradotti restano semplicemente in italiano.
 
 ## Modalità
 

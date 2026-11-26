@@ -14,10 +14,10 @@ const phase=p=>p.evaluate(()=>window.__g()?.phase);
 const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/`,errs=[];
-  const b=await chromium.launch(),ctx=await b.newContext();
+  const b=await chromium.launch(),ctx=await b.newContext({locale:'it-IT'});
   await ctx.route(/firebase-config\.js/,r=>r.fulfill({contentType:'text/javascript',body:'window.FF_FIREBASE=null;'}));
   await ctx.addInitScript({content:fs.readFileSync(path.join(__dirname,'mock-db.js'),'utf8')+";try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=8;"});
-  const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage();p.on('pageerror',e=>errs.push(n+': '+e.message));
+  const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(n+': '+e.message));
     await p.goto(url+'?u='+n);await p.waitForSelector('#nickIn',{state:'visible'});await p.fill('#nickIn',n+'R');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)');P.push(p)}
   await P[0].click('#rumbleOnline');await P[0].waitForSelector('#rumbleBox:not(.hidden)');
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');

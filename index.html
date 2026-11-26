@@ -47,6 +47,7 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 .score .s0{background:var(--blue)} .score .s1{background:var(--red)}
 .score .goal{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:800}
 .meta{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.langsel{background:var(--chip);color:inherit;border:0;border-radius:999px;padding:5px 10px;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .pill{background:var(--chip);border-radius:999px;padding:5px 12px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums}
 .pill.gold{background:var(--gold);color:#241800}
 .how{display:flex;flex-wrap:wrap;gap:6px 20px;color:var(--muted);font-size:13.5px}
@@ -283,6 +284,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
     <div class="meta">
       <span class="pill hidden" id="roundPill">Round 1</span>
       <span class="pill hidden" id="phasePill">Market</span>
+      <select id="langSel" class="langsel" aria-label="Lingua" data-notr><option value="it">🇮🇹 Italiano</option><option value="en">🇬🇧 English</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option></select>
       <span class="pill" id="eloPill">Ospite</span>
       <button class="btn hidden" id="menuBtn">Menu</button>
     </div>
@@ -445,8 +447,88 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   </details>
 </div>
 
+<script src="lang/en.js"></script>
+<script src="lang/es.js"></script>
+<script src="lang/fr.js"></script>
 <script>
 (()=>{
+// ---------- lingue ----------
+// Il gioco è scritto in italiano. Per le altre lingue un dizionario (lang/xx.js) traduce i testi
+// a schermo e quelli disegnati sul campo; la logica non cambia, così le partite online restano identiche.
+const LANGS={it:1,en:1,es:1,fr:1};
+const LANG=(()=>{try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])return q;const v=localStorage.getItem('ff-lang');if(v&&LANGS[v])return v}catch(e){}
+  const n=String(navigator.language||'it').slice(0,2).toLowerCase();return LANGS[n]?n:'en'})();
+const DICT=(window.FF_I18N||{})[LANG]||{};
+const TRX=new Map(),TRP=[],TRC=new Map();
+for(const [k,v] of Object.entries(DICT)){
+  if(!/\{\d+\}/.test(k)){TRX.set(k,v);continue}
+  const esc=k.replace(/[.*+?^$()|[\]\\]/g,'\\$&');
+  const mk=g=>new RegExp('^'+esc.replace(/\\?\{(\d+)\}/g,()=>g?'([\\s\\S]+)':'([\\s\\S]+?)')+'$');
+  const ord=[...k.matchAll(/\{(\d+)\}/g)].map(m=>+m[1]);
+  TRP.push({lazy:mk(false),greedy:mk(true),ord,v,lit:k.replace(/\{\d+\}/g,'').length});
+}
+TRP.sort((a,b)=>b.lit-a.lit);
+const clean=c=>!/[A-Za-zÀ-ÿ]/.test(c)||TRX.has(c.trim());
+function trCore(c,depth){
+  let r=TRX.get(c);if(r!=null)return r;
+  if(depth<3) for(const p of TRP){
+    let best=null,bs=-1;
+    for(const re of [p.lazy,p.greedy]){const m=c.match(re);if(!m)continue;const caps=m.slice(1);const sc=caps.filter(clean).length;if(sc>bs){bs=sc;best=caps}}
+    if(best){const caps=best.map(x=>{const t=x.trim();let o=trCore(t,depth+1);
+        if(o==null&&/[.!?…]\s/.test(t)){const ss=t.split(/(?<=[.!?…])\s+(?=\S)/),oo=ss.map(y=>trCore(y,depth+1));if(oo.some(y=>y!=null))o=oo.map((y,i)=>y??ss[i]).join(' ')}
+        return o==null?x:x.replace(t,o)});
+      return p.v.replace(/\{(\d+)\}/g,(m,n)=>caps[p.ord.indexOf(+n)]??m)}
+  }
+  if(c.includes(' · ')){const parts=c.split(' · ');const out=parts.map(x=>trCore(x,depth+1));if(out.some(x=>x!=null))return out.map((x,i)=>x??parts[i]).join(' · ')}
+  if(c.includes(', ')){const parts=c.split(', ');const out=parts.map(x=>TRX.get(x));if(out.every(x=>x!=null))return out.join(', ')}
+  return null;
+}
+// prova anche senza simboli o emoji in testa, punteggiatura in coda, e su "etichetta: valore"
+function trLoose(c){
+  let r=trCore(c,0);if(r!=null)return r;
+  const m=c.match(/^([\s·:•–—\-]*(?:[\p{Extended_Pictographic}←-⇿☀-➿][️‍]*\s*)*)([\s\S]*?)([\s.:!?…]*)$/u);
+  if(m&&m[1]&&m[2]){r=trCore(m[2]+m[3],0);if(r!=null)return m[1]+r}
+  if(m&&(m[1]||m[3])&&m[2]){r=trCore(m[2],0);if(r!=null)return m[1]+r+m[3]}
+  const ss=c.split(/(?<=[.!?…])\s+(?=\S)/);
+  if(ss.length>1){const o=ss.map(x=>trLooseNoSplit(x));if(o.some(x=>x!=null))return o.map((x,i)=>x??ss[i]).join(' ')}
+  const i=c.indexOf(': ');
+  if(i>0){const a=c.slice(0,i),b=c.slice(i+2),ta=trLooseNoSplit(a),tb=trLooseNoSplit(b);if(ta!=null||tb!=null)return (ta??a)+(LANG==='fr'?' : ':': ')+(tb??b)}
+  return null;
+}
+function trLooseNoSplit(c){let r=trCore(c,1);if(r!=null)return r;const m=c.match(/^([\s·:•–—\-]*(?:[\p{Extended_Pictographic}←-⇿☀-➿][️‍]*\s*)*)([\s\S]*?)([\s.:!?…]*)$/u);
+  if(m&&m[1]&&m[2]){r=trCore(m[2]+m[3],1);if(r!=null)return m[1]+r}
+  if(m&&(m[1]||m[3])&&m[2]){r=trCore(m[2],1);if(r!=null)return m[1]+r+m[3]}return null}
+function tr(s){
+  if(LANG==='it'||s==null)return s;s=String(s);if(!s.trim())return s;
+  const hit=TRC.get(s);if(hit!==undefined)return hit;
+  const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),core=m[2].replace(/\s+/g,' ');
+  const r=trLoose(core),out=r==null?s:m[1]+r+m[3];
+  if(TRC.size>8000)TRC.clear();TRC.set(s,out);return out;
+}
+// testo con nomi evidenziati (<b>, <span>): ogni elemento diventa un segnaposto, così la frase si traduce intera
+function trHTML(h){
+  if(LANG==='it')return h;const toks=[];
+  const s=String(h).replace(/<(\w+)[^>]*>[^<]*<\/\1>/g,m=>{toks.push(m.replace(/>([^<]*)</,(x,t)=>'>'+tr(t)+'<'));return '\u27E6'+(toks.length-1)+'\u27E7'});
+  return tr(s).replace(/\u27E6(\d+)\u27E7/g,(m,i)=>toks[+i]);
+}
+const TRA=['title','placeholder','aria-label','alt'];
+function trNode(n){
+  if(n.nodeType===3){const p=n.parentElement;if(!p||p.closest('script,style,[data-notr]'))return;const v=n.nodeValue,t=tr(v);if(t!==v)n.nodeValue=t;return}
+  if(n.nodeType!==1||n.closest('[data-notr]'))return;
+  for(const a of TRA){const v=n.getAttribute(a);if(v){const t=tr(v);if(t!==v)n.setAttribute(a,t)}}
+  for(const c of n.childNodes)trNode(c);
+}
+if(LANG!=='it'){
+  document.documentElement.lang=LANG;document.title=tr(document.title);trNode(document.body);
+  new MutationObserver(ms=>{for(const m of ms){
+    if(m.type==='characterData')trNode(m.target);
+    else if(m.type==='attributes')trNode(m.target);
+    else for(const n of m.addedNodes)trNode(n);
+  }}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:TRA});
+}
+{const sel=document.getElementById('langSel');sel.value=LANG;
+  sel.onchange=()=>{if(typeof G!=='undefined'&&G&&!G.finished){toast(tr('Puoi cambiare lingua dal menu, fuori dalla partita.'));sel.value=LANG;return}
+    try{localStorage.setItem('ff-lang',sel.value)}catch(e){}const u=new URL(location.href);u.searchParams.delete('lang');location.href=u.toString()}}
 const W=960,H=540;
 const HOME=[{x:62,y:H/2},{x:W-62,y:H/2}];
 const SIDE=[{name:'Tu',col:'#2f6fe0',soft:'rgba(47,111,224,.18)'},{name:'Bot',col:'#d23f2d',soft:'rgba(210,63,45,.18)'}];
@@ -833,8 +915,8 @@ const UNITS={
    d:"Ladra volante: ignora trappole, Tacchino e attacchi corpo a corpo. Ma è fragile e con l'uovo vola lenta.",beats:'Cane, Tacchino, Bracconiere',loses:'Corvo, Cacciatore, Poliziotto, Spaventapasseri'},
  coltivatore:{n:'Coltivatore',i:'🧑‍🌾',t:3,tags:['Umano'],hp:50,dmg:4,spd:50,rng:18,cd:1,role:'guard',guardR:150,wander:[220,420],spawns:{type:'germoglio',every:3,max:4},
    d:'Avanza a metà campo e pianta un germoglio ogni 3 s (fino a 4, ogni 2 s se ★★): mini esche che attirano gli Animali nemici e fermano Faina e Gazza per 0,75 s. Si mette sulla strada degli Animali nemici diretti al tuo uovo.',beats:'Cane, Faina, Gazza, Corvo',loses:'Assassino, Cacciatore'},
- benefattore:{n:'Benefattore',i:'🎩',t:3,tags:['Umano'],hp:65,dmg:0,spd:55,role:'guard',guardR:150,wander:[220,420],spawns:{type:'monete',every:2.5,max:5},
-   d:'Avanza a metà campo e lascia monete ogni 2,5 s (fino a 5, ogni 1,5 s se ★★): attirano gli Umani nemici e fermano il Ladro per 0,75 s. Si mette sulla strada degli Umani nemici diretti al tuo uovo.',beats:'Ladro, Assassino, Poliziotto, Cacciatore',loses:'Animali'},
+ benefattore:{n:'Benefattore',i:'🎩',t:3,tags:['Umano'],hp:90,dmg:0,spd:55,role:'guard',guardR:150,wander:[220,420],spawns:{type:'monete',every:2.5,max:5},
+   d:'Avanza a metà campo e lascia monete ogni 2,5 s (fino a 5). Ogni Umano nemico, anche armato, si ferma a raccoglierle per 1,5 s (2,5 s se ★★) invece di combattere. Ogni Umano corrotto ti dà +1 oro nel market successivo (massimo 3).',beats:'Ladro, Assassino, Poliziotto, Cacciatore',loses:'Animali'},
  spazzino:{n:'Spazzino',i:'🧹',t:2,tags:['Umano'],hp:60,dmg:6,spd:70,rng:18,cd:.7,role:'hunter',prio:{Oggetto:12},bonus:{Oggetto:4},noLure:true,sweeper:true,
    d:"Ignora le esche nemiche e le distrugge (4× danno), anche germogli e monete. Smonta le trappole che trova sul percorso. Quando non restano esche o trappole nemiche, va lui a rubare l'uovo.",beats:'Mais, Spaventapasseri, Coltivatore, Benefattore, Bracconiere',loses:'Assassino, Cane, Poliziotto'},
  topi:{n:'Topi',i:'🐭',t:1,cost:1,tags:['Animale','Ladro','Piccolo'],hp:10,dmg:0,spd:85,carry:.7,role:'thief',pack:2,
@@ -867,7 +949,7 @@ const UNITS={
    d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 8 s (10 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
  arnia:{n:'Arnia',i:'🍯',t:1,hidden:true,tags:['Oggetto'],hp:60,dmg:0,spd:0,role:'static',aura:{r:100,dps:5,slow:.6}},
  germoglio:{n:'Germoglio',i:'🌱',t:1,hidden:true,tags:['Oggetto','Esca'],hp:25,dmg:0,spd:0,role:'static',lure:110,lureTag:'Animale',eat:.75},
- monete:{n:'Monete',i:'🪙',t:1,hidden:true,tags:['Oggetto','Esca'],hp:40,dmg:0,spd:0,role:'static',lure:120,lureTag:'Umano',eat:.75},
+ monete:{n:'Monete',i:'🪙',t:1,hidden:true,tags:['Oggetto','Esca'],hp:40,dmg:0,spd:0,role:'static',lure:120,lureTag:'Umano',eat:1.5,bribe:220},
  poliziotto:{n:'Poliziotto',i:'👮',t:2,tags:['Umano','Guardiano'],hp:55,dmg:5,spd:55,rng:100,cd:1,ranged:true,role:'guard',guardR:230,prio:{Ladro:4,Umano:1},bonus:{Ladro:1.5},bonusType:{ladro:1.4},arrest:true,missFly:.5,
    d:"Spara a distanza media e dà la caccia ai ladri: +50% di danno su tutti i ladri e più del doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.",beats:'Tutti i ladri visibili',loses:'Assassino, Ladro invisibile'},
  bracconiere:{n:'Bracconiere',i:'🧔',t:2,tags:['Umano','Trappole'],hp:50,dmg:6,spd:50,rng:18,cd:1,role:'guard',guardR:200,traps:3,trapEvery:5,
@@ -1023,7 +1105,7 @@ function setDeadline(at){const T=turnLimit(G.round);if(T&&at&&(!G.deadline||at+T
 function startShop(){
   G.phase='shop';G.deadline=null;G.oppDoc=null;G.myAt=null;G.afkSent=false;for(const p of G.players)p.ovr=null;
   if(G.mode==='rumble'){rumbleShop();return}
-  for(let s=0;s<2;s++){const p=G.players[s];p.gold=Math.min(10,(G.variant==='fog'?6:3)+G.round)+(G.lost[s]?1:0);rollShop(p,s?G.brng:G.rng,G.round)}
+  for(let s=0;s<2;s++){const p=G.players[s];p.gold=Math.min(10,(G.variant==='fog'?6:3)+G.round)+(G.lost[s]?1:0)+((G.bribeGold||[])[s]||0);rollShop(p,s?G.brng:G.rng,G.round)}
   if(G.mode!=='pvp') botTurn(G.players[1],G.brng,G.lastComp[0]); else pvpWatch();
   hideBanner(); toast(G.round===1?'Hai 4 oro: compra due unità da 2. Un ladro per attaccare e un guardiano per difendere è un buon inizio.':'');
   renderAll();
@@ -1070,7 +1152,7 @@ function botTurn(p,rng,ec,sk=.7){
   let n={};
   for(const b of p.board){
     const r=UNITS[b.type].role; n[r]=(n[r]||0)+1; const k=n[r]-1;
-    const base={guard:[120,60],thief:[330,120],hunter:[230,80],scout:[150,40],static:[250,120]}[r];
+    const base={guard:[120,60],thief:[330,120],hunter:[230,80],scout:[150,40],static:[250,120],escort:[260,80],medic:[200,60]}[r]||[200,80];
     b.px=r==='static'&&rng()<.5?660+rng()*150:clamp(base[0]+(rng()-.5)*base[1],26,W/2-26);
     b.py=clamp(H/2+(k%2?1:-1)*Math.ceil(k/2)*95+(rng()-.5)*70,30,H-30);
   }
@@ -1096,7 +1178,7 @@ function spawn(b,side,id){
 }
 function makeSim(seed){
   const S={t:0,units:[],eggs:[0,1].map(s=>({side:s,home:HOME[s],x:HOME[s].x,y:HOME[s].y,state:'home',carrier:null,dropT:0})),
-    traps:[],fakes:[],fx:[],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:Math.min(70,ROUND_T+(G.round-1)*3)};
+    traps:[],fakes:[],fx:[],bribes:[0,0],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:Math.min(70,ROUND_T+(G.round-1)*3)};
   let id=1;
   for(let s=0;s<2;s++) for(const b of (G.players[s].ovr||G.players[s].board).filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
   for(const u of [...S.units]) if(u.def.pack) for(let i=0;i<u.def.pack;i++)
@@ -1296,9 +1378,10 @@ function think(u,S,dt){
   if(u.chargeT>0&&u.chDir){moveTo(u,u.x+u.chDir.x*60,u.y+u.chDir.y*60,dt,S);return}
   if(u.wait>0){u.wait-=dt;return}
   if(u.eatT>0){u.eatT-=dt;return}
-  if(u.carrying===null&&u.dmg<=0&&!u.underground){
-    const b=S.units.find(e=>e.alive&&e.side!==u.side&&e.def.lure&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&!(u.ate&&u.ate[e.id])&&dist(u,e)<e.def.lure);
-    if(b){ if(dist(u,b)<26){u.eatT=b.def.eat||2.5;(u.ate=u.ate||{})[b.id]=1;fx(S,u.x,u.y-22,b.def.lureTag==='Animale'?'sta mangiando':b.type==='monete'?'raccoglie i soldi':'spaventato!','#ffe6a8');log(S,`${nm(u)} si distrae con ${nm(b)}`)}
+  if(u.carrying===null&&!u.underground){
+    const b=S.units.find(e=>e.alive&&e.side!==u.side&&e.def.lure&&(u.dmg<=0||e.def.bribe)&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&!(u.ate&&u.ate[e.id])&&dist(u,e)<(e.def.bribe&&u.dmg>0?e.def.bribe:e.def.lure));
+    if(b){ if(dist(u,b)<26){u.eatT=b.def.eat||2.5;(u.ate=u.ate||{})[b.id]=1;
+        if(b.def.bribe){const own=S.units.find(x=>x.id===b.owner);if(own&&own.star>=2)u.eatT=2.5;b.alive=false;S.bribes[b.side]=(S.bribes[b.side]||0)+1}fx(S,u.x,u.y-22,b.def.lureTag==='Animale'?'sta mangiando':b.type==='monete'?'raccoglie i soldi':'spaventato!','#ffe6a8');log(S,`${nm(u)} si distrae con ${nm(b)}`)}
       else moveTo(u,b.x,b.y,dt,S); return }
   }
   const own=S.eggs[u.side];
@@ -1416,6 +1499,7 @@ function step(S,dt){
 
 // ---------- disegno ----------
 const cv=$('field'),ctx=cv.getContext('2d');
+if(LANG!=='it')for(const f of ['fillText','strokeText','measureText']){const o=ctx[f].bind(ctx);ctx[f]=(t,...a)=>o(tr(String(t)),...a)}
 // risoluzione del campo in base alla larghezza mostrata, così resta nitido anche a tutta pagina
 let DPR=1;
 function fitCanvas(){const k=Math.min(3,Math.max(1,(window.devicePixelRatio||1)*(cv.clientWidth||W)/W));
@@ -1578,7 +1662,7 @@ function startBattle(){
 function endRound(){
   if(G.mode==='rumble'){rumbleEnd();return}
   const S=G.sim,o=S.over;G.phase='result';
-  G.lost=[false,false];
+  G.lost=[false,false];G.bribeGold=[0,1].map(s=>Math.min(3,S.bribes[s]||0));
   const me=G.me;let title,text;
   if(o.winner!==null){G.score[o.winner]++;G.lost[1-o.winner]=true;
     title=o.winner===me?'Uovo rubato!':'Ti hanno rubato l\'uovo!';
@@ -1586,6 +1670,7 @@ function endRound(){
   else{title=o.draw?'Round pari!':'Nessuna presa';text=o.reason}
   const lostB=baitLoss(S,G.players,me,G.mode==='pvp');
   if(lostB.length) text+=` Esche distrutte: ${lostB.join(', ')}.`;
+  if(G.bribeGold[me]) text+=` Umani corrotti: +${G.bribeGold[me]} oro nel prossimo market.`;
   flushLog();
   const done=G.score[0]>=G.win||G.score[1]>=G.win||G.round>=Math.max(MAX_ROUNDS,G.win*5);
   if(done){
@@ -1627,7 +1712,7 @@ async function finishMatch(res,summary){
 }
 function flushLog(){
   const S=G.sim;if(!S)return;const el=$('log');
-  while(G.logN<S.log.length){const d=document.createElement('div');d.innerHTML=`<span style="color:var(--muted);font-variant-numeric:tabular-nums">${S.t.toFixed(0).padStart(2,'0')}s</span> ${S.log[G.logN++]}`;el.prepend(d)}
+  while(G.logN<S.log.length){const d=document.createElement('div');d.innerHTML=`<span style="color:var(--muted);font-variant-numeric:tabular-nums">${S.t.toFixed(0).padStart(2,'0')}s</span> ${trHTML(S.log[G.logN++])}`;el.prepend(d)}
 }
 function showBanner(t,p,btn,fn){$('bTitle').textContent=t;$('bText').textContent=p;const b=$('bBtn');b.classList.toggle('hidden',!btn);b.textContent=btn||'';b.onclick=fn||null;$('banner').classList.remove('hidden')}
 function hideBanner(){$('banner').classList.add('hidden')}
@@ -2116,7 +2201,7 @@ function rumbleShop(){
   const alive=R.P.map((p,i)=>i).filter(i=>!R.P[i].out);
   for(let i=alive.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[alive[i],alive[j]]=[alive[j],alive[i]]}
   R.pairs=[];for(let i=0;i<alive.length;i+=2)R.pairs.push([alive[i],i+1<alive.length?alive[i+1]:'ghost']);
-  const gold=p=>Math.min(10,3+G.round)+(p.lost?1:0);
+  const gold=p=>Math.min(10,3+G.round)+(p.lost?1:0)+(p.bribeGold||0);
   const me=R.P[R.me];me.gold=gold(me);rollShop(me,G.rng,G.round);
   if(!R.online) for(const i of alive){const p=R.P[i];if(!p.bot)continue;p.gold=gold(p);rollShop(p,p.brng,G.round);botTurn(p,p.brng,p.last)}
   else{const sk=botSkill(R);R.skill=sk;
@@ -2140,8 +2225,9 @@ function rumbleEnd(){
   const R=G.rmb,S=G.sim,lines=[];let myTitle='Nessuna presa',myText=S.over.reason||'',myLoss=[];
   R.pairs.forEach((pr,idx)=>{
     const [a,b]=pr,A=pOf(a),B=pOf(b);let w;
-    if(idx===R.myPair){w=S.over.winner===null?null:S.over.winner===0?a:b;myLoss=baitLoss(S,[A,B],G.me,false)}
-    else{const s2=simPair(A,B,((G.seedBase||1)*31+G.round*7919+idx*101)>>>0);w=s2.over.winner===null?null:s2.over.winner===0?a:b;baitLoss(s2,[A,B],-1,false)}
+    let SS;if(idx===R.myPair){SS=S;w=S.over.winner===null?null:S.over.winner===0?a:b;myLoss=baitLoss(S,[A,B],G.me,false)}
+    else{SS=simPair(A,B,((G.seedBase||1)*31+G.round*7919+idx*101)>>>0);w=SS.over.winner===null?null:SS.over.winner===0?a:b;baitLoss(SS,[A,B],-1,false)}
+    A.bribeGold=Math.min(3,SS.bribes[0]||0);B.bribeGold=Math.min(3,SS.bribes[1]||0);
     A.lastBoard=fieldOf(A);B.lastBoard=fieldOf(B);A.last=B.lastBoard;B.last=A.lastBoard;A.lost=B.lost=false;
     if(w!==null){const l=w===a?b:a,Wp=pOf(w),Lp=pOf(l);
       if(!Wp.ghost)Wp.lives=Math.min(RMB.max,Wp.lives+1);if(!Lp.ghost){Lp.lives--;Lp.lost=true}
@@ -2157,7 +2243,7 @@ function rumbleEnd(){
   for(const p of newly){p.out=true;p.place=aliveAfter+1;lines.push(`<b>${esc(p.name)}</b> resta senza uova ed è fuori (${p.place}º posto)`)}
   if(myLoss.length) myText+=` Esche distrutte: ${myLoss.join(', ')}.`;
   flushLog();
-  const el=$('log');for(const l of lines.reverse()){const d=document.createElement('div');d.innerHTML=`👑 ${l}`;el.prepend(d)}
+  const el=$('log');for(const l of lines.reverse()){const d=document.createElement('div');d.innerHTML=`👑 ${trHTML(l)}`;el.prepend(d)}
   G.phase='result';
   const me=R.P[R.me],alive=R.P.filter(p=>!p.out);
   for(const p of [...R.P,R.ghost]) p.ovr=null;

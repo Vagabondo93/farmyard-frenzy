@@ -12,16 +12,16 @@ function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{l
 (async()=>{
   const b=await chromium.launch(),errs=[];
   // 1) senza configurazione: modalità offline
-  {const srv=await serve('window.FF_FIREBASE=null;');const p=await b.newPage();p.on('pageerror',e=>errs.push(e.message));
+  {const srv=await serve('window.FF_FIREBASE=null;');const p=await b.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(e.message));
     await p.goto(`http://127.0.0.1:${srv.address().port}/`);await p.waitForTimeout(800);
     ok((await p.textContent('#onlineNote')).includes('non è disponibile'),'senza configurazione il gioco resta offline');
     await p.close();srv.close()}
   // 2) con Firebase (simulato)
   const srv=await serve('window.FF_FIREBASE={apiKey:"test",projectId:"test"};'),base=`http://127.0.0.1:${srv.address().port}/`;
-  const ctx=await b.newContext();
+  const ctx=await b.newContext({locale:'it-IT'});
   await ctx.route(/gstatic\.com\/firebasejs/,r=>r.fulfill({contentType:'text/javascript',body:r.request().url().includes('app-compat')?fs.readFileSync(path.join(__dirname,'mock-firebase.js'),'utf8'):''}));
   await ctx.addInitScript({content:"try{localStorage.setItem('uovo-tut','1')}catch(e){}window.__mpx=4;"});
-  const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage();p.on('pageerror',e=>errs.push(n+': '+e.message));await p.goto(base+'?u='+n);P.push(p)}
+  const P=[];for(const n of ['anna','bruno']){const p=await ctx.newPage({locale:'it-IT'});p.on('pageerror',e=>errs.push(n+': '+e.message));await p.goto(base+'?u='+n);P.push(p)}
   await P[0].evaluate(()=>{for(const k of Object.keys(localStorage))if(k.startsWith('mockfb:'))localStorage.removeItem(k)});
   for(const p of P){await p.waitForSelector('#loginBox:not(.hidden)',{timeout:10000})}
   ok(true,'compare il riquadro di accesso');

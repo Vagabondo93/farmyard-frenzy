@@ -7,7 +7,7 @@ const VAR=process.env.VAR||'classic',N=+process.argv[2]||3000, BUDGET=+process.a
 const src=fs.readFileSync(process.env.F||path.join(__dirname,'..','index.html'),'utf8').replace('let G;',
  'let G;window.__api={UNITS:()=>UNITS,ORD:()=>ORDERS,COST:()=>COST,makeSim:(s)=>makeSim(s),step:(S,d)=>step(S,d),setG:g=>{G=g},pos:(t,n,r)=>defaultPos(t,n,r),mul:mulberry};');
 const tmp=path.join(os.tmpdir(),'ff-bilanciamento-'+process.pid+'.html');fs.writeFileSync(tmp,src);
-const b=await chromium.launch();const p=await b.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+const b=await chromium.launch();const p=await b.newPage({locale:'it-IT'});const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto('file://'+tmp);
 const res=await p.evaluate(({N,BUDGET,STAR2,ROUND,VAR})=>{
   const A=window.__api,U=A.UNITS(),O=Object.keys(A.ORD()),C=A.COST();
