@@ -10,7 +10,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   let body=fs.readFileSync(p);if(f==='/index.html')body=body.toString().replace('let G;','let G;window.__g=()=>G;');
   r.writeHead(200,{'Content-Type':f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.js')?'text/javascript':'application/octet-stream'});r.end(body)});
   s.listen(0,'127.0.0.1',()=>res(s))})}
-const doBans=async(ps)=>{for(let i=0;i<300;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
+const doBans=async(ps)=>{for(let i=0;i<300;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([aria-disabled="true"])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/`,errs=[];
   const b=await chromium.launch(),ctx=await b.newContext({locale:'it-IT'});

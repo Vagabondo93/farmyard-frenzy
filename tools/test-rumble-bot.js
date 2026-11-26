@@ -12,7 +12,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   s.listen(0,'127.0.0.1',()=>res(s))})}
 const phase=p=>p.evaluate(()=>window.__g()?.phase);
 const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}};
-const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
+const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([aria-disabled="true"])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/`,errs=[];
   const b=await chromium.launch(),ctx=await b.newContext({locale:'it-IT'});

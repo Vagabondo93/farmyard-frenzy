@@ -24,7 +24,7 @@ async function playRound(pages){
     if(await phase(p)==='battle'&&await p.isVisible('[data-speed="4"]')) await p.click('[data-speed="4"]')}
   for(const p of pages){await p.bringToFront();await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000})}
 }
-const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([disabled])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
+const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([aria-disabled="true"])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/test.html`,errs=[];
   const b=await chromium.launch();
@@ -39,7 +39,7 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
     const st=await p.evaluate(()=>window.__g().rmb.P.map(x=>x.lives+(x.out?'x':'')).join(' '));ok(true,'uova dopo 3 round: '+st);
     console.log('Contro il bot con ban e scelte');await p.click('#menuBtn');
     await p.evaluate(()=>openPlay('bot','classic'));await p.check('#banOpt');await p.click('#botBtn');
-    for(let i=0;i<300&&await p.isHidden('#game');i++){const c=await p.$('#botBanPool [data-bban]:not([disabled])');if(c)await c.click().catch(()=>{});await p.waitForTimeout(150)}
+    for(let i=0;i<300&&await p.isHidden('#game');i++){const c=await p.$('#botBanPool [data-bban]:not([aria-disabled="true"])');if(c)await c.click().catch(()=>{});await p.waitForTimeout(150)}
     const bb=await p.evaluate(()=>{const g=window.__g();return {pool:g.pool,bans:g.bans,picks:g.picks}});
     ok(bb.bans.length===4&&bb.picks.length===2&&bb.picks.every(k=>bb.pool.includes(k))&&!bb.bans.some(k=>bb.pool.includes(k)),`4 ban e 2 scelte con il bot: via ${bb.bans.join(', ')}, scelti ${bb.picks.join(', ')}`);
     await playRound([p]);ok(true,'round giocato dopo i ban');

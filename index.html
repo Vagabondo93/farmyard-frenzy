@@ -62,8 +62,15 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 .lobbybox{max-width:640px;max-height:92vh;overflow-y:auto}
 .lobbyinv,.lobbychat,.banbox{display:grid;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
 #lobbyFriends{display:flex;flex-wrap:wrap;gap:6px}
-.banpool{display:flex;flex-wrap:wrap;gap:6px}.banpool .pchip{border:0;font:inherit}.banpool .pchip.banned{opacity:.45;text-decoration:line-through}
-.banpool .pchip.picked{outline:2px solid #f2c230}.banpool .banhd{flex:1 0 100%;margin:6px 0 0;font-weight:800;font-size:13px;color:var(--muted)}
+.banpool{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.banpool .pchip{border:0;border-bottom:4px solid var(--rsup);font:inherit;display:grid;justify-items:center;gap:3px;padding:8px 4px 6px;border-radius:12px;font-size:12px;line-height:1.15;text-align:center;position:relative}
+.banpool .pchip.r-thief{border-bottom-color:var(--rthief)}.banpool .pchip.r-def{border-bottom-color:var(--rdef)}.banpool .pchip.r-atk{border-bottom-color:var(--ratk)}.banpool .pchip.r-ctl{border-bottom-color:var(--rctl,#8a6a1f)}
+.banpool .pchip .uimg,.banpool .pchip .bic{width:58px;height:58px;font-size:44px;line-height:58px;object-fit:contain}
+.banpool .pchip[aria-disabled="true"]{cursor:default}.banpool .pchip:not([aria-disabled="true"]):hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.banpool .pchip.banned{opacity:.4}.banpool .pchip.banned::after{content:'✕';position:absolute;top:2px;right:6px;font-size:22px;font-weight:900;color:#c0392b}
+.banpool .pchip.banned .uimg{filter:grayscale(1)}
+#banTipBox{position:fixed;z-index:80;width:300px;pointer-events:none}
+.banpool .pchip.picked{outline:2px solid #f2c230}.banpool .banhd{grid-column:1/-1;margin:6px 0 0;font-weight:800;font-size:13px;color:var(--muted)}
 .banpool .pchip:disabled{cursor:default}
 .mailbox{max-width:560px;max-height:90vh;overflow-y:auto}.mailbox textarea,.mailbox select,.mailbox input{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .maillist{list-style:none;margin:0;padding:0;display:grid;gap:8px}.maillist li{background:var(--chip);border-radius:12px;padding:10px 12px;display:grid;gap:4px}
@@ -2500,7 +2507,7 @@ function nickOf(d,uid){if(d.type==='rumble'){const p=(d.players||[]).find(x=>x.u
 function renderBan(d,code){
   if(!LOBBY)return;LOBBY.ban=d;$('banBox').classList.remove('hidden');$('pvpStart').classList.add('hidden');$('rumbleStart').classList.add('hidden');$('rumbleFillRow').classList.add('hidden');
   const n=(d.bans||[]).length,picking=n>=nBanOf(d),banned=bansOf(d),picked=picksOf(d),turn=d.banOrder[n],mine=turn===UID;
-  const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-ban="${k}" ${dis?'disabled':''}>${IC(u)} ${u.n}</button>`};
+  const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-ban="${k}" data-tipcard="${k}" ${dis?'aria-disabled="true"':''}>${u.img?IC(u):`<span class="bic">${u.i}</span>`}<span>${u.n}</span></button>`};
   $('banPool').innerHTML=`<p class="banhd">${picking?'Scegli un personaggio che sarà di sicuro nella partita':'Tutti i personaggi: banna quello che non vuoi in partita'}</p>`
     +allChars(d).map(k=>chip(k,banned.includes(k)?' banned':picked.includes(k)?' picked':'',!mine||banned.includes(k)||picked.includes(k))).join('');
   if(!LOBBY.banT)LOBBY.banT=setInterval(banTick,500);banTick();
@@ -2521,7 +2528,7 @@ async function doBan(code,k,auto){
     const nb=[...bans,pick?{by:who,k,pick:true}:{by:who,k}],up={bans:nb,banAt:Date.now()};if(nb.length>=cur.banOrder.length)up.status='playing';
     await ref.update(up)}catch(e){lobbyMsg('Ban non riuscito, riprova.')}
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-ban]');if(b&&LOBBY&&LOBBY.ban){b.disabled=true;doBan(LOBBY.code,b.dataset.ban,false)}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ban]');if(b&&LOBBY&&LOBBY.ban&&b.getAttribute('aria-disabled')!=='true'){b.setAttribute('aria-disabled','true');doBan(LOBBY.code,b.dataset.ban,false)}});
 function lobbyChat(code){
   if(LOBBY&&LOBBY.chatUn)return;$('lobbyChatLog').innerHTML='<p class="empty">Scrivi qualcosa agli altri giocatori.</p>';
   const un=DB.collection(`rooms/${code}/chat`).onSnapshot(sn=>{const ms=sn.docs.map(d=>d.data()).filter(m=>m&&m.text).sort((a,b)=>a.at-b.at).slice(-60);if(!ms.length)return;
@@ -3216,6 +3223,16 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-pt],[data-
 // la finestra lascia il posto alla lobby o alla partita
 
 $('botBtn').onclick=()=>$('banOpt').checked?startBotBans():newMatch({mode:'bot',variant:variant(),win:winTarget()});
+// carta a comparsa sui personaggi della fase di ban (mouse sopra)
+const banTip=document.createElement('div');banTip.id='banTipBox';banTip.className='hidden';document.body.appendChild(banTip);
+document.addEventListener('pointerover',e=>{const c=e.target.closest&&e.target.closest('[data-tipcard]');
+  if(!c||e.pointerType==='touch'){banTip.classList.add('hidden');return}
+  if(banTip.dataset.k!==c.dataset.tipcard){banTip.dataset.k=c.dataset.tipcard;banTip.innerHTML=tcgCard(c.dataset.tipcard,1,{dense:true})}
+  banTip.classList.remove('hidden');placeBanTip(e)});
+document.addEventListener('pointermove',e=>{if(!banTip.classList.contains('hidden'))placeBanTip(e)});
+function placeBanTip(e){const w=banTip.offsetWidth||280,h=banTip.offsetHeight||380;
+  let x=e.clientX+18,y=e.clientY+18;if(x+w>innerWidth-8)x=e.clientX-w-18;if(y+h>innerHeight-8)y=Math.max(8,innerHeight-h-8);
+  banTip.style.left=Math.max(8,x)+'px';banTip.style.top=y+'px'}
 // ---------- ban e scelte contro il bot: stesso schema dell'1 contro 1 (2 ban a testa, poi 1 scelta a testa) ----------
 let BB=null;
 function startBotBans(){
@@ -3225,7 +3242,7 @@ function startBotBans(){
 }
 function renderBotBan(){
   const d=BB.d,n=d.bans.length,picking=n>=BB.nBan,mine=BB.order[n]==='me',banned=bansOf(d),picked=picksOf(d);
-  const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-bban="${k}" ${dis?'disabled':''}>${IC(u)} ${u.n}</button>`};
+  const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-bban="${k}" data-tipcard="${k}" ${dis?'aria-disabled="true"':''}>${u.img?IC(u):`<span class="bic">${u.i}</span>`}<span>${u.n}</span></button>`};
   $('botBanPool').innerHTML=`<p class="banhd">${picking?'Scegli un personaggio che sarà di sicuro nella partita':'Tutti i personaggi: banna quello che non vuoi in partita'}</p>`
     +allChars(d).map(k=>chip(k,banned.includes(k)?' banned':picked.includes(k)?' picked':'',!mine||banned.includes(k)||picked.includes(k))).join('');
   botBanTick();
@@ -3245,7 +3262,7 @@ function botBanDo(k){
     newMatch({mode:'bot',variant:d.variant,win:b.win,poolSeed:d.seed,big:true,bans:bansOf(d),picks:picksOf(d)});return}
   renderBotBan();
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-bban]');if(b&&BB&&BB.order[BB.d.bans.length]==='me'&&!b.disabled)botBanDo(b.dataset.bban)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-bban]');if(b&&BB&&BB.order[BB.d.bans.length]==='me'&&b.getAttribute('aria-disabled')!=='true')botBanDo(b.dataset.bban)});
 $('botBanClose').onclick=()=>{if(BB)clearInterval(BB.t);BB=null;$('botBanModal').classList.add('hidden')};
 $('modeSel').onchange=()=>{const f=variant()==='fog';$('winSel').disabled=f;if(f)$('winSel').value='7';$('modeHint').classList.toggle('hidden',!f)};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-rt]');if(!t)return;RANKTAB=t.dataset.rt;document.querySelectorAll('[data-rt]').forEach(b=>b.classList.toggle('on',b===t));renderLobby()});
