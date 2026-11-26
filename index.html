@@ -200,7 +200,16 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .field-row input:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
 .winrow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800}
 .winrow select{flex:0 0 auto;width:auto;padding:6px 10px}
-.playgrid{display:grid;gap:8px}.playbig{font-size:20px;padding:16px}
+.playgrid{display:grid;gap:8px}
+/* linguette rapide da telefono: campo, market e ordini, squadra e panchina */
+.quicknav{display:none}
+@media (max-width:760px){
+  .quicknav{display:flex;flex-direction:column;gap:6px;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:40}
+  .quicknav button{display:grid;justify-items:center;gap:1px;width:48px;padding:7px 2px;border:0;border-radius:0 12px 12px 0;background:rgba(43,60,26,.86);color:#fff;font:inherit;font-size:19px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .quicknav button span{font-size:9.5px;font-weight:800;letter-spacing:.01em}
+  .quicknav button.on{background:#e0a91c;color:#2b1d00}
+  #game{scroll-margin-top:8px}#arenaSec,#shopPanel,#teamPanel{scroll-margin-top:10px}
+}.playbig{font-size:20px;padding:16px}
 .playbox{max-width:620px;max-height:92vh;overflow-y:auto;display:grid;gap:12px}
 .ptabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ptabs button{display:grid;gap:2px;justify-items:center;text-align:center;padding:12px 8px;border-radius:14px;border:2px solid var(--line);background:var(--chip);font:inherit;font-size:22px;color:var(--ink);cursor:pointer}
 .ptabs button b{font-size:14.5px}.ptabs button small{font-size:11.5px;color:var(--muted);font-weight:600}.ptabs button.on{border-color:#e0a91c;background:var(--panel);box-shadow:0 2px 8px rgba(0,0,0,.12)}
@@ -532,7 +541,12 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   </div>
 
   <div class="main">
-    <section class="arena">
+    <nav class="quicknav" id="quickNav" aria-label="Vai a">
+      <button data-go="arenaSec" aria-label="Campo">🏟️<span>Campo</span></button>
+      <button data-go="shopPanel" aria-label="Market e ordini">🛒<span>Market</span></button>
+      <button data-go="teamPanel" aria-label="Squadra e panchina">👥<span>Squadra</span></button>
+    </nav>
+    <section class="arena" id="arenaSec">
       <canvas id="field" width="960" height="540" aria-label="Campo di gioco"></canvas>
       <div class="tip hidden" id="tip" role="tooltip"></div>
       <div class="banner hidden" id="banner"><div class="box"><h2 id="bTitle"></h2><p id="bText"></p><button class="btn primary" id="bBtn"></button></div></div>
@@ -587,7 +601,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
     <div class="ords" id="orders"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="teamPanel">
     <h3>La tua squadra <small id="boardCount">0/7 · tocca un'unità per darle un ordine</small></h3>
     <div class="board" id="board"></div>
     <h3 style="margin-top:14px;padding-top:12px;border-top:2px dashed var(--line)">🪑 Panchina <small id="benchCount">0/5 · non scende in campo, ma conta per le copie ★★</small></h3>
@@ -1098,14 +1112,14 @@ const UNITS={
    d:"Cova un uovo finto nella tua metà campo: i ladri nemici puntano all'uovo più vicino e scoprono l'inganno solo arrivati al nido, restando storditi 2 s.",beats:'Faina, Topi, Volpe',loses:'Spazzino, Lupo, Cacciatrice'},
  veterinario:{n:'Veterinario',i:'🧑‍⚕️',t:2,cost:2,minRound:3,tags:['Umano'],hp:65,dmg:0,spd:65,role:'medic',heal:10,healR:100,
    d:"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.",beats:'Assassino, Cacciatrice',loses:'Lupo, Assassino se resta solo'},
- avicoltore:{n:'Avicoltore',i:'🪺',t:2,cost:2,minRound:2,tags:['Umano'],hp:55,dmg:0,spd:62,role:'escort',guardR:130,followFly:true,lane:2.5,
-   d:"Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.",beats:'Squadre lente a difendere contro gazze e falchi',loses:'Chi lo raggiunge, squadre senza volanti'},
+ avicoltore:{n:'Avicoltore',i:'🪺',t:2,cost:2,minRound:2,tags:['Umano'],hp:55,dmg:3,rng:18,cd:1,spd:62,role:'escort',guardR:130,followFly:true,lane:2.5,
+   d:"Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo e si difende con il bastone solo da chi gli arriva vicino.",beats:'Squadre lente a difendere contro gazze e falchi',loses:'Chi lo raggiunge, squadre senza volanti'},
  gufo:{n:'Gufo',i:'🦉',t:2,tags:['Animale','Volante'],hp:40,dmg:5,spd:70,rng:20,cd:.9,flying:true,role:'center',guardR:200,reveal:130,owlEye:true,prio:{Piccolo:5},bonus:{Piccolo:1.6},
    d:"Vola sopra il centro del campo: scopre gli invisibili entro 130 e caccia gli animali piccoli. In Nebbia vede attraverso il bosco per tutta la squadra.",beats:'Volpe, Ladro, Topi, Lepre',loses:'Falco, Cacciatrice, Poliziotto'},
  puzzola:{n:'Puzzola',i:'🦨',t:2,tags:['Animale','Piccolo'],hp:55,dmg:0,spd:60,role:'guard',guardR:160,wander:[200,380],stink:{every:4,max:2,r:65,dps:8,t:6},
    d:"Gira a metà campo e lascia una nube puzzolente ogni 4 s (fino a 2): i nemici dentro perdono 8 vita al secondo, per 6 s.",beats:'Topi, Faina, Ladro, Postina',loses:'Cacciatrice, Falco, Gatto'},
  carpentiera:{n:'Carpentiera',i:'🪚',t:2,cost:2,minRound:3,classicOnly:true,tags:['Umano'],hp:60,dmg:4,spd:55,rng:18,cd:1,role:'guard',guardR:170,wander:[200,380],spawns:{type:'staccionata',every:3,max:3},
-   d:"Lavora a metà campo e costruisce una staccionata ogni 3 s (fino a 3): i nemici a terra devono girarci intorno o abbatterla.",beats:'Ladro, Faina, Topi, Toro',loses:'Volanti, Talpa, Spazzino'},
+   d:"Lavora attorno al punto in cui la piazzi e costruisce una staccionata ogni 3 s (fino a 3): i nemici a terra devono girarci intorno o abbatterla.",beats:'Ladro, Faina, Topi, Toro',loses:'Volanti, Talpa, Spazzino'},
  castoro:{n:'Castoro',i:'🦫',t:1,cost:1,fogOnly:true,tags:['Animale'],hp:100,dmg:8,spd:55,rng:18,cd:1,role:'guard',guardR:120,bridge:2,
    d:"Solo in Nebbia. All'inizio costruisce in 2 s un ponte in più sul ruscello, all'altezza a cui lo metti, poi lo difende. Il ponte resta per tutto il round e lo usano tutti.",beats:'Talpa, squadre lente',loses:'Falco, Cacciatrice, Lupo'},
  lepre:{n:'Lepre',i:'🐇',t:2,tags:['Animale','Ladro','Piccolo'],hp:34,dmg:0,spd:106,carry:.85,role:'thief',nap:4,
@@ -1124,8 +1138,8 @@ const UNITS={
  monete:{n:'Monete',i:'🪙',t:1,hidden:true,tags:['Oggetto','Esca'],hp:40,dmg:0,spd:0,role:'static',lure:120,lureTag:'Umano',eat:1.5,bribe:220},
  poliziotto:{n:'Poliziotto',i:'👮',t:2,cost:4,tags:['Umano','Guardiano'],hp:55,dmg:5,spd:55,rng:100,cd:1,ranged:true,role:'guard',guardR:230,prio:{Ladro:4,Umano:1},bonus:{Ladro:1.35},bonusType:{ladro:1.4},arrest:true,missFly:.5,
    d:"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.",beats:'Tutti i ladri visibili',loses:'Assassino, Ladro invisibile'},
- bracconiere:{n:'Bracconiere',i:'🧔',t:2,cost:2,tags:['Umano','Trappole'],hp:50,dmg:6,spd:50,rng:18,cd:1,role:'guard',guardR:200,traps:3,trapEvery:5,
-   d:"Si aggira davanti al tuo uovo e piazza una trappola ogni 5 s (4 s se ★★), fino a 3 attive (4 se ★★). Bloccano 2,5 s e fanno 15 danni. Non prendono chi vola o scava. Se la tua squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Ladro, Cane, Assassino',loses:'Corvo, Talpa'},
+ bracconiere:{n:'Bracconiere',i:'🧔',t:2,cost:2,tags:['Umano','Trappole'],hp:50,dmg:6,spd:50,rng:18,cd:1,role:'guard',guardR:200,traps:3,trapEvery:5,stunEvery:4,stunT:.5,
+   d:"Pattuglia attorno al punto in cui lo piazzi e si mette sulla strada dei ladri. Piazza una trappola ogni 5 s (4 s se ★★), fino a 3 attive (4 se ★★): bloccano 2,5 s e fanno 15 danni, ma non prendono chi vola o scava. Ogni 4 s il suo colpo stordisce per mezzo secondo. Se la tua squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Ladro, Cane, Assassino',loses:'Corvo, Talpa'},
  assassino:{n:'Assassino',i:'🥷',t:3,cost:5,tags:['Umano','Killer'],hp:45,dmg:7,spd:88,rng:18,cd:.8,role:'hunter',advance:true,prio:{Umano:5},bonus:{Umano:4},
    d:"Rapido, avanza verso il campo nemico e fa 4× danno agli Umani, che caccia per primi.",beats:'Cacciatrice, Poliziotto, Ladro',loses:'Cane, Tacchino'},
  talpa:{n:'Talpa',i:'🦫',t:3,tags:['Animale','Ladro','Scavatore','Piccolo'],hp:90,dmg:0,spd:65,carry:.85,role:'thief',burrow:true,
@@ -1543,6 +1557,7 @@ function pickTarget(u,S){
   const en=S.units.filter(e=>e.alive&&e.side!==u.side),esc=u.order==='scorta';
   // Scorta: resta attaccata a chi accompagna; se se ne allontana prima lo raggiunge, e non si fa distrarre da esche e provocazioni
   if(esc){const a=anchorOf(u,S);if(a&&dist(u,a)>90)return null}
+  if(u.def.followFly&&!esc) return en.filter(e=>canTarget(u,e)&&dist(u,e)<60).sort((a,b)=>dist(u,a)-dist(u,b))[0]||null; // l'Avicoltore si difende solo da vicino
   const l=!esc&&!u.def.noLure&&en.find(e=>e.def.lure&&dist(u,e)<e.def.lure&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&canTarget(u,e));if(l)return l;
   const tz=!esc&&en.find(e=>e.def.taunt&&dist(u,e)<e.def.taunt&&canTarget(u,e)); if(tz) return tz;
   const anc=anchorOf(u,S); let best=null,bs=-1e9;
@@ -1628,6 +1643,7 @@ function attack(u,t,S){
   if(!u.def.ranged&&t.def.dodge&&S.rng()<t.def.dodge){fx(S,t.x,t.y-18,'schivata','#fff6c4');return}
   if(u.def.arrest&&t.carrying!==null&&!t.def.unstoppable&&S.rng()<(u.def.arrestChance||(t.type==='ladro'?.6:u.star===2?.55:.4))){t.stun=u.def.arrestStun||1.5;fx(S,t.x,t.y-22,'ARRESTO!','#fff6c4');log(S,`${nm(u)} arresta ${nm(t)}: l'uovo cade`);dropEgg(t,S)}
   if(u.def.stunHit) t.stun=Math.max(t.stun,u.def.stunHit);
+  if(u.def.stunEvery&&!(u.stunCd>0)&&!t.def.unstoppable){t.stun=Math.max(t.stun,u.def.stunT);u.stunCd=u.def.stunEvery;fx(S,t.x,t.y-22,'stordito!','#fff6c4')}
   damage(t,dmg,S,u);
 }
 function thief(u,S,dt){
@@ -1664,7 +1680,14 @@ function idlePoint(u,S){
       for(const e of S.units) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&e.invis<=0&&(tag?e.def.tags.includes(tag):canCarry(e))){const d=dist(e,own);if(d<bd){bd=d;best=e}}
       if(best){const dx=own.x-best.x,dy=own.y-best.y,L=Math.hypot(dx,dy)||1,k=Math.min(130,L*.5);return{x:best.x+dx/L*k,y:best.y+dy/L*k}}
       return{x:own.x+(u.side?-1:1)*300,y:H/2+Math.sin(S.t*.5+u.id)*150}}
-      if(u.def.traps||u.def.wander){const wr=u.def.wander||[95,215];const k=Math.floor(S.t/3.5)+u.id;const a=Math.sin(k*12.9898)*1.25,r=wr[0]+Math.abs(Math.sin(k*78.233))*(wr[1]-wr[0]);
+      if(u.def.traps){ // Bracconiere: resta attorno al punto in cui l'hai piazzato; se un ladro nemico passa lì vicino gli si mette davanti
+        const home={x:u.sx,y:u.sy};let best=null,bd=1e9;
+        for(const e of S.units) if(e.alive&&e.side!==u.side&&canCarry(e)&&!e.underground&&!e.def.flying&&e.invis<=0){const d=dist(e,home);if(d<bd){bd=d;best=e}}
+        if(best&&bd<260){const dx=best.x-home.x,dy=best.y-home.y,L=Math.hypot(dx,dy)||1,r=Math.min(110,L*.6);return{x:home.x+dx/L*r,y:clamp(home.y+dy/L*r,30,H-30)}}
+        return{x:home.x+Math.sin(S.t*.5+u.id)*18,y:clamp(home.y+Math.sin(S.t*.33+u.id*2)*55,30,H-30)}}
+      if(u.def.spawns&&u.def.spawns.type==='staccionata'){ // Carpentiera: costruisce attorno al punto in cui l'hai piazzata
+        return{x:u.sx+Math.sin(S.t*.4+u.id)*20,y:clamp(u.sy+Math.sin(S.t*.27+u.id)*70,30,H-30)}}
+      if(u.def.wander){const wr=u.def.wander||[95,215];const k=Math.floor(S.t/3.5)+u.id;const a=Math.sin(k*12.9898)*1.25,r=wr[0]+Math.abs(Math.sin(k*78.233))*(wr[1]-wr[0]);
       return{x:own.x+(u.side?-1:1)*Math.cos(a)*r,y:clamp(own.y+Math.sin(a)*r*1.6,30,H-30)}}
       {const dx=u.sx-own.x,dy=u.sy-own.y,L=Math.hypot(dx,dy)||1,r=Math.min(L,u.leash*.55);return{x:own.x+dx/L*r,y:own.y+dy/L*r}}
     case 'scout':{const a=S.t*.9+u.id;return{x:own.x+u.face*0+(u.side?-110:110)+Math.cos(a)*55,y:own.y+Math.sin(a)*95}}
@@ -1727,7 +1750,7 @@ function step(S,dt){
   const live=S.units.filter(u=>u.alive);
   // nessuno resta dentro un campo arato (spinte, uscite dal tunnel, unità piazzate lì sopra); nemmeno l'uovo caduto
   if(S.plots&&S.plots.length){for(const u of live) if(!u.def.flying&&!u.underground) pushOut(u,S,!!u.def.swim);for(const e of S.eggs) if(e.state==='dropped') pushOut(e,S)}
-  for(const u of live){if(u.def.unstoppable){u.stun=0;u.snare=0}if(u.shellT>0)u.shellT-=dt;if(u.shellCd>0)u.shellCd-=dt;u.cd=Math.max(0,u.cd-dt);if(u.boostT>0)u.boostT-=dt;if(u.chargeT>0)u.chargeT-=dt;if(u.chargeCd>0)u.chargeCd-=dt;if(u.pst>0)u.pst-=dt;if(u.stun>0)u.stun-=dt;if(u.snare>0)u.snare-=dt;if(u.invis>0){u.invis-=dt;if(u.invis<=0)fx(S,u.x,u.y-20,'visibile','#fff6c4')}
+  for(const u of live){if(u.def.unstoppable){u.stun=0;u.snare=0}if(u.shellT>0)u.shellT-=dt;if(u.shellCd>0)u.shellCd-=dt;u.cd=Math.max(0,u.cd-dt);if(u.boostT>0)u.boostT-=dt;if(u.chargeT>0)u.chargeT-=dt;if(u.chargeCd>0)u.chargeCd-=dt;if(u.pst>0)u.pst-=dt;if(u.stunCd>0)u.stunCd-=dt;if(u.stun>0)u.stun-=dt;if(u.snare>0)u.snare-=dt;if(u.invis>0){u.invis-=dt;if(u.invis<=0)fx(S,u.x,u.y-20,'visibile','#fff6c4')}
     if(u.hit>0)u.hit-=dt;if(u.lunge>0)u.lunge-=dt;if(u.lb>0)u.lb-=dt}
   for(const u of live){ if(!(u.underground||u.invis>0||u.disguised)) continue;
     for(const e of live){ if(e.side===u.side) continue; const d=dist(u,e);
@@ -1970,6 +1993,13 @@ function drawDuoLegend(){const D=G.duo;if(!D)return;ctx.save();ctx.font='bold 12
     ctx.fillStyle='rgba(20,26,14,.62)';ctx.beginPath();ctx.roundRect(x,H-36,w,22,11);ctx.fill();
     ctx.fillStyle=duoColOf(i);ctx.beginPath();ctx.arc(x+11,H-25,6,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='left';ctx.fillText(nm,x+21,H-25);x+=w+6}
   ctx.restore()}
+// api attorno all'arnia: mostrano l'area in cui pungono e rallentano
+function drawBees(x,y,r,seed){const t=performance.now()/1000;ctx.save();
+  ctx.fillStyle='rgba(242,194,48,.07)';ctx.strokeStyle='rgba(242,194,48,.45)';ctx.setLineDash([4,6]);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.stroke();ctx.setLineDash([]);
+  for(let i=0;i<9;i++){const a=t*(.6+i%3*.25)*(i%2?1:-1)+i*2.1+seed,rr=r*(.35+.6*((i*37)%10)/10),bx=x+Math.cos(a)*rr,by=y+Math.sin(a*1.3)*rr*.8+Math.sin(t*9+i)*1.5;
+    ctx.fillStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.ellipse(bx-1,by-2.5,2.2,1.4,0,0,7);ctx.fill();
+    ctx.fillStyle='#f2c230';ctx.beginPath();ctx.ellipse(bx,by,3,2.2,a,0,7);ctx.fill();ctx.fillStyle='#2b1d12';ctx.fillRect(bx-.6,by-2,1.2,4)}
+  ctx.restore()}
 function render(){
   drawField();
   if(!G) return;
@@ -2005,6 +2035,7 @@ function render(){
       ctx.strokeStyle=SIDE[e.side^G.me].col;ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(X(e.x),e.y-4,19,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.recT/3));ctx.stroke()}}
   if(S.fog) drawFog();
   if(S.mist) drawFog(DUO_MIST);
+  for(const h of S.units) if(h.alive&&h.def.aura) drawBees(X(h.x),h.y,h.def.aura.r,h.id);
   for(const f of S.fakes) if(f.state==='home'){drawEgg(X(f.x),f.y-4,.85,false);
     if(f.side===G.me){ctx.font='bold 9px Nunito,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.strokeText('finto',X(f.x),f.y+14);ctx.fillText('finto',X(f.x),f.y+14)}}
   for(const c of S.clouds){ctx.save();ctx.globalAlpha=Math.min(1,c.t)*.35;ctx.fillStyle='#9bbf3a';ctx.beginPath();ctx.arc(X(c.x),c.y,c.r,0,7);ctx.fill();
@@ -3240,6 +3271,11 @@ function coachTick(){
 }
 $('coachNext').onclick=()=>{if(!COACH)return;COACH.i++;coachTick()};
 $('coachExit').onclick=()=>endGuided();
+// linguette rapide (telefono): portano alla sezione e si illumina quella che stai guardando
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'})});
+addEventListener('scroll',()=>{if($('game').classList.contains('hidden'))return;let cur='arenaSec';
+  for(const id of ['arenaSec','shopPanel','teamPanel']){const r=$(id).getBoundingClientRect();if(r.top<innerHeight*.4)cur=id}
+  for(const b of document.querySelectorAll('[data-go]'))b.classList.toggle('on',b.dataset.go===cur)},{passive:true});
 // ---------- finestra Gioca: tipo di partita, modalità, opzioni; quando si apre una stanza diventa la lobby ----------
 let PT='bot',PM='classic';
 function renderPlay(){
