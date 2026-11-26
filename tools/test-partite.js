@@ -37,6 +37,12 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
     console.log('Royal Rumble contro 7 bot');await p.evaluate(()=>openPlay('bot','rumble')).then(()=>p.click('#rumbleBot'));
     for(let r=0;r<3;r++){await playRound([p]);if(await phase(p)==='over')break;await p.click('#bBtn')}
     const st=await p.evaluate(()=>window.__g().rmb.P.map(x=>x.lives+(x.out?'x':'')).join(' '));ok(true,'uova dopo 3 round: '+st);
+    console.log('Contro il bot con ban e scelte');await p.click('#menuBtn');
+    await p.evaluate(()=>openPlay('bot','classic'));await p.check('#banOpt');await p.click('#botBtn');
+    for(let i=0;i<300&&await p.isHidden('#game');i++){const c=await p.$('#botBanPool [data-bban]:not([disabled])');if(c)await c.click().catch(()=>{});await p.waitForTimeout(150)}
+    const bb=await p.evaluate(()=>{const g=window.__g();return {pool:g.pool,bans:g.bans,picks:g.picks}});
+    ok(bb.bans.length===4&&bb.picks.length===2&&bb.picks.every(k=>bb.pool.includes(k))&&!bb.bans.some(k=>bb.pool.includes(k)),`4 ban e 2 scelte con il bot: via ${bb.bans.join(', ')}, scelti ${bb.picks.join(', ')}`);
+    await playRound([p]);ok(true,'round giocato dopo i ban');
     await ctx.close()}
   // --- online con database finto
   const ctx=await b.newContext({locale:'it-IT'});

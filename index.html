@@ -143,7 +143,8 @@ canvas.drag{touch-action:none}
 .ord{border:2px dashed var(--line);background:color-mix(in srgb,var(--chip) 45%,transparent);border-radius:14px;padding:10px 12px;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;position:relative;min-width:0}
 .ord:hover:not(:disabled){border-color:var(--gold)}
 .ord:disabled{opacity:.55;cursor:not-allowed}
-.ord .ic{font-size:24px;grid-row:span 2;align-self:center}
+.ord .ic{font-size:24px;grid-row:span 2;align-self:center}.ord .ic .oimg{width:40px;height:40px;vertical-align:middle}
+.oimg{width:1.35em;height:1.35em;vertical-align:-.3em;object-fit:contain}.tipic .oimg{width:38px;height:38px}
 .ord .nm{font-weight:800;padding-right:34px}
 .ord .ds{font-size:13.5px;color:var(--ink)}
 .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;align-items:stretch}
@@ -170,17 +171,17 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .herobar{display:flex;align-items:center;gap:8px 26px;padding:0 26px 20px;flex-wrap:wrap}
 .herologo{width:clamp(220px,30%,380px);height:auto;margin-top:-9%;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));flex:0 0 auto}
 .herotxt{flex:1 1 280px;min-width:0;padding-top:14px}
-.tipbox{flex:1 1 300px;max-width:440px;margin-top:14px;background:rgba(255,248,220,.1);border:1px solid rgba(255,240,190,.28);border-radius:16px;padding:12px 14px;color:#f4f8e6;align-self:center}
-.tiphead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tiphead b{color:#ffe07a;font-size:15px}
-.tipkind{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff7d6}
+.tipbox{flex:1 1 300px;min-width:0;max-width:440px;margin-top:14px;background:rgba(255,248,220,.1);border:1px solid rgba(255,240,190,.28);border-radius:16px;padding:12px 14px;color:#f4f8e6;align-self:center}
+.tiphead{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0}.tiphead b{color:#ffe07a;font-size:15px;white-space:nowrap}
+.tipkind{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff7d6}
 .tipkind.syn{background:#3f7d2c}.tipkind.ctr{background:#9a3b2a}.tipkind.early{background:#2d6a8a}.tipkind.late{background:#6b4a9a}.tipkind.sit{background:#8a6a1f}
-.tipnav{margin-left:auto;display:flex;gap:4px}.tipnav button{width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px;line-height:1;cursor:pointer}
+.tipnav{margin-left:auto;display:flex;gap:4px;flex:0 0 auto}.tipnav button{width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px;line-height:1;cursor:pointer}
 .tipnav button:hover{background:rgba(255,255,255,.3)}
-.tipbody{display:flex;gap:10px;align-items:flex-start;margin-top:8px;transition:opacity .35s}.tipbody.fade{opacity:0}
+.tipbody{display:grid;margin-top:8px}.tipone{grid-area:1/1;display:flex;gap:10px;align-items:flex-start;visibility:hidden;opacity:0;transition:opacity .35s}.tipone.on{visibility:visible;opacity:1}
 .tipics{display:flex;gap:4px;flex:0 0 auto}.tipic{width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,.22);display:grid;place-items:center;font-size:24px;cursor:pointer;overflow:hidden}
 .tipic img{width:100%;height:100%;object-fit:cover}.tipic.ord{cursor:default}
 .tipbody p{margin:0;font-size:14px;line-height:1.4;color:#eef5dc}
-@media (max-width:640px){.tipbox{max-width:none;text-align:left}}
+@media (max-width:640px){.tipbox{max-width:none;flex-basis:100%;text-align:left}}
 .hero h2{font-size:clamp(26px,3.6vw,40px);line-height:1.05;color:#fff7d6;text-shadow:0 3px 0 rgba(0,0,0,.25)}
 .hero p{margin:8px 0 0;max-width:560px;color:#eaf3d6;font-size:15.5px}
 @media (max-width:640px){.heroimg{aspect-ratio:16/9;object-position:58% 50%}.herobar{justify-content:center;text-align:center;padding:0 16px 18px}.herologo{width:72%;margin-top:-16%}.herotxt{padding-top:4px}.hero p{margin-inline:auto}}
@@ -295,6 +296,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcg .sell{border:1px solid var(--line);background:var(--chip);color:var(--ink);font-size:13px;font-weight:800;padding:5px 11px;border-radius:999px;cursor:pointer;text-decoration:none;line-height:1.1}
 .tcg.compact{padding:8px;gap:6px;border-width:5px}
 .tcg.compact .tname{font-size:17px}
+.tcost.up{background:radial-gradient(circle at 35% 30%,#ffd9b0,#f08a30 50%,#a3480b);color:#2b1000}
 .tcg.compact .tcost{width:26px;height:26px;font-size:13px}
 .tcg.compact .tart{aspect-ratio:2/1}
 .tcg.compact .temo{font-size:46px}.tcg.compact.s2 .temo{font-size:52px}.tcg.compact.s3 .temo{font-size:58px}
@@ -415,6 +417,11 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
           <button class="btn primary" id="rumbleOnline" disabled>👑 Crea Royal Rumble online (fino a 8)</button>
           <div id="mmBox" class="hidden mmbox"><span id="mmText">Cerco un avversario…</span><button class="btn" id="mmCancel">Annulla</button></div>
         </div>
+      </div></div>
+      <div id="botBanModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="botBanT"><div class="mbox lobbybox">
+        <div class="row" style="align-items:center"><h2 id="botBanT" style="margin:0">Ban e scelte contro il bot</h2><button class="linkbtn" id="botBanClose">Annulla</button></div>
+        <p id="botBanText" style="margin:0;font-weight:700"></p>
+        <div class="banpool" id="botBanPool"></div>
       </div></div>
       <div id="roomBox" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="roomTitle"><div class="mbox lobbybox">
         <div class="row" style="align-items:center"><h2 id="roomTitle" style="margin:0">Lobby</h2><button class="linkbtn" id="lobbyLeave">Esci dalla lobby</button></div>
@@ -1174,6 +1181,10 @@ const ORDERS={
 };
 
 const IMG={};
+// icone disegnate degli ordini (cartella icons/, file ord-<chiave>.webp); se non si caricano resta l'emoji
+const OIMG={};
+for(const k in ORDERS){ORDERS[k].img='icons/ord-'+k+'.webp';const im=new Image();im.src=ORDERS[k].img;OIMG[k]=im}
+const OIC=o=>o.img?`<img class="oimg" src="${o.img}" alt="">`:o.i;
 for(const k in ARTSRC) UNITS[k].img='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' stroke-linejoin='round'>${ARTSRC[k]}</svg>`);
 // illustrazioni disegnate (cartella icons/); dove manca si usa il disegno vettoriale qui sopra
 for(const k of 'apicoltore arnia assassino avicoltore benefattore bracconiere cacciatore cane carpentiera castoro chioccia coltivatore corvo faina falco gallico gatto gazza germoglio gufo ladro lepre lupo mais monete mucca oca poliziotto postina procione puzzola spaventa spazzino staccionata tacchino talpa tartaruga topi toro trombettiere veterinario volpe'.split(' ')) if(UNITS[k]) UNITS[k].img='icons/'+k+'.webp';
@@ -1192,7 +1203,7 @@ function newMatch(o={}){
   const seed=(Date.now()&0xffffff)^0x5bd1;
   G={round:1,score:[0,0],phase:'shop',players:[mkPlayer(),mkPlayer()],lastComp:[null,null],rng:mulberry(seed),
      brng:mulberry(seed^0x9e37),sel:null,sim:null,speed:1,lost:[false,false],acc:0,revealT:0,logN:0,
-     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online)?mulberry((o.seed||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||!!o.ranked||!!o.big),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
+     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online||o.poolSeed)?mulberry(((o.poolSeed||o.seed)||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||!!o.ranked||!!o.big),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
   if(G.mode==='rumble') initRumble(o);
   G.tutorial=!!o.tutorial;
   if(o.bans&&o.bans.length) G.pool=G.pool.filter(k=>!o.bans.includes(k));
@@ -1800,7 +1811,8 @@ function drawToken(x,y,side,type,star,order,o={}){
   if(star===3){ctx.save();ctx.shadowColor='#ffd54a';ctx.shadowBlur=10;ctx.strokeStyle='#ffd54a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x+lx,yy,18.5,0,7);ctx.stroke();ctx.restore()}
   if(star>1){const s='★'.repeat(star);ctx.font='bold 10px sans-serif';ctx.fillStyle='#ffd54a';ctx.strokeStyle='#5a3e00';ctx.lineWidth=2.5;ctx.strokeText(s,x,yy+22);ctx.fillText(s,x,yy+22)}
   if(order){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x+13,yy+12,8,0,7);ctx.fill();ctx.strokeStyle=SIDE[side].col;ctx.lineWidth=1.5;ctx.stroke();
-    ctx.font='9px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.fillStyle='#000';ctx.fillText(ORDERS[order].i,x+13,yy+12.5)}
+    const oi=OIMG[order];if(oi&&oi.complete&&oi.naturalWidth)ctx.drawImage(oi,x+13-7.5,yy+12-7.5,15,15);
+    else{ctx.font='9px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.fillStyle='#000';ctx.fillText(ORDERS[order].i,x+13,yy+12.5)}}
   if(o.hpf!==undefined&&o.hpf<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(x-15,yy-25,30,4);ctx.fillStyle=o.hpf>.5?'#6ee06e':o.hpf>.25?'#f2c230':'#f05a4a';ctx.fillRect(x-15,yy-25,30*Math.max(0,o.hpf),4)}
   if(o.stun>0){ctx.font='13px sans-serif';ctx.fillText('💫',x,yy-30)}
   if(o.snare>0){ctx.strokeStyle='#5a3a1a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,yy+8,14,0,Math.PI);ctx.stroke()}
@@ -1993,16 +2005,16 @@ function renderAll(){
     if(!t) return `<div class="tcgbtn sold" aria-hidden="true"></div>`;
     const d=UNITS[t],two=(p.shopStar||[])[i]===2,c=shopCost(p,i),n=two?0:p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
-    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,two?2:1,{foot:`${two?'<span class="merge">★★ già pronta</span>':hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
+    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,two?2:1,{cost:c,foot:`${two?'<span class="merge">★★ già pronta</span>':hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
   $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta.';
   $('orders').innerHTML=Object.entries(ORDERS).map(([k,d])=>`<button class="ord${selU&&selU.order===k?' cur':''}" data-ord="${k}" ${!shop||p.gold<ORDER_COST||!selU?'disabled':''}>
-      <span class="cost">${ORDER_COST}</span><span class="ic">${d.i}</span>
+      <span class="cost">${ORDER_COST}</span><span class="ic">${OIC(d)}</span>
       <span class="nm">${d.n}</span><span class="ds">${d.d}</span></button>`).join('');
   const field=p.board.filter(b=>!b.bench),bench=p.board.filter(b=>b.bench);
   $('boardCount').textContent=`${field.length}/${MAXB} · tocca un'unità per darle un ordine`;
   $('benchCount').textContent=`${bench.length}/${MAXBENCH} · non scende in campo, ma conta per le copie ★★`;
   const card=b=>`<div class="bu tcgbtn${G.sel===b.uid?' sel':''}" tabindex="0" role="button" data-sel="${b.uid}" aria-label="${UNITS[b.type].n}${b.star>1?' '+b.star+' stelle':''}">${tcgCard(b.type,b.star,{compact:true,foot:
-     `<span class="oc ${b.order?'':'none'}">${b.order?ORDERS[b.order].i+' '+ORDERS[b.order].n:'nessun ordine'}</span>
+     `<span class="oc ${b.order?'':'none'}">${b.order?OIC(ORDERS[b.order])+' '+ORDERS[b.order].n:'nessun ordine'}</span>
       <span class="acts"><button class="sell" data-card="${b.type}:${b.star}">Scheda</button>${shop?`<button class="sell" data-swap="${b.uid}">${b.bench?'↑ In campo':'↓ Panchina'}</button><button class="sell" data-sell="${b.uid}">Vendi (+1)</button>`:''}</span>`})}</div>`;
   let h=field.map(card).join('');
   if(field.length<MAXB) h+=`<div class="slot" style="min-height:60px">${MAXB-field.length} posti liberi</div>`;
@@ -2014,7 +2026,7 @@ function renderAll(){
   $('poolCount').textContent=`${pl.length} personaggi`;
   $('poolList').innerHTML=pl.map(k=>{const u=UNITS[k],lock=!avail(k,G.round);return `<span class="mini pchip r-${roleOf(k)}${lock?' lock':''}" data-card="${k}:1" role="button" tabindex="0" title="${lock?`Disponibile dal round ${Math.max(u.minRound||1,u.t===3?3:1)}`:u.n}">${IC(u)} ${u.n}${lock?` <small>dal r${Math.max(u.minRound||1,u.t===3?3:1)}</small>`:''}</span>`}).join('');
   const lc=G.lastComp[1-G.me];
-  $('intel').innerHTML=lc&&lc.length?lc.map(b=>`<span class="mini">${IC(UNITS[b.type])} ${UNITS[b.type].n}${b.star>1?` <span class="st">${'★'.repeat(b.star)}</span>`:''}${b.order?' '+ORDERS[b.order].i:''}</span>`).join(''):
+  $('intel').innerHTML=lc&&lc.length?lc.map(b=>`<span class="mini">${IC(UNITS[b.type])} ${UNITS[b.type].n}${b.star>1?` <span class="st">${'★'.repeat(b.star)}</span>`:''}${b.order?' '+OIC(ORDERS[b.order]):''}</span>`).join(''):
     `<span class="empty">${lc?'Nessuna unità.':'Ancora sconosciuta: la vedrai dopo il primo round.'}</span>`;
 }
 function statsOf(type,star){
@@ -2035,7 +2047,7 @@ const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
   const roleTag={thief:'Ladro',def:'Guardiano'}[r];
   return `<article class="tcg r-${r} s${star}${o.compact?' compact':''}${o.dense?' dense':''}">
-    <header><span class="tname">${d.n}</span><span class="tcost" title="Costo">${d.cost??COST[d.t]}</span></header>
+    <header><span class="tname">${d.n}</span><span class="tcost${o.cost!=null&&o.cost!==(d.cost??COST[d.t])?' up':''}" title="Costo">${o.cost??d.cost??COST[d.t]}</span></header>
     <div class="tart"><span class="temo" aria-hidden="true">${IC(d)}</span><span class="tstars">${'★'.repeat(star)}</span></div>
     <div class="ttags"><span class="trole">${ROLES[r].n}</span>${d.fogOnly?'<span class="trole fogb">🌫️ Solo Nebbia</span>':''}${d.classicOnly?'<span class="trole fogb">Solo Classica</span>':''} ${d.tags.filter(t=>t!=='Piccolo'&&t!==roleTag).join(' · ')} · Liv. ${d.t}${(d.minRound||1)>1?` · dal round ${d.minRound}`:''}</div>
     <div class="tstats">${STATDEF.map(([key,i,l])=>{const v=statVal(s,key),w=v==='mischia'?6:v==='—'?0:Math.max(4,Math.min(100,v/statMax(star,key)*100));
@@ -2060,7 +2072,7 @@ function renderCodex(){
   $('codex').innerHTML=`<div class="rolelegend">${RO.map(r=>`<span><i style="background:var(--r${r})"></i><b>${ROLES[r].n}</b> · ${ROLES[r].d}</span>`).join('')}</div>
     <p class="empty" style="margin:10px 0 0">Tocca una carta per aprirla e vedere come cambiano le statistiche a ★★ e ★★★.</p>
     <div class="tcggrid">${ks.map(k=>`<div class="tcgbtn" role="button" tabindex="0" data-card="${k}:1" aria-label="Scheda ${UNITS[k].n}">${tcgCard(k,1)}</div>`).join('')}</div>
-    <h3 style="margin:18px 0 8px">Ordini</h3><div class="cx">${Object.values(ORDERS).map(o=>`<div><b>${o.i} ${o.n}</b> <span class="tier">· costo ${ORDER_COST}</span><br>${o.d}</div>`).join('')}</div>`;
+    <h3 style="margin:18px 0 8px">Ordini</h3><div class="cx">${Object.values(ORDERS).map(o=>`<div><b>${OIC(o)} ${o.n}</b> <span class="tier">· costo ${ORDER_COST}</span><br>${o.d}</div>`).join('')}</div>`;
 }
 document.addEventListener('click',e=>{
   if(!G) return;
@@ -2131,7 +2143,7 @@ function showTip(e){
     if(u.underground) st.push('sottoterra'); if(u.invis>0) st.push('invisibile'); if(u.snare>0) st.push('in trappola');
     if(u.stun>0) st.push('stordito'); if(u.eatT>0) st.push('distratto'); if(u.turned) st.push('ora fa il ladro'); if(u.wait>0) st.push('in attesa');
     h=`<b class="c${u.side^G.me}">${IC(d)} ${d.n}${u.star>1?' '+'★'.repeat(u.star):''}</b> <span style="color:var(--muted)">· ${u.side===G.me?'Tuo':esc(G.oppName)}</span><br><span class="tg">${d.tags.join(' · ')}</span>`+
-      (st.length?`<br>${st.join(' · ')}`:'')+(u.order?`<br>Ordine: ${ORDERS[u.order].i} ${ORDERS[u.order].n}`:'')+
+      (st.length?`<br>${st.join(' · ')}`:'')+(u.order?`<br>Ordine: ${OIC(ORDERS[u.order])} ${ORDERS[u.order].n}`:'')+
       (u.star===3&&P3[u.type]?`<br>⚡ <b>${P3[u.type].n}</b>: ${P3[u.type].d}`:'')+`<br><span style="color:var(--muted)">${d.d}</span>`}
   tip.innerHTML=h;tip.classList.remove('hidden');
   const ar=cv.parentElement.getBoundingClientRect(),r=cv.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight;
@@ -2185,25 +2197,28 @@ function renderLobby(){
     '<li class="empty">Nessun giocatore ancora. Iscriviti per primo!</li>';
 }
 // ---------- "Lo sapevi?" (file tips.js): uno a caso all'apertura, poi cambia da solo ----------
-let TIPI=-1,TIPT=null,TIPHOVER=false,TIPORD=null;
+let TIPI=0,TIPT=null,TIPHOVER=false,TIPN=0;
 const TIPKIND={syn:'Sinergia',ctr:'Counter naturale',early:'Forte a inizio partita',late:'Forte a fine partita',sit:'Situazionale'};
-function showTip(step){
-  // ordine mescolato a ogni apertura: si vedono tutti prima di ripeterne uno
-  if(!TIPORD){TIPORD=(window.FF_TIPS||[]).filter(t=>t.cards.every(k=>k.startsWith('o:')?ORDERS[k.slice(2)]:UNITS[k]));
-    for(let i=TIPORD.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[TIPORD[i],TIPORD[j]]=[TIPORD[j],TIPORD[i]]}}
-  const T=TIPORD;if(!T.length)return;
-  TIPI=TIPI<0?0:(TIPI+step+T.length)%T.length;
-  const t=T[TIPI],box=$('tipBox'),body=$('tipBody');box.classList.remove('hidden');
-  const draw=()=>{$('tipKind').className='tipkind '+t.kind;$('tipKind').textContent=TIPKIND[t.kind]||'';
-    const ic=t.cards.map(k=>{if(k.startsWith('o:')){const o=ORDERS[k.slice(2)];return `<span class="tipic ord" title="${esc(o.n)}">${o.i}</span>`}
+// tutti i consigli stanno impilati nello stesso spazio (uno visibile): il riquadro ha sempre l'altezza del più lungo
+function buildFacts(){
+  const T=(window.FF_TIPS||[]).filter(t=>t.cards.every(k=>k.startsWith('o:')?ORDERS[k.slice(2)]:UNITS[k]));
+  for(let i=T.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[T[i],T[j]]=[T[j],T[i]]} // ordine mescolato a ogni apertura
+  TIPN=T.length;if(!TIPN)return;
+  $('tipBody').innerHTML=T.map((t,i)=>{
+    const ic=t.cards.map(k=>{if(k.startsWith('o:')){const o=ORDERS[k.slice(2)];return `<span class="tipic ord" title="${esc(o.n)}">${OIC(o)}</span>`}
       const d=UNITS[k];return `<span class="tipic" role="button" tabindex="0" data-card="${k}:1" title="${esc(d.n)}">${IC(d)}</span>`}).join('');
-    body.innerHTML=`<div class="tipics">${ic}</div><p data-notr>${esc(t[LANG]||t.it)}</p>`;body.classList.remove('fade')};
-  if(step){body.classList.add('fade');setTimeout(draw,300)}else draw();
+    return `<div class="tipone${i?'':' on'}" data-kind="${t.kind}"><div class="tipics">${ic}</div><p data-notr>${esc(t[LANG]||t.it)}</p></div>`}).join('');
+  $('tipBox').classList.remove('hidden');showFact(0);
 }
-$('tipPrev').onclick=()=>{showTip(-1);startTipsTimer()};$('tipNext').onclick=()=>{showTip(1);startTipsTimer()};
-function startTipsTimer(){clearInterval(TIPT);TIPT=setInterval(()=>{if(!TIPHOVER&&!document.hidden&&!$('lobby').classList.contains('hidden'))showTip(1)},15000)}
+function showFact(step){
+  if(!TIPN)return;TIPI=(TIPI+step+TIPN)%TIPN;const all=$('tipBody').children,cur=all[TIPI];
+  for(const el of all)el.classList.toggle('on',el===cur);
+  const k=cur.dataset.kind;$('tipKind').className='tipkind '+k;$('tipKind').textContent=TIPKIND[k]||'';
+}
+$('tipPrev').onclick=()=>{showFact(-1);startTipsTimer()};$('tipNext').onclick=()=>{showFact(1);startTipsTimer()};
+function startTipsTimer(){clearInterval(TIPT);TIPT=setInterval(()=>{if(!TIPHOVER&&!document.hidden&&!$('lobby').classList.contains('hidden'))showFact(1)},15000)}
 $('tipBox').addEventListener('mouseenter',()=>TIPHOVER=true);$('tipBox').addEventListener('mouseleave',()=>TIPHOVER=false);
-startTipsTimer();setTimeout(()=>showTip(0),0);
+startTipsTimer();setTimeout(buildFacts,0);
 // ---------- novità (file news.js): testo nelle quattro lingue, carte dei nuovi personaggi, mini-report dei win rate ----------
 let NEWSALL=false;
 function renderNews(){
@@ -3014,7 +3029,7 @@ function renderPlay(){
   for(const b of document.querySelectorAll('[data-pm]'))b.classList.toggle('on',b.dataset.pm===PM);
   $('modeSel').value=PM==='fog'?'fog':'classic';$('modeSel').onchange();
   const R=PM==='rumble',show=(id,on)=>$(id).classList.toggle('hidden',!on),online=PT!=='bot';
-  show('rumbleHint',R);show('winRow',PM==='classic');show('banRow',PT==='friendly'&&!R);show('rankNote',PT==='ranked');
+  show('rumbleHint',R);show('winRow',PM==='classic');show('banRow',PT!=='ranked'&&!R);show('rankNote',PT==='ranked');
   show('loginNote',online&&!(PROFILE&&ONLINE==='ok'));
   show('botBtn',PT==='bot'&&!R);show('rumbleBot',PT==='bot'&&R);
   show('roomFriendly',PT==='friendly'&&!R);show('quickFriendly',PT==='friendly'&&!R);
@@ -3027,7 +3042,38 @@ $('playClose').onclick=()=>$('playModal').classList.add('hidden');
 document.addEventListener('click',e=>{const t=e.target.closest('[data-pt],[data-pm]');if(!t)return;if(t.dataset.pt)PT=t.dataset.pt;else PM=t.dataset.pm;renderPlay()});
 // la finestra lascia il posto alla lobby o alla partita
 
-$('botBtn').onclick=()=>newMatch({mode:'bot',variant:variant(),win:winTarget()});
+$('botBtn').onclick=()=>$('banOpt').checked?startBotBans():newMatch({mode:'bot',variant:variant(),win:winTarget()});
+// ---------- ban e scelte contro il bot: stesso schema dell'1 contro 1 (2 ban a testa, poi 1 scelta a testa) ----------
+let BB=null;
+function startBotBans(){
+  const seed=Math.floor(Math.random()*2e9),v=variant(),d={variant:v,seed,bansOn:true,bans:[]};
+  BB={d,order:['me','bot','me','bot','me','bot'],nBan:4,at:Date.now(),win:winTarget(),t:setInterval(botBanTick,400)};
+  $('playModal').classList.add('hidden');$('botBanModal').classList.remove('hidden');renderBotBan();
+}
+function renderBotBan(){
+  const d=BB.d,n=d.bans.length,picking=n>=BB.nBan,mine=BB.order[n]==='me',pool=lobbyPool(d),banned=bansOf(d),picked=picksOf(d);
+  const chip=(k,cls,dis)=>{const u=UNITS[k];return `<button class="mini pchip r-${roleOf(k)}${cls}" data-bban="${k}" ${dis?'disabled':''}>${IC(u)} ${u.n}</button>`};
+  $('botBanPool').innerHTML=(picking?'<p class="banhd">Pool della partita</p>':'')+pool.map(k=>chip(k,banned.includes(k)?' banned':'',picking||!mine||banned.includes(k))).join('')
+    +picked.map(k=>chip(k,' picked',true)).join('')+(picking?'<p class="banhd">Scegli un personaggio da aggiungere</p>'+pickable(d).map(k=>chip(k,'',!mine)).join(''):'');
+  botBanTick();
+}
+function botBanTick(){
+  if(!BB)return;const d=BB.d,n=d.bans.length,picking=n>=BB.nBan,left=Math.max(0,Math.ceil((BB.at+BAN_MS-Date.now())/1000));
+  $('botBanText').textContent=BB.order[n]==='me'?(picking?`Fase di scelta: tocca a te, scegli un personaggio che sarà di sicuro nella partita (${left} s).`:`Fase di ban: tocca a te, scegli un personaggio da escludere dalla partita (${left} s).`):'Il bot sta scegliendo…';
+  if(BB.order[n]==='bot'&&Date.now()-BB.at>900) botBanDo(botBanChoice());
+  else if(BB.order[n]==='me'&&left<=0){const c=picking?pickable(d):lobbyPool(d).filter(k=>!bansOf(d).includes(k));botBanDo(c[Math.floor(Math.random()*c.length)])}
+}
+// il bot banna i personaggi più costosi rimasti e sceglie a caso tra quelli che può aggiungere
+function botBanChoice(){const d=BB.d;if(d.bans.length>=BB.nBan){const c=pickable(d);return c[Math.floor(Math.random()*c.length)]}
+  const c=lobbyPool(d).filter(k=>!bansOf(d).includes(k)).sort((a,b)=>costOf(b)-costOf(a)||Math.random()-.5);return c[Math.floor(Math.random()*Math.min(4,c.length))]}
+function botBanDo(k){
+  if(!BB||!k)return;const d=BB.d,pick=d.bans.length>=BB.nBan;d.bans.push(pick?{k,pick:true}:{k});BB.at=Date.now();
+  if(d.bans.length>=BB.order.length){const b=BB;clearInterval(b.t);BB=null;$('botBanModal').classList.add('hidden');
+    newMatch({mode:'bot',variant:d.variant,win:b.win,poolSeed:d.seed,big:true,bans:bansOf(d),picks:picksOf(d)});return}
+  renderBotBan();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-bban]');if(b&&BB&&BB.order[BB.d.bans.length]==='me'&&!b.disabled)botBanDo(b.dataset.bban)});
+$('botBanClose').onclick=()=>{if(BB)clearInterval(BB.t);BB=null;$('botBanModal').classList.add('hidden')};
 $('modeSel').onchange=()=>{const f=variant()==='fog';$('winSel').disabled=f;if(f)$('winSel').value='7';$('modeHint').classList.toggle('hidden',!f)};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-rt]');if(!t)return;RANKTAB=t.dataset.rt;document.querySelectorAll('[data-rt]').forEach(b=>b.classList.toggle('on',b===t));renderLobby()});
 function winTarget(){const v=+$('winSel').value;return [1,2,3,5,7].includes(v)?v:3}

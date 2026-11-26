@@ -850,5 +850,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "⚡ Partita rapida con un giocatore a caso": "⚡ Quick match with a random player",
 "⚡ Cerca un avversario (Elo simile)": "⚡ Find an opponent (similar Elo)",
 "🏆 Crea una stanza classificata": "🏆 Create a ranked room",
-"amichevole con ban": "friendly with bans"
+"amichevole con ban": "friendly with bans",
+"Ban e scelte contro il bot": "Bans and picks against the bot",
+"Il bot sta scegliendo…": "The bot is choosing…"
 };

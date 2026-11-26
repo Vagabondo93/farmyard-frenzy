@@ -850,5 +850,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "⚡ Partita rapida con un giocatore a caso": "⚡ Partie rapide avec un joueur au hasard",
 "⚡ Cerca un avversario (Elo simile)": "⚡ Chercher un adversaire (Elo proche)",
 "🏆 Crea una stanza classificata": "🏆 Créer un salon classé",
-"amichevole con ban": "amicale avec bannissements"
+"amichevole con ban": "amicale avec bannissements",
+"Ban e scelte contro il bot": "Bannissements et choix contre le bot",
+"Il bot sta scegliendo…": "Le bot choisit…"
 };

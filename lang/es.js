@@ -850,5 +850,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "⚡ Partita rapida con un giocatore a caso": "⚡ Partida rápida con un jugador al azar",
 "⚡ Cerca un avversario (Elo simile)": "⚡ Buscar rival (Elo similar)",
 "🏆 Crea una stanza classificata": "🏆 Crear una sala clasificatoria",
-"amichevole con ban": "amistosa con bloqueos"
+"amichevole con ban": "amistosa con bloqueos",
+"Ban e scelte contro il bot": "Bloqueos y elecciones contra el bot",
+"Il bot sta scegliendo…": "El bot está eligiendo…"
 };
