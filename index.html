@@ -1373,9 +1373,10 @@ function spawn(b,side,id){
   let role=d.role,leash=d.guardR||0;
   if(b.order==='guardia'&&role!=='static'&&role!=='thief'){role='guard';leash=150}
   if(b.order==='guardia'&&role==='thief'){role='guard';leash=150}
-  if(b.order==='assalto'&&(role==='guard'||role==='hunter'||role==='scout')){role='assault';leash=220}
-  if(b.order==='scorta'&&role!=='static'&&role!=='thief'){role='escort';leash=130} // Scorta prevale sul posizionamento automatico del personaggio
-  if(b.order==='centro'&&(role==='guard'||role==='hunter'||role==='scout')){role='center';leash=170}
+  // gli ordini di posizione valgono per tutti tranne oggetti e ladri e prevalgono sul comportamento automatico del personaggio
+  if(b.order==='assalto'&&role!=='static'&&role!=='thief'){role='assault';leash=220}
+  if(b.order==='scorta'&&role!=='static'&&role!=='thief'){role='escort';leash=80} // Scorta prevale sul posizionamento automatico del personaggio
+  if(b.order==='centro'&&role!=='static'&&role!=='thief'){role='center';leash=170}
   const x=side===0?b.px:W-b.px;
   return{id,side,buid:b.uid??null,type:b.type,def:d,star:b.star,order:b.order,x,y:b.py,sx:x,sy:b.py,hp,maxHp:hp,spd,dmg,cd:0,alive:true,carrying:null,
     disguised:!!d.disguise,lives:d.lives||0,boostT:0,chargeT:0,chargeCd:0,stun:0,snare:0,invis:Math.max(d.invis?d.invis+(st?2:0):0,b.order==='mimetica'?4:0),underground:!!d.burrow,wait:b.order==='attesa'?4:0,flankOut:false,flankBack:false,
@@ -1523,9 +1524,11 @@ function anchorOf(u,S){
   return null;
 }
 function pickTarget(u,S){
-  const en=S.units.filter(e=>e.alive&&e.side!==u.side);
-  const l=!u.def.noLure&&en.find(e=>e.def.lure&&dist(u,e)<e.def.lure&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&canTarget(u,e));if(l)return l;
-  const tz=en.find(e=>e.def.taunt&&dist(u,e)<e.def.taunt&&canTarget(u,e)); if(tz) return tz;
+  const en=S.units.filter(e=>e.alive&&e.side!==u.side),esc=u.order==='scorta';
+  // Scorta: resta attaccata a chi accompagna; se se ne allontana prima lo raggiunge, e non si fa distrarre da esche e provocazioni
+  if(esc){const a=anchorOf(u,S);if(a&&dist(u,a)>90)return null}
+  const l=!esc&&!u.def.noLure&&en.find(e=>e.def.lure&&dist(u,e)<e.def.lure&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&canTarget(u,e));if(l)return l;
+  const tz=!esc&&en.find(e=>e.def.taunt&&dist(u,e)<e.def.taunt&&canTarget(u,e)); if(tz) return tz;
   const anc=anchorOf(u,S); let best=null,bs=-1e9;
   for(const e of en){
     if(!canTarget(u,e)) continue;
@@ -1638,7 +1641,9 @@ function thief(u,S,dt){
 function idlePoint(u,S){
   const own=S.eggs[u.side].home,foe=S.eggs[1-u.side].home;
   switch(u.role){
-    case 'guard':if((u.def.spawns&&UNITS[u.def.spawns.type].lureTag)||u.def.stink){
+    case 'guard':if(u.order==='guardia'){ // Guardia: resta entro 150 dall'uovo, dal lato in cui l'hai piazzato
+        const dx=u.sx-own.x,dy=u.sy-own.y,L=Math.hypot(dx,dy)||1,r=Math.min(L,110);return{x:own.x+dx/L*r,y:own.y+dy/L*r}}
+      if((u.def.spawns&&UNITS[u.def.spawns.type].lureTag)||u.def.stink){
       const tag=u.def.stink?null:UNITS[u.def.spawns.type].lureTag;let best=null,bd=1e9;
       for(const e of S.units) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&e.invis<=0&&(tag?e.def.tags.includes(tag):canCarry(e))){const d=dist(e,own);if(d<bd){bd=d;best=e}}
       if(best){const dx=own.x-best.x,dy=own.y-best.y,L=Math.hypot(dx,dy)||1,k=Math.min(130,L*.5);return{x:best.x+dx/L*k,y:best.y+dy/L*k}}
@@ -1664,6 +1669,8 @@ function idlePoint(u,S){
   }
   return{x:u.x,y:u.y};
 }
+// ordini che decidono dove sta l'unità: prevalgono su tutto il comportamento automatico
+const POSORD=['guardia','assalto','centro','scorta'];
 function think(u,S,dt){
   if(u.role==='static'||u.stun>0) return;
   if(u.sleep>0){u.sleep-=dt;return}
@@ -1694,7 +1701,7 @@ function think(u,S,dt){
   const tg=u.dmg>0?pickTarget(u,S):null;
   if(tg&&u.def.charge&&u.chargeCd<=0){const d=dist(u,tg);
     if(d>40&&d<240){u.chargeT=.9;u.chargeCd=u.def.chargeCd||5;u.chargeHit={};u.chDir={x:(tg.x-u.x)/d,y:(tg.y-u.y)/d};fx(S,u.x,u.y-24,'CARICA!','#ffb0a0');return}}
-  if(tg){const reach=u.def.rng+(u.def.ranged?0:14);
+  if(tg){const reach=Math.max(u.def.rng+(u.def.ranged?0:14),u.def.push?u.def.push+8:0);
     if(dist(u,tg)<=reach){if(u.cd<=0)attack(u,tg,S)} else moveTo(u,tg.x,tg.y,dt,S); return}
   if(own.state==='dropped'&&dist(u,own)<320){moveTo(u,own.x,own.y,dt,S);return}
   const p=idlePoint(u,S); if(dist(u,p)>5) moveTo(u,p.x,p.y,dt,S);
@@ -1717,10 +1724,10 @@ function step(S,dt){
   }
   for(const u of live) if(u.alive&&u.def.sweeper){
     const work=live.some(e=>e.alive&&e.side!==u.side&&e.def.tags.includes('Oggetto'))||S.traps.some(t=>t.armed&&t.side!==u.side);
-    if(!work&&!u.turned){u.turned=true;u.role='thief';fx(S,u.x,u.y-24,'va a rubare!','#ffe680');log(S,`${nm(u)} non ha più esche da pulire e va a rubare l'uovo`)}
+    if(!work&&!u.turned&&!POSORD.includes(u.order)){u.turned=true;u.role='thief';fx(S,u.x,u.y-24,'va a rubare!','#ffe680');log(S,`${nm(u)} non ha più esche da pulire e va a rubare l'uovo`)}
     else if(work&&u.turned&&u.carrying===null&&!u.fake){u.turned=false;u.role='hunter'}
   }
-  for(const u of live) if((u.def.traps||u.def.bugle||(u.type==='cane'&&live.some(x=>x.alive&&x.side===u.side&&x.type==='cacciatore')))&&u.alive&&!u.turned&&!live.some(x=>x.alive&&x.side===u.side&&canCarry(x))){
+  for(const u of live) if((u.def.traps||u.def.bugle||(u.type==='cane'&&live.some(x=>x.alive&&x.side===u.side&&x.type==='cacciatore')))&&u.alive&&!u.turned&&!POSORD.includes(u.order)&&!live.some(x=>x.alive&&x.side===u.side&&canCarry(x))){
     u.turned=true;u.role='thief';fx(S,u.x,u.y-24,'Diventa ladro!','#ffe680');log(S,u.type==='cane'?`${nm(u)} fa il cane da riporto: va a prendere l'uovo`:`${nm(u)} resta senza ladri e va a rubare l'uovo`)}
   for(const u of live){ if(!u.alive) continue;
     if(u.def.alarm){u.alarmCd=(u.alarmCd||0)-dt;
@@ -1735,7 +1742,9 @@ function step(S,dt){
       for(const a of live) if(a.alive&&a.side===u.side&&a!==u&&a.role!=='static'&&(u.def.healAll||a.def.tags.includes('Animale'))&&a.hp<a.maxHp&&dist(a,u)<r) a.hp=Math.min(a.maxHp,a.hp+amt)}
     if(u.def.aura){for(const e of live) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&dist(u,e)<u.def.aura.r) damage(e,u.def.aura.dps*dt,S,u)}
     if(u.def.push){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!e.def.unstoppable){const d=dist(u,e);
-      if(d<u.def.push&&d>.1){const k=(u.def.push-d)*.5;e.x=clamp(e.x+(e.x-u.x)/d*k,14,W-14);e.y=clamp(e.y+(e.y-u.y)/d*k,16,H-16);
+      // spinta a colpi: 0,6 s di spinta, poi 1,2 s in cui si può passare (così l'uovo resta raggiungibile)
+      if(d<u.def.push)e.pushA=(e.pushA||0)+dt;if(e.pushA>1.8)e.pushA=0;
+      if(d<u.def.push&&d>.1&&e.pushA<.6){const k=(u.def.push-d)*.5;e.x=clamp(e.x+(e.x-u.x)/d*k,14,W-14);e.y=clamp(e.y+(e.y-u.y)/d*k,16,H-16);
         if(u.def.pushStun&&!(e.pst>0)){e.stun=Math.max(e.stun,u.def.pushStun);e.pst=2}}}}
     if(u.chargeT>0){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!u.chargeHit[e.id]&&dist(u,e)<26){
       u.chargeHit[e.id]=1;e.stun=Math.max(e.stun,1);fx(S,e.x,e.y-22,'TRAVOLTO!','#ffb0a0');damage(e,u.def.chargeDmg||20,S,u)}}
