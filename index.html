@@ -2625,6 +2625,7 @@ function tutorialShop(){
   bot.board=(R1?[{type:'topi',px:330,py:270}]:[{type:'topi',px:330,py:200},{type:'tacchino',px:110,py:270}]).map((b,i)=>({uid:900+i,star:1,order:null,bench:false,...b}));
 }
 const COACH_STEPS=[
+ {el:null,t:"Benvenuto in Farmyard Frenzy! Ogni squadra ha un uovo d'oro nel suo nido. Tu compri i personaggi al market e li schieri, poi gli automi combattono da soli: devono rubare l'uovo avversario e difendere il tuo. Ti guido in una partita di prova di due round.",next:true},
  {el:'#field',egg:0,t:"Questo è il campo. Qui a sinistra c'è il tuo nido con il tuo uovo d'oro: è quello da difendere.",next:true},
  {el:'#field',egg:1,t:"A destra c'è il nido del bot con il suo uovo: è quello da rubare e portare nel tuo nido. Ogni uovo portato a casa è una presa: vince chi arriva prima al numero di prese.",next:true},
  {el:'#shop',t:"Questo è il market: a ogni round ricevi oro e compri personaggi. Ogni carta mostra costo, ruolo, statistiche e contro chi è forte o debole.",next:true},
@@ -2670,13 +2671,13 @@ function coachTick(){
     $('coachT').textContent=st.t;$('coachStep').textContent=`${COACH.i+1}/${COACH_STEPS.length}`;
     const nb=$('coachNext');nb.classList.toggle('hidden',!st.next);nb.textContent=st.next===true?'Avanti ›':st.next||'';
     document.querySelectorAll('.coach-hl').forEach(e=>e.classList.remove('coach-hl'));
-    const tg=document.querySelector(st.el);if(tg){tg.classList.add('coach-hl');tg.scrollIntoView({block:'center',behavior:'smooth'})}
+    const tg=st.el&&document.querySelector(st.el);if(tg){tg.classList.add('coach-hl');tg.scrollIntoView({block:'center',behavior:'smooth'})}
   }
-  const tg=document.querySelector(st.el);box.classList.remove('hidden');
+  const tg=st.el&&document.querySelector(st.el);box.classList.remove('hidden');
   if(tg&&!tg.classList.contains('coach-hl')){document.querySelectorAll('.coach-hl').forEach(e=>e.classList.remove('coach-hl'));tg.classList.add('coach-hl')}
   // il fumetto sta sotto il punto da guardare, o sopra se sotto non c'è spazio
-  const r=tg?tg.getBoundingClientRect():{left:innerWidth/2-150,right:innerWidth/2+150,top:80,bottom:80,width:300},bw=box.offsetWidth,bh=box.offsetHeight;
-  let top=r.bottom+12;if(top+bh>innerHeight-8)top=Math.max(8,r.top-bh-12);if(r.height>innerHeight*.6)top=Math.max(8,Math.min(innerHeight-bh-8,r.top+16));
+  const r=tg?tg.getBoundingClientRect():{left:innerWidth/2-150,right:innerWidth/2+150,top:80,bottom:80,width:300,height:0},bw=box.offsetWidth,bh=box.offsetHeight;
+  let top=tg?r.bottom+12:Math.max(8,innerHeight/2-bh/2);if(top+bh>innerHeight-8)top=Math.max(8,r.top-bh-12);if(r.height>innerHeight*.6)top=Math.max(8,Math.min(innerHeight-bh-8,r.top+16));
   const left=Math.max(8,Math.min(innerWidth-bw-8,r.left+r.width/2-bw/2));
   box.style.top=top+'px';box.style.left=left+'px';
 }

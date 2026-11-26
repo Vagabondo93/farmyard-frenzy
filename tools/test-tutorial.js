@@ -16,7 +16,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   const step=()=>p.textContent('#coachStep');
   const next=async()=>{await p.waitForSelector('#coachNext:not(.hidden)');await p.click('#coachNext')};
   await p.click('#tutBtn');await p.waitForSelector('#coach:not(.hidden)');ok(true,'il tutorial parte: '+(await p.textContent('#coachT')).slice(0,60)+'…');
-  await next();await next();await next();await next();
+  await next();await next();await next();await next();await next();
   await p.click('[data-buy="0"]');await p.click('[data-buy="1"]');
   ok(await p.evaluate(()=>window.__g().players[0].board.map(b=>b.type).join()==='faina,tacchino'),'comprati Faina e Tacchino');
   await next(); // squadra

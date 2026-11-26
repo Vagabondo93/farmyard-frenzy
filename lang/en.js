@@ -762,5 +762,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Avanti ›": "Next ›",
 "DIFENDI": "DEFEND",
 "RUBA": "STEAL",
-"{0} personaggi": "{0} characters"
+"{0} personaggi": "{0} characters",
+"Benvenuto in Farmyard Frenzy! Ogni squadra ha un uovo d'oro nel suo nido. Tu compri i personaggi al market e li schieri, poi gli automi combattono da soli: devono rubare l'uovo avversario e difendere il tuo. Ti guido in una partita di prova di due round.": "Welcome to Farmyard Frenzy! Each team has a golden egg in its nest. You buy characters in the shop and place them, then the automatons fight by themselves: they must steal the enemy egg and defend yours. I'll guide you through a two-round practice match."
 };
