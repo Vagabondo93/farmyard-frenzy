@@ -15,7 +15,7 @@
 :root{
   --bg:#efeedd; --bg2:#e4e6cc; --panel:#fffdf4; --ink:#22281b; --muted:#5d6852; --line:#d8d9bd; --chip:#ecedd6;
   --gold:#d39a12; --gold-ink:#7a5300; --blue:#2f6fe0; --red:#d23f2d; --accent:#4b7a26; --accent-2:#3d6a1c; --accent-ink:#ffffff;
-  --wood:#7a5230; --t1:#5e9334; --t2:#2f8fa6; --t3:#8a52c8; --rthief:#8a4fc4; --rdef:#2f7f9e; --ratk:#d0622a; --rsup:#5f9a2f; --good:#3f7d1f; --bad:#b4402f;
+  --wood:#7a5230; --t1:#5e9334; --t2:#2f8fa6; --t3:#8a52c8; --rthief:#8a4fc4; --rdef:#2f7f9e; --ratk:#d0622a; --rsup:#5f9a2f; --rctl:#b8860b; --good:#3f7d1f; --bad:#b4402f;
   --shadow:0 1px 0 rgba(60,70,30,.08),0 10px 24px -18px rgba(50,60,20,.55);
   --f-display:'Lilita One','Trebuchet MS',system-ui,sans-serif;
   --f-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -23,12 +23,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#151912; --bg2:#1b2116; --panel:#20271b; --ink:#ebefdd; --muted:#a0ab90; --line:#37402c; --chip:#2b3423;
   --gold:#f0b72f; --gold-ink:#f6d27a; --blue:#5b92f5; --red:#f06451; --accent:#8cc157; --accent-2:#a6d672; --accent-ink:#14200b;
-  --wood:#a77a4f; --t1:#8cc157; --t2:#5cc0d6; --t3:#b98bf0; --rthief:#b07ff0; --rdef:#4fb3d6; --ratk:#f08a52; --rsup:#8cc157; --good:#9dd46a; --bad:#ff8a78;
+  --wood:#a77a4f; --t1:#8cc157; --t2:#5cc0d6; --t3:#b98bf0; --rthief:#b07ff0; --rdef:#4fb3d6; --ratk:#f08a52; --rsup:#8cc157; --rctl:#e3b341; --good:#9dd46a; --bad:#ff8a78;
   --shadow:0 1px 0 rgba(0,0,0,.3),0 12px 26px -16px rgba(0,0,0,.7); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#151912; --bg2:#1b2116; --panel:#20271b; --ink:#ebefdd; --muted:#a0ab90; --line:#37402c; --chip:#2b3423;
   --gold:#f0b72f; --gold-ink:#f6d27a; --blue:#5b92f5; --red:#f06451; --accent:#8cc157; --accent-2:#a6d672; --accent-ink:#14200b;
-  --wood:#a77a4f; --t1:#8cc157; --t2:#5cc0d6; --t3:#b98bf0; --rthief:#b07ff0; --rdef:#4fb3d6; --ratk:#f08a52; --rsup:#8cc157; --good:#9dd46a; --bad:#ff8a78;
+  --wood:#a77a4f; --t1:#8cc157; --t2:#5cc0d6; --t3:#b98bf0; --rthief:#b07ff0; --rdef:#4fb3d6; --ratk:#f08a52; --rsup:#8cc157; --rctl:#e3b341; --good:#9dd46a; --bad:#ff8a78;
   --shadow:0 1px 0 rgba(0,0,0,.3),0 12px 26px -16px rgba(0,0,0,.7); color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
@@ -181,7 +181,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcg{--tc:var(--t1);--b1:var(--tc);--b2:color-mix(in srgb,var(--tc) 45%,#000);
   background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(155deg,var(--b1),var(--b2)) border-box;
   border:6px solid transparent;border-radius:20px;padding:10px;display:flex;flex-direction:column;gap:8px;height:100%;box-shadow:var(--shadow)}
-.tcg.r-thief{--tc:var(--rthief)}.tcg.r-def{--tc:var(--rdef)}.tcg.r-atk{--tc:var(--ratk)}.tcg.r-sup{--tc:var(--rsup)}
+.tcg.r-thief{--tc:var(--rthief)}.tcg.r-def{--tc:var(--rdef)}.tcg.r-atk{--tc:var(--ratk)}.tcg.r-sup{--tc:var(--rsup)}.tcg.r-ctl{--tc:var(--rctl)}
 .trole{display:inline-block;background:var(--tc);color:#fff;border-radius:999px;padding:1px 8px;margin-right:4px;letter-spacing:.04em}
 .rolelegend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:13px}
 .rolelegend span{display:inline-flex;align-items:center;gap:6px}
@@ -249,7 +249,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcg.compact .tstats{padding:6px 8px;gap:3px}
 .toplogo{height:52px;width:auto;display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
 .fogb{background:#6b7a8f!important}
-.pchip{cursor:pointer;border-left:4px solid var(--rsup)}.pchip.r-thief{border-left-color:var(--rthief)}.pchip.r-def{border-left-color:var(--rdef)}.pchip.r-atk{border-left-color:var(--ratk)}
+.pchip{cursor:pointer;border-left:4px solid var(--rsup)}.pchip.r-thief{border-left-color:var(--rthief)}.pchip.r-def{border-left-color:var(--rdef)}.pchip.r-atk{border-left-color:var(--ratk)}.pchip.r-ctl{border-left-color:var(--rctl)}
 .pchip.lock{opacity:.5}.pchip small{font-weight:700;color:var(--muted)}
 .rank li.out{opacity:.5}
 .trow i{font-style:normal}
@@ -292,7 +292,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 
   <section class="lobby" id="lobby">
     <div class="hero">
-      <img class="heroimg" src="banner.jpg" width="2000" height="667" alt="In un'aia al tramonto due squadre si contendono le uova d'oro: tacchino, gallo con l'elmo, cane, faina, ladro, cacciatore, poliziotto, corvo, gazza, talpa e spaventapasseri.">
+      <img class="heroimg" src="banner.jpg" width="2000" height="667" alt="In un'aia al tramonto due squadre si contendono le uova d'oro: tacchino, gallo con l'elmo, cane, faina, ladro, cacciatrice, poliziotto, corvo, gazza, talpa e spaventapasseri.">
       <div class="herobar">
         <img class="herologo" src="logo.webp" alt="Farmyard Frenzy: The Golden Egg">
         <div class="herotxt"><h2>Due uova d'oro.<br>Due pollai. Zero pietà.</h2>
@@ -526,7 +526,7 @@ if(LANG!=='it'){
     else for(const n of m.addedNodes)trNode(n);
   }}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:TRA});
 }
-{const sel=document.getElementById('langSel');sel.value=LANG;
+{const sel=document.getElementById('langSel');sel.value=LANG;sel.setAttribute('aria-label',tr('Lingua'));
   sel.onchange=()=>{if(typeof G!=='undefined'&&G&&!G.finished){toast(tr('Puoi cambiare lingua dal menu, fuori dalla partita.'));sel.value=LANG;return}
     try{localStorage.setItem('ff-lang',sel.value)}catch(e){}const u=new URL(location.href);u.searchParams.delete('lang');location.href=u.toString()}}
 const W=960,H=540;
@@ -894,29 +894,29 @@ arnia:`${SH(32,61,20,2.5)}
 const IC=d=>d.img?`<img class="uimg" src="${d.img}" alt="">`:d.i;
 const UNITS={
  tacchino:{n:'Tacchino',i:'🦃',t:1,tags:['Animale','Guardiano'],hp:125,dmg:5,spd:42,rng:18,cd:1,role:'guard',guardR:80,taunt:90,block:true,
-   d:"Scudo vivente vicino all'uovo: attira gli attacchi entro 90 e rallenta molto i ladri che gli passano accanto (non la Faina).",beats:'Ladro, Talpa scoperta',loses:'Cacciatore, Faina, Mais'},
+   d:"Scudo vivente vicino all'uovo: attira gli attacchi entro 90 e rallenta molto i ladri che gli passano accanto (non la Faina).",beats:'Ladro, Talpa scoperta',loses:'Cacciatrice, Faina, Mais'},
  faina:{n:'Faina',i:'🦡',t:1,tags:['Animale','Ladro','Piccolo'],hp:32,dmg:0,spd:100,carry:.6,carry2:.7,role:'thief',dodge:.3,agile:true,
-   d:"Velocissima all'andata, ma con l'uovo in bocca rallenta. Schiva il 30% dei colpi corpo a corpo e scavalca il Tacchino.",beats:'Tacchino, Bracconiere',loses:'Cane, Cacciatore'},
+   d:"Velocissima all'andata, ma con l'uovo in bocca rallenta. Schiva il 30% dei colpi corpo a corpo e scavalca il Tacchino.",beats:'Tacchino, Bracconiere',loses:'Cane, Cacciatrice'},
  cane:{n:'Cane',i:'🐕',t:2,tags:['Animale','Guardiano'],hp:42,dmg:7,spd:74,rng:18,cd:.9,role:'guard',guardR:140,prio:{Ladro:4},bonus:{Ladro:1.5},carry:.7,sniff:60,
-   d:"Difende un'area ampia e insegue i ladri facendo doppio danno. Non vede i ladri invisibili né la talpa sottoterra. Se restate senza ladri e hai un Cacciatore, diventa cane da riporto e va a prendere l'uovo.",beats:'Faina, ladri visibili',loses:'Cacciatore, Mais, Ladro invisibile'},
+   d:"Difende un'area ampia e insegue i ladri facendo doppio danno. Non vede i ladri invisibili né la talpa sottoterra. Se restate senza ladri e hai una Cacciatrice, diventa cane da riporto e va a prendere l'uovo.",beats:'Faina, ladri visibili',loses:'Cacciatrice, Mais, Ladro invisibile'},
  spaventa:{n:'Spaventapasseri',i:'🌾',img:SCARE,t:1,tags:['Oggetto','Esca'],hp:190,dmg:0,spd:0,role:'static',lure:180,lureTag:'Umano',lureNoOrder:true,slowFly:150,
-   d:'Piazzalo dove vuoi, anche in campo nemico. Rallenta del 50% chi vola entro 180. Gli Umani nemici senza ordine lo attaccano, e il Ladro senza ordine si spaventa e perde 2,5 s. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Corvo, Cacciatore, Poliziotto, Assassino senza ordini',loses:'Animali, Umani con un ordine'},
+   d:'Piazzalo dove vuoi, anche in campo nemico. Rallenta del 50% chi vola entro 180. Gli Umani nemici senza ordine lo attaccano, e il Ladro senza ordine si spaventa e perde 2,5 s. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Corvo, Cacciatrice, Poliziotto, Assassino senza ordini',loses:'Animali, Umani con un ordine'},
  mais:{n:'Mais',i:'🌽',t:1,tags:['Oggetto','Esca'],hp:150,dmg:0,spd:0,role:'static',lure:180,lureTag:'Animale',
    d:'Piazzalo dove vuoi, anche in campo nemico. Gli Animali nemici entro 180 lo attaccano, e Faina e Gazza si fermano 2,5 s a mangiarlo. Se viene distrutto perde una stella; senza stelle in più va perso.',beats:'Tacchino, Cane, Corvo',loses:'Umani'},
  gallico:{n:'Galli-co',i:'🐓',t:3,tags:['Animale','Guardiano'],hp:150,dmg:8,spd:50,rng:18,cd:.9,role:'guard',guardR:100,taunt:95,block:true,blockAll:true,stunHit:.25,
-   d:"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 95, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.",beats:'Faina, Ladro, Talpa, Assassino',loses:'Cacciatore, Gazza, Mais'},
+   d:"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 95, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.",beats:'Faina, Ladro, Talpa, Assassino',loses:'Cacciatrice, Gazza, Mais'},
  ladro:{n:'Ladro',i:'🦹',t:2,tags:['Umano','Ladro'],hp:70,dmg:0,spd:62,carry:1,role:'thief',invis:7,
-   d:"Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.",beats:'Cane, Cacciatore',loses:'Poliziotto, Assassino, Corvo'},
- cacciatore:{n:'Cacciatore',i:'🤠',t:2,tags:['Umano','Tiratore'],hp:45,dmg:10,spd:40,rng:155,cd:1.4,ranged:true,role:'hunter',prio:{Animale:4},bonus:{Animale:1.35},
+   d:"Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.",beats:'Cane, Cacciatrice',loses:'Poliziotto, Assassino, Corvo'},
+ cacciatore:{n:'Cacciatrice',i:'🤠',t:2,tags:['Umano','Tiratore'],hp:45,dmg:10,spd:40,rng:155,cd:1.4,ranged:true,role:'hunter',prio:{Animale:4},bonus:{Animale:1.35},
    d:"Spara da lontano (155), +35% danno e priorità agli Animali. Colpisce anche chi vola.",beats:'Animali, Corvo',loses:'Assassino, Ladro'},
  corvo:{n:'Corvo',i:'🐦',t:2,tags:['Animale','Volante'],hp:32,dmg:4,spd:85,rng:16,cd:.9,flying:true,role:'scout',guardR:200,reveal:115,prio:{Ladro:5},
-   d:"Vola sopra il tuo uovo: scopre ladri invisibili e fa riemergere le talpe entro 115. Solo i tiratori lo colpiscono.",beats:'Talpa, Ladro, Gazza',loses:'Cacciatore, Poliziotto, Spaventapasseri, Mais'},
+   d:"Vola sopra il tuo uovo: scopre ladri invisibili e fa riemergere le talpe entro 115. Solo i tiratori lo colpiscono.",beats:'Talpa, Ladro, Gazza',loses:'Cacciatrice, Poliziotto, Spaventapasseri, Mais'},
  gazza:{n:'Gazza ladra',i:'🪶',t:2,tags:['Animale','Volante','Ladro'],hp:30,dmg:0,spd:78,carry:.55,flying:true,role:'thief',
-   d:"Ladra volante: ignora trappole, Tacchino e attacchi corpo a corpo. Ma è fragile e con l'uovo vola lenta.",beats:'Cane, Tacchino, Bracconiere',loses:'Corvo, Cacciatore, Poliziotto, Spaventapasseri'},
+   d:"Ladra volante: ignora trappole, Tacchino e attacchi corpo a corpo. Ma è fragile e con l'uovo vola lenta.",beats:'Cane, Tacchino, Bracconiere',loses:'Corvo, Cacciatrice, Poliziotto, Spaventapasseri'},
  coltivatore:{n:'Coltivatore',i:'🧑‍🌾',t:3,tags:['Umano'],hp:50,dmg:4,spd:50,rng:18,cd:1,role:'guard',guardR:150,wander:[220,420],spawns:{type:'germoglio',every:3,max:4},
-   d:'Avanza a metà campo e pianta un germoglio ogni 3 s (fino a 4, ogni 2 s se ★★): mini esche che attirano gli Animali nemici e fermano Faina e Gazza per 0,75 s. Si mette sulla strada degli Animali nemici diretti al tuo uovo.',beats:'Cane, Faina, Gazza, Corvo',loses:'Assassino, Cacciatore'},
+   d:'Avanza a metà campo e pianta un germoglio ogni 3 s (fino a 4, ogni 2 s se ★★): mini esche che attirano gli Animali nemici e fermano Faina e Gazza per 0,75 s. Si mette sulla strada degli Animali nemici diretti al tuo uovo.',beats:'Cane, Faina, Gazza, Corvo',loses:'Assassino, Cacciatrice'},
  benefattore:{n:'Benefattore',i:'🎩',t:3,tags:['Umano'],hp:90,dmg:0,spd:55,role:'guard',guardR:150,wander:[220,420],spawns:{type:'monete',every:2.5,max:5},
-   d:'Avanza a metà campo e lascia monete ogni 2,5 s (fino a 5). Ogni Umano nemico, anche armato, si ferma a raccoglierle per 1,5 s (2,5 s se ★★) invece di combattere. Ogni Umano corrotto ti dà +1 oro nel market successivo (massimo 3).',beats:'Ladro, Assassino, Poliziotto, Cacciatore',loses:'Animali'},
+   d:'Avanza a metà campo e lascia monete ogni 2,5 s (fino a 5). Ogni Umano nemico, anche armato, si ferma a raccoglierle per 1,5 s (2,5 s se ★★) invece di combattere. Ogni Umano corrotto ti dà +1 oro nel market successivo (massimo 3).',beats:'Ladro, Assassino, Poliziotto, Cacciatrice',loses:'Animali'},
  spazzino:{n:'Spazzino',i:'🧹',t:2,tags:['Umano'],hp:60,dmg:6,spd:70,rng:18,cd:.7,role:'hunter',prio:{Oggetto:12},bonus:{Oggetto:4},noLure:true,sweeper:true,
    d:"Ignora le esche nemiche e le distrugge (4× danno), anche germogli e monete. Smonta le trappole che trova sul percorso. Quando non restano esche o trappole nemiche, va lui a rubare l'uovo.",beats:'Mais, Spaventapasseri, Coltivatore, Benefattore, Bracconiere',loses:'Assassino, Cane, Poliziotto'},
  topi:{n:'Topi',i:'🐭',t:1,cost:1,tags:['Animale','Ladro','Piccolo'],hp:10,dmg:0,spd:85,carry:.7,role:'thief',pack:2,
@@ -927,22 +927,37 @@ const UNITS={
    d:"Quando ha l'uovo lo lancia a un ladro alleato più vicino al tuo nido, entro 150. Rende al meglio con altri ladri in campo.",beats:'Cane, Galli-co, Mucca',loses:'Poliziotto, Lupo, Falco'},
  oca:{n:'Oca',i:'🪿',t:1,tags:['Animale','Guardiano'],hp:70,dmg:5,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,hitAir:true,swim:true,
    d:"Starnazza quando vede un ladro entro 170: i difensori alleati vicini corrono il 35% più veloci per 3 s. Becca anche i volanti (pur non volando) e in Nebbia attraversa il ruscello a nuoto (più lenta in acqua).",beats:'Ladro, Faina, Topi, Gazza',loses:'Assassino, Volpe, Lupo'},
- gatto:{n:'Gatto',i:'🐈',t:2,tags:['Animale','Guardiano'],hp:48,dmg:7,spd:84,rng:18,cd:.75,role:'guard',guardR:180,prio:{Piccolo:6,Ladro:2},bonus:{Piccolo:1.4},hearUnder:75,
-   d:"Caccia gli animali piccoli (Topi, Faina, Talpa) con danno +40% e sente le talpe sottoterra entro 75, costringendole a riemergere.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatore'},
+ gatto:{n:'Gatto',i:'🐈',t:2,tags:['Animale','Guardiano'],hp:48,dmg:7,spd:84,rng:18,cd:.75,role:'center',guardR:200,fullSlow:.1,prio:{Piccolo:6,Ladro:2},bonus:{Piccolo:1.4},hearUnder:75,
+   d:"Si apposta a metà campo e caccia gli animali piccoli (Topi, Faina, Talpa, Lepre, Puzzola) con danno +40%. Sente le talpe sottoterra entro 75 e le fa riemergere. Ogni animale piccolo che elimina lo rende più sazio e lento del 10%.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatrice'},
  mucca:{n:'Mucca',i:'🐄',t:2,minRound:3,tags:['Animale','Guardiano'],hp:340,dmg:9,spd:34,rng:20,cd:1.1,role:'guard',guardR:120,push:56,block:true,
-   d:"Un muro lento e gigantesco vicino all'uovo: spinge via i nemici che le passano accanto e rallenta molto i ladri.",beats:'Ladro, Topi, Toro',loses:'Gazza, Cacciatore, Mais'},
+   d:"Un muro lento e gigantesco vicino all'uovo: spinge via i nemici che le passano accanto e rallenta molto i ladri.",beats:'Ladro, Topi, Toro',loses:'Gazza, Cacciatrice, Mais'},
  lupo:{n:'Lupo',i:'🐺',t:2,minRound:2,tags:['Animale','Killer'],hp:65,dmg:9,spd:90,rng:18,cd:.8,role:'hunter',advance:true,prio:{Guardiano:5},bonus:{Guardiano:1.8},
-   d:"Avanza nel campo nemico e caccia i difensori, con quasi il doppio del danno su Cane, Gatto, Oca, Tacchino e Poliziotto.",beats:'Cane, Gatto, Oca, Tacchino',loses:'Cacciatore, Galli-co, Mais'},
+   d:"Avanza nel campo nemico e caccia i difensori, con quasi il doppio del danno su Cane, Gatto, Oca, Tacchino e Poliziotto.",beats:'Cane, Gatto, Oca, Tacchino',loses:'Cacciatrice, Galli-co, Mais'},
  falco:{n:'Falco',i:'🦅',t:2,tags:['Animale','Volante'],hp:36,dmg:3,spd:105,rng:16,cd:.7,flying:true,role:'hunter',prio:{Volante:8},bonus:{Volante:6},
-   d:"Vola e caccia chi vola, con danno triplo su Corvo, Gazza e altri falchi. Senza bersagli volanti attacca il resto con poco danno.",beats:'Corvo, Gazza, Falco',loses:'Cacciatore, Spaventapasseri, Poliziotto'},
+   d:"Vola e caccia chi vola, con danno triplo su Corvo, Gazza e altri falchi. Senza bersagli volanti attacca il resto con poco danno.",beats:'Corvo, Gazza, Falco',loses:'Cacciatrice, Spaventapasseri, Poliziotto'},
  toro:{n:'Toro',i:'🐂',t:3,minRound:4,tags:['Animale'],hp:150,dmg:8,spd:55,rng:20,cd:1,role:'hunter',advance:true,charge:true,
-   d:"Carica in linea retta il nemico più vicino e travolge chi incontra: 20 danni e stordimento. Ricarica in 5 s.",beats:'Poliziotto, Cacciatore, Ladro',loses:'Mais, Mucca, trappole'},
+   d:"Carica in linea retta il nemico più vicino e travolge chi incontra: 20 danni e stordimento. Ricarica in 5 s.",beats:'Poliziotto, Cacciatrice, Ladro',loses:'Mais, Mucca, trappole'},
  chioccia:{n:'Chioccia',i:'🐔',t:2,fogOnly:true,tags:['Animale','Esca'],hp:100,dmg:0,spd:0,role:'static',fakeEgg:true,
-   d:"Cova un uovo finto nella tua metà campo: i ladri nemici puntano all'uovo più vicino e scoprono l'inganno solo arrivati al nido, restando storditi 2 s.",beats:'Faina, Topi, Volpe',loses:'Spazzino, Lupo, Cacciatore'},
+   d:"Cova un uovo finto nella tua metà campo: i ladri nemici puntano all'uovo più vicino e scoprono l'inganno solo arrivati al nido, restando storditi 2 s.",beats:'Faina, Topi, Volpe',loses:'Spazzino, Lupo, Cacciatrice'},
  veterinario:{n:'Veterinario',i:'🧑‍⚕️',t:2,minRound:3,tags:['Umano'],hp:65,dmg:0,spd:65,role:'medic',heal:10,healR:100,
-   d:"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.",beats:'Assassino, Cacciatore',loses:'Lupo, Assassino se resta solo'},
+   d:"Segue l'animale alleato più ferito e cura tutti gli animali alleati entro 100: 10 vita al secondo, 15 se ★★.",beats:'Assassino, Cacciatrice',loses:'Lupo, Assassino se resta solo'},
  avicoltore:{n:'Avicoltore',i:'🪺',t:2,minRound:2,tags:['Umano'],hp:55,dmg:0,spd:62,role:'escort',guardR:130,followFly:true,lane:2.5,
    d:"Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo.",beats:'Squadre lente a difendere contro gazze e falchi',loses:'Chi lo raggiunge, squadre senza volanti'},
+ gufo:{n:'Gufo',i:'🦉',t:2,tags:['Animale','Volante'],hp:40,dmg:5,spd:70,rng:20,cd:.9,flying:true,role:'center',guardR:200,reveal:130,owlEye:true,prio:{Piccolo:5},bonus:{Piccolo:1.6},
+   d:"Vola sopra il centro del campo: scopre gli invisibili entro 130 e caccia gli animali piccoli. In Nebbia vede attraverso il bosco per tutta la squadra.",beats:'Volpe, Ladro, Topi, Lepre',loses:'Falco, Cacciatrice, Poliziotto'},
+ puzzola:{n:'Puzzola',i:'🦨',t:2,tags:['Animale','Piccolo'],hp:55,dmg:0,spd:60,role:'guard',guardR:160,wander:[200,380],stink:{every:4,max:2,r:65,dps:8,t:6},
+   d:"Gira a metà campo e lascia una nube puzzolente ogni 4 s (fino a 2): i nemici dentro perdono 8 vita al secondo, per 6 s.",beats:'Topi, Faina, Ladro, Postina',loses:'Cacciatrice, Falco, Gatto'},
+ carpentiera:{n:'Carpentiera',i:'🪚',t:2,minRound:3,tags:['Umano'],hp:60,dmg:4,spd:55,rng:18,cd:1,role:'guard',guardR:170,wander:[200,380],spawns:{type:'staccionata',every:3,max:3},
+   d:"Lavora a metà campo e costruisce una staccionata ogni 3 s (fino a 3): i nemici a terra devono girarci intorno o abbatterla.",beats:'Ladro, Faina, Topi, Toro',loses:'Volanti, Talpa, Spazzino'},
+ castoro:{n:'Castoro',i:'🦫',t:1,fogOnly:true,tags:['Animale'],hp:100,dmg:8,spd:55,rng:18,cd:1,role:'guard',guardR:120,bridge:2,
+   d:"Solo in Nebbia. All'inizio costruisce in 2 s un ponte in più sul ruscello, all'altezza a cui lo metti, poi lo difende. Il ponte resta per tutto il round e lo usano tutti.",beats:'Talpa, squadre lente',loses:'Falco, Cacciatrice, Lupo'},
+ lepre:{n:'Lepre',i:'🐇',t:2,tags:['Animale','Ladro','Piccolo'],hp:36,dmg:0,spd:112,carry:.85,role:'thief',nap:4,
+   d:"La ladra più veloce del campo, anche con l'uovo. Ma la prima volta che supera la metà campo si ferma a fare un pisolino di 4 s (3 s se ★★): se la colpiscono si sveglia.",beats:'Squadre lente, Tacchino, Mucca',loses:'Gatto, Gufo, Oca'},
+ tartaruga:{n:'Tartaruga',i:'🐢',t:2,tags:['Animale','Ladro'],hp:200,dmg:0,spd:40,carry:1,role:'thief',unstoppable:true,noLure:true,shell:true,
+   d:"Lenta ma inarrestabile: immune a trappole, stordimenti, arresti, esche e rallentamenti, e con l'uovo non rallenta. Se in 1 s perde più di un quarto della vita si chiude nel guscio per 2 s: ferma, ma subisce l'80% di danni in meno.",beats:'Poliziotto, Bracconiere, Apicoltore, Spaventapasseri',loses:'Lupo, Assassino, Cacciatrice'},
+ postina:{n:'Postina',i:'📮',t:2,tags:['Umano','Ladro'],hp:50,dmg:0,spd:80,carry:1,role:'thief',dodge:.25,
+   d:"In bicicletta porta l'uovo a casa senza rallentare: le consegne sono il suo mestiere. Schiva il 25% dei colpi corpo a corpo.",beats:'Cane, Gatto, Tacchino',loses:'Poliziotto, Cacciatrice, Spaventapasseri, Benefattore'},
+ staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
    d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 100.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
  trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:45,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:8,
@@ -955,7 +970,7 @@ const UNITS={
  bracconiere:{n:'Bracconiere',i:'🧔',t:2,tags:['Umano','Trappole'],hp:50,dmg:6,spd:50,rng:18,cd:1,role:'guard',guardR:200,traps:3,trapEvery:5,
    d:"Si aggira davanti al tuo uovo e piazza una trappola ogni 5 s (4 s se ★★), fino a 3 attive (4 se ★★). Bloccano 2,5 s e fanno 15 danni. Non prendono chi vola o scava. Se la tua squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Ladro, Cane, Assassino',loses:'Corvo, Talpa'},
  assassino:{n:'Assassino',i:'🥷',t:3,tags:['Umano','Killer'],hp:50,dmg:8,spd:88,rng:18,cd:.8,role:'hunter',advance:true,prio:{Umano:5},bonus:{Umano:4},
-   d:"Rapido, avanza verso il campo nemico e fa 4× danno agli Umani, che caccia per primi.",beats:'Cacciatore, Poliziotto, Ladro',loses:'Cane, Tacchino'},
+   d:"Rapido, avanza verso il campo nemico e fa 4× danno agli Umani, che caccia per primi.",beats:'Cacciatrice, Poliziotto, Ladro',loses:'Cane, Tacchino'},
  talpa:{n:'Talpa',i:'🦫',t:3,tags:['Animale','Ladro','Scavatore','Piccolo'],hp:90,dmg:0,spd:65,carry:.85,role:'thief',burrow:true,
    d:"Viaggia sottoterra: non si vede, non si colpisce e ignora le trappole. Sbuca sotto l'uovo, ma torna lenta in superficie.",beats:'Cane, Bracconiere, Poliziotto',loses:'Corvo, Tacchino'},
 };
@@ -988,6 +1003,13 @@ const P3={
  chioccia:{n:"Covata",d:"Cova due uova finte invece di una.",m:{fakes:2}},
  veterinario:{n:"Pronto soccorso",d:"Cura anche gli umani, più in fretta e più lontano.",m:{heal:14,healR:130,healAll:true}},
  avicoltore:{n:"Voliera",d:"Corrente ×3,5 e i volanti che lo raggiungono recuperano 10 vita al secondo.",m:{lane:3.5,laneHeal:10}},
+ gufo:{n:"Notte bianca",d:"Scopre entro 220 e ogni attacco stordisce per 0,5 s.",m:{reveal:220,stunHit:.5}},
+ puzzola:{n:"Nube tossica",d:"Nubi più grandi (raggio 90) e più velenose: 9 vita al secondo, fino a 3.",m:{stink:{every:3,max:3,r:90,dps:9,t:6}}},
+ carpentiera:{n:"Cantiere",d:"Una staccionata ogni 2,5 s, fino a 5, ancora più robuste.",m:{spawns:{type:'staccionata',every:2.5,max:5},wallHp:140}},
+ castoro:{n:"Ingegnere",d:"Costruisce il ponte all'istante e ha il doppio della vita.",m:{bridge:.01,hp:160}},
+ lepre:{n:"Insonne",d:"Non si ferma mai a dormire.",m:{nap:0}},
+ tartaruga:{n:"Corazza d'acciaio",d:"Anche gli alleati entro 80 subiscono il 30% di danni in meno.",m:{shieldAura:80}},
+ postina:{n:"Raccomandata",d:"La prima volta che la colpiscono mentre porta l'uovo, il colpo non le fa nulla.",m:{registered:true}},
  apicoltore:{n:"Sciame",d:"Piazza due arnie invece di una.",m:{spawns:{type:'arnia',every:3,max:2}}},
  trombettiere:{n:"Fanfara",d:"Suona la carica ogni 12 secondi.",m:{bugleRepeat:12}},
  talpa:{n:"Tunnel",d:"Dopo aver preso l'uovo torna sottoterra e lo porta a casa senza farsi vedere.",m:{reburrow:true}},
@@ -1004,7 +1026,7 @@ const ORDERS={
  scatto:{n:'Scatto',i:'💨',d:"+35% velocità, −25% vita."},
  corazza:{n:'Corazza',i:'🧱',d:"+40% vita, −15% velocità."},
  ritirata:{n:'Ritirata',i:'🩹',d:"Sotto il 35% di vita torna all'uovo e si cura fino all'80%."},
- mirinoT:{n:'Mirino: Tiratori',i:'🏹',d:"Priorità assoluta a Cacciatore e Poliziotto e agli altri che sparano da lontano.",prio:{Tiratore:7,Guardiano:1}},
+ mirinoT:{n:'Mirino: Tiratori',i:'🏹',d:"Priorità assoluta alla Cacciatrice, al Poliziotto e agli altri che sparano da lontano.",prio:{Tiratore:7,Guardiano:1}},
  mirinoO:{n:'Mirino: Esche',i:'🧺',d:"Va per prima cosa a distruggere esche e arnie nemiche.",prio:{Oggetto:10}},
  deboli:{n:'Finisci i feriti',i:'🩸',d:"Sceglie sempre il nemico con meno vita rimasta."},
  mimetica:{n:'Mimetica',i:'🌿',d:"Invisibile per i primi 4 secondi: nessuno può prenderla di mira."},
@@ -1040,7 +1062,7 @@ function newMatch(o={}){
 const COUNTERS=[{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
   {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco','oca']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
   {if:['avicoltore'],need:['corvo','gazza','falco']}]; // l'Avicoltore esce solo se nella partita c'è almeno un volante
-const POOLQ={thief:3,def:4,atk:3,sup:3},POOLQR={thief:4,def:5,atk:4,sup:3};
+const POOLQ={thief:3,def:3,atk:3,sup:3,ctl:2},POOLQR={thief:4,def:4,atk:4,sup:3,ctl:3};
 function makePool(variant,rng,big){
   const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly,pool=[],Q=big?POOLQR:POOLQ;
   for(const r of Object.keys(Q)){
@@ -1126,7 +1148,7 @@ function botTurn(p,rng,ec,sk=.7){
     s+=({cacciatore:A*1+has('corvo')*1.5,assassino:U*1.3,cane:(L-has('talpa'))*1.1,poliziotto:L,corvo:has('talpa')*3+has('ladro')*1.5,
       bracconiere:(L-has('talpa'))*.8,tacchino:has('ladro')-has('cacciatore')*.5,faina:has('tacchino')*1.2-has('cane'),
       ladro:has('cane')*.8+Gd*.2,talpa:Gd*.6-has('corvo')*2,mais:(has('cane')+has('tacchino')+has('corvo'))*.8,gazza:has('cane')*.8+has('bracconiere')+has('tacchino')*.5-has('corvo')*1.5,
-      coltivatore:A*.6,avicoltore:p.board.filter(b=>UNITS[b.type].flying).length*1.6-1,benefattore:U*.6,topi:has('mucca')+has('tacchino')*.5-has('gatto'),volpe:has('poliziotto')*.8+has('gallico'),oca:L*.4,gatto:(has('topi')+has('faina')+has('talpa'))*1.2,mucca:has('ladro')*.6,lupo:(has('cane')+has('gatto')+has('oca'))*.9,falco:(has('corvo')+has('gazza'))*1.5,toro:U*.4,chioccia:L*.4,veterinario:A*.15,apicoltore:L*.5,gallico:(has('faina')+has('ladro')+has('talpa'))*.8,spazzino:(has('mais')+has('spaventa')+has('coltivatore')+has('benefattore')+has('bracconiere'))*1.2,
+      coltivatore:A*.6,gufo:has('volpe')*1.2+has('topi')+has('lepre')+has('ladro')*.5,puzzola:L*.4,carpentiera:L*.5+has('toro'),castoro:.6,lepre:Gd*.2,tartaruga:has('poliziotto')+has('bracconiere')+has('apicoltore')*.8-has('lupo'),postina:has('cane')*.6+has('gatto')*.6-has('poliziotto'),avicoltore:p.board.filter(b=>UNITS[b.type].flying).length*1.6-1,benefattore:U*.6,topi:has('mucca')+has('tacchino')*.5-has('gatto'),volpe:has('poliziotto')*.8+has('gallico'),oca:L*.4,gatto:(has('topi')+has('faina')+has('talpa'))*1.2,mucca:has('ladro')*.6,lupo:(has('cane')+has('gatto')+has('oca'))*.9,falco:(has('corvo')+has('gazza'))*1.5,toro:U*.4,chioccia:L*.4,veterinario:A*.15,apicoltore:L*.5,gallico:(has('faina')+has('ladro')+has('talpa'))*.8,spazzino:(has('mais')+has('spaventa')+has('coltivatore')+has('benefattore')+has('bracconiere'))*1.2,
       spaventa:has('corvo')*1.2+(has('cacciatore')+has('poliziotto')+has('assassino'))*.6})[type]||0;
     s+=p.board.filter(b=>b.type===type&&b.star===1).length*2.2;
     return s;
@@ -1178,7 +1200,7 @@ function spawn(b,side,id){
 }
 function makeSim(seed){
   const S={t:0,units:[],eggs:[0,1].map(s=>({side:s,home:HOME[s],x:HOME[s].x,y:HOME[s].y,state:'home',carrier:null,dropT:0})),
-    traps:[],fakes:[],fx:[],bribes:[0,0],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:Math.min(70,ROUND_T+(G.round-1)*3)};
+    traps:[],fakes:[],fx:[],bribes:[0,0],clouds:[],bridges:[...BRIDGES],tracers:[],log:[],rng:mulberry(seed),over:null,fog:G.variant==='fog',T:Math.min(70,ROUND_T+(G.round-1)*3)};
   let id=1;
   for(let s=0;s<2;s++) for(const b of (G.players[s].ovr||G.players[s].board).filter(b=>!b.bench)) S.units.push(spawn(b,s,id++));
   for(const u of [...S.units]) if(u.def.pack) for(let i=0;i<u.def.pack;i++)
@@ -1197,20 +1219,21 @@ const RX=W/2,RW=22,BRIDGES=[96,H-96],BW=16,FOGS=BRIDGES.map(y=>({x:W/2,y,r:112})
 function inFog(p){return FOGS.some(f=>Math.hypot(p.x-f.x,p.y-f.y)<f.r)}
 function segHits(a,b,f){const dx=b.x-a.x,dy=b.y-a.y,L2=dx*dx+dy*dy||1;let t=((f.x-a.x)*dx+(f.y-a.y)*dy)/L2;t=Math.max(0,Math.min(1,t));return Math.hypot(a.x+dx*t-f.x,a.y+dy*t-f.y)<f.r}
 function fogBlocks(a,b){return FOGS.some(f=>segHits(a,b,f))}
-const onBridge=u=>BRIDGES.some(b=>Math.abs(u.y-b)<BW);
+const BR=()=>(CUR&&CUR.bridges)||BRIDGES;
+const onBridge=u=>BR().some(b=>Math.abs(u.y-b)<BW);
 // percorso a terra: se il bersaglio è oltre il ruscello si passa dal ponte più comodo
 function riverStep(u,tx,ty){
   const su=Math.sign(u.x-RX)||1,st=Math.sign(tx-RX)||su,inX=Math.abs(u.x-RX)<RW+6;
-  if(inX&&onBridge(u)){const b=BRIDGES.reduce((p,c)=>Math.abs(u.y-c)<Math.abs(u.y-p)?c:p);const side=Math.abs(tx-RX)<RW+6?su:st;return{x:RX+side*(RW+16),y:b}}
+  if(inX&&onBridge(u)){const b=BR().reduce((p,c)=>Math.abs(u.y-c)<Math.abs(u.y-p)?c:p);const side=Math.abs(tx-RX)<RW+6?su:st;return{x:RX+side*(RW+16),y:b}}
   if(su===st) return null; // anche chi è sulla riva fuori dal ponte deve fare il giro
-  const b=BRIDGES.reduce((p,c)=>Math.abs(u.y-c)+Math.abs(ty-c)<Math.abs(u.y-p)+Math.abs(ty-p)?c:p);
+  const b=BR().reduce((p,c)=>Math.abs(u.y-c)+Math.abs(ty-c)<Math.abs(u.y-p)+Math.abs(ty-p)?c:p);
   const entry={x:RX+su*(RW+12),y:b};
   if(Math.hypot(u.x-entry.x,u.y-entry.y)<10){
     if(u.underground){u.underground=false;u.reburrow=true;if(CUR)fx(CUR,u.x,u.y-20,'esce per il ponte','#ffe6a8')}
     return{x:RX+st*(RW+16),y:b}}
   return entry;
 }
-function sees(a,t){return dist(a,t)<SIGHT||!fogBlocks(a,t)}
+function sees(a,t){return dist(a,t)<SIGHT||!fogBlocks(a,t)||(a.def.owlEye&&dist(a,t)<240)}
 function canTarget(a,t){
   if(!t.alive||t.underground) return false;
   if(t.disguised) return false;
@@ -1250,6 +1273,7 @@ function anchorOf(u,S){
   if(u.role==='assault') return S.eggs[1-u.side].home;
   if(u.role==='escort') return (u.def.followFly?allyFlyer(u,S):allyThief(u,S)||(u.def.follow&&frontAlly(u,S)))||S.eggs[u.side].home;
   if(u.role==='center') return{x:W/2-(u.side?-1:1)*60,y:u.sy};
+  if(u.role==='hold') return u.hold;
   return null;
 }
 function pickTarget(u,S){
@@ -1270,9 +1294,10 @@ function moveTo(u,tx,ty,dt,S){
   if(u.snare>0||u.spd<=0) return;
   let sp=u.spd; if(u.carrying!==null||u.fake) sp*=(u.star===2&&u.def.carry2)||u.def.carry||1;
   if(u.boostT>0) sp*=u.boostMul||1.3; if(u.chargeT>0) sp*=2.6;
-  for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.aura&&dist(u,e)<e.def.aura.r){sp*=e.def.aura.slow;break}
+  if(u.fed) sp*=Math.max(.7,1-u.def.fullSlow*u.fed);
+  if(!u.def.unstoppable) for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.aura&&dist(u,e)<e.def.aura.r){sp*=e.def.aura.slow;break}
   if(u.def.flying&&!u.def.noSlow) for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.slowFly&&dist(u,e)<e.def.slowFly){sp*=e.def.slowFlyMul??.5;break}
-  if(canCarry(u)&&!u.def.flying&&!u.underground)
+  if(canCarry(u)&&!u.def.flying&&!u.underground&&!u.def.unstoppable)
     for(const e of S.units) if(e.alive&&e.side!==u.side&&e.def.block&&(!u.def.agile||e.def.blockAll)&&dist(u,e)<36){sp*=.4;break}
   if(S.fog&&u.def.swim&&Math.abs(u.x-RX)<RW&&!onBridge(u)) sp*=.6; // a nuoto va più piano
   if(S.fog&&!u.def.flying&&!u.def.swim){
@@ -1289,6 +1314,10 @@ function moveTo(u,tx,ty,dt,S){
       if(a.def.laneHeal&&da<30) u.hp=Math.min(u.maxHp,u.hp+a.def.laneHeal*dt)}}
   const dx=tx-u.x,dy=ty-u.y,d=Math.hypot(dx,dy); if(d<1) return;
   const s=Math.min(d,sp*dt); u.x+=dx/d*s; u.y+=dy/d*s;
+  // staccionate nemiche: chi va a terra ci gira intorno (o, se armato, le abbatte)
+  if(!u.def.flying&&!u.underground) for(const w of S.units) if(w.alive&&w.def.wall&&w.side!==u.side){
+    const ox=u.x-w.x,oy=u.y-w.y,od=Math.hypot(ox,oy)||.01,Rr=w.def.wall+10;
+    if(od<Rr){u.x=w.x+ox/od*Rr;u.y=w.y+oy/od*Rr;const px=-oy/od,py=ox/od,sg=((tx-u.x)*px+(ty-u.y)*py)>=0?1:-1;u.x+=px*sg*s*.6;u.y+=py*sg*s*.6;u.wallHit=w}}
   if(Math.abs(dx)>3) u.face=dx>0?1:-1;
   u.x=clamp(u.x,14,W-14); u.y=clamp(u.y,16,H-16);
 }
@@ -1297,11 +1326,18 @@ function dropEgg(u,S){
   if(S.fog&&Math.abs(e.x-RX)<RW+4&&!onBridge(e)) e.x=RX+(e.x<RX?-1:1)*(RW+8); // la corrente lo porta a riva
 }
 function damage(t,amt,S,src){
+  if(t.def.registered&&t.carrying!==null&&!t.usedReg&&amt>0){t.usedReg=true;fx(S,t.x,t.y-22,'raccomandata!','#fff6c4');return}
+  if(t.shellT>0) amt*=.2;
+  for(const a of S.units) if(a.alive&&a!==t&&a.side===t.side&&a.def.shieldAura&&dist(a,t)<a.def.shieldAura){amt*=.7;break}
+  if(t.def.shell&&amt>0){t.dmgWin=(t.dmgWin||[]).filter(x=>S.t-x[0]<1);t.dmgWin.push([S.t,amt]);
+    if(!(t.shellCd>0)&&t.dmgWin.reduce((a,x)=>a+x[1],0)>t.maxHp*.25){t.shellT=2;t.shellCd=6;fx(S,t.x,t.y-24,'nel guscio!','#e8f0ff')}}
+  if(t.sleep>0&&amt>0){t.sleep=0;fx(S,t.x,t.y-24,'sveglia!','#fff6c4')}
   t.hp-=amt; t.hit=.15;
   if(t.disguised&&amt>=1){t.disguised=false;fx(S,t.x,t.y-20,'Smascherata!','#fff6c4')}
   if(t.hp<=0&&t.alive){
     if(t.lives>0){t.lives--;t.hp=t.maxHp*.5;fx(S,t.x,t.y-24,'Sette vite!','#fff6c4');log(S,`${nm(t)} si rialza!`);return}
     t.alive=false; fx(S,t.x,t.y-10,'💀');
+    if(src&&src.def&&src.def.fullSlow&&t.def.tags.includes('Piccolo')&&t.def.tags.includes('Animale')){src.fed=(src.fed||0)+1;fx(S,src.x,src.y-24,'sazio','#ffe6a8')}
     if(t.fake){const f=t.fake;f.state='home';f.x=f.hx;f.y=f.hy;f.carrier=null;t.fake=null}
     if(t.def.fakeEgg) for(const f of S.fakes) if(f.owner===t.id){if(f.state==='carried'){const c=S.units.find(x=>x.id===f.carrier);if(c)c.fake=null}f.state='gone'}
     if(t.carrying!==null){log(S,`${nm(src)} abbatte ${nm(t)} e l'uovo cade!`);dropEgg(t,S)}
@@ -1316,7 +1352,7 @@ function attack(u,t,S){
   else u.lunge=.12;
   if(u.def.missFly&&t.def.flying&&S.rng()<u.def.missFly){fx(S,t.x,t.y-24,'mancato!','#fff6c4');return}
   if(!u.def.ranged&&t.def.dodge&&S.rng()<t.def.dodge){fx(S,t.x,t.y-18,'schivata','#fff6c4');return}
-  if(u.def.arrest&&t.carrying!==null&&S.rng()<(u.def.arrestChance||(t.type==='ladro'?.6:u.star===2?.55:.4))){t.stun=u.def.arrestStun||1.5;fx(S,t.x,t.y-22,'ARRESTO!','#fff6c4');log(S,`${nm(u)} arresta ${nm(t)}: l'uovo cade`);dropEgg(t,S)}
+  if(u.def.arrest&&t.carrying!==null&&!t.def.unstoppable&&S.rng()<(u.def.arrestChance||(t.type==='ladro'?.6:u.star===2?.55:.4))){t.stun=u.def.arrestStun||1.5;fx(S,t.x,t.y-22,'ARRESTO!','#fff6c4');log(S,`${nm(u)} arresta ${nm(t)}: l'uovo cade`);dropEgg(t,S)}
   if(u.def.stunHit) t.stun=Math.max(t.stun,u.def.stunHit);
   damage(t,dmg,S,u);
 }
@@ -1347,9 +1383,9 @@ function thief(u,S,dt){
 function idlePoint(u,S){
   const own=S.eggs[u.side].home,foe=S.eggs[1-u.side].home;
   switch(u.role){
-    case 'guard':if(u.def.spawns&&UNITS[u.def.spawns.type].lureTag){
-      const tag=UNITS[u.def.spawns.type].lureTag;let best=null,bd=1e9;
-      for(const e of S.units) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&e.invis<=0&&e.def.tags.includes(tag)){const d=dist(e,own);if(d<bd){bd=d;best=e}}
+    case 'guard':if((u.def.spawns&&UNITS[u.def.spawns.type].lureTag)||u.def.stink){
+      const tag=u.def.stink?null:UNITS[u.def.spawns.type].lureTag;let best=null,bd=1e9;
+      for(const e of S.units) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&e.invis<=0&&(tag?e.def.tags.includes(tag):canCarry(e))){const d=dist(e,own);if(d<bd){bd=d;best=e}}
       if(best){const dx=own.x-best.x,dy=own.y-best.y,L=Math.hypot(dx,dy)||1,k=Math.min(130,L*.5);return{x:best.x+dx/L*k,y:best.y+dy/L*k}}
       return{x:own.x+(u.side?-1:1)*300,y:H/2+Math.sin(S.t*.5+u.id)*150}}
       if(u.def.traps||u.def.wander){const wr=u.def.wander||[95,215];const k=Math.floor(S.t/3.5)+u.id;const a=Math.sin(k*12.9898)*1.25,r=wr[0]+Math.abs(Math.sin(k*78.233))*(wr[1]-wr[0]);
@@ -1359,6 +1395,7 @@ function idlePoint(u,S){
     case 'hunter':if(u.def.sweeper){const a=allyThief(u,S);if(a)return{x:a.x-(u.side?-1:1)*30,y:a.y+(u.id%2?20:-20)};return{x:W/2+(u.side?60:-60),y:u.sy}}
       return u.def.advance?{x:foe.x-(u.side?-1:1)*140,y:u.sy}:{x:u.sx,y:u.sy};
     case 'center':return{x:W/2-(u.side?-1:1)*60,y:u.sy};
+    case 'hold':return u.hold;
     case 'assault':return{x:foe.x-(u.side?-1:1)*75,y:foe.y+(u.sy-H/2)*.4};
     case 'medic':{let best=null,bf=1;
       for(const a of S.units) if(a.alive&&a.side===u.side&&a!==u&&a.role!=='static'&&(u.def.healAll||a.def.tags.includes('Animale'))){const f=a.hp/a.maxHp;if(f<bf){bf=f;best=a}}
@@ -1375,11 +1412,20 @@ function idlePoint(u,S){
 }
 function think(u,S,dt){
   if(u.role==='static'||u.stun>0) return;
+  if(u.sleep>0){u.sleep-=dt;return}
+  if(u.shellT>0) return;
+  if(u.def.nap&&!u.napped&&(u.side===0?u.x>W/2+20:u.x<W/2-20)){u.napped=true;u.sleep=u.star===2?u.def.nap-1:u.def.nap;fx(S,u.x,u.y-24,'zzz… pisolino','#e8f0ff');log(S,`${nm(u)} si ferma a fare un pisolino`);return}
+  if(u.def.bridge&&!u.built){const sx=RX+(u.side?1:-1)*(RW+18),site={x:sx,y:clamp(u.sy,40,H-40)};
+    if(!S.fog){u.built=true}else if(dist(u,site)>8){moveTo(u,site.x,site.y,dt,S);return}
+    else{u.buildT=(u.buildT||0)+dt;if(!u.buildFx){u.buildFx=1;fx(S,u.x,u.y-24,'costruisce un ponte','#ffe6a8')}
+      if(u.buildT<u.def.bridge)return;u.built=true;if(!S.bridges.some(b=>Math.abs(b-site.y)<2*BW+6)){S.bridges.push(site.y);log(S,`${nm(u)} costruisce un nuovo ponte`)}
+      u.role='hold';u.hold=site;u.leash=120;return}}
+  {const wh=u.wallHit;u.wallHit=null;if(wh&&wh.alive&&u.dmg>0&&u.carrying===null&&canTarget(u,wh)){if(dist(u,wh)<=u.def.rng+wh.def.wall+6){if(u.cd<=0)attack(u,wh,S)}else moveTo(u,wh.x,wh.y,dt,S);return}}
   if(u.chargeT>0&&u.chDir){moveTo(u,u.x+u.chDir.x*60,u.y+u.chDir.y*60,dt,S);return}
   if(u.wait>0){u.wait-=dt;return}
   if(u.eatT>0){u.eatT-=dt;return}
   if(u.carrying===null&&!u.underground){
-    const b=S.units.find(e=>e.alive&&e.side!==u.side&&e.def.lure&&(u.dmg<=0||e.def.bribe)&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&!(u.ate&&u.ate[e.id])&&dist(u,e)<(e.def.bribe&&u.dmg>0?e.def.bribe:e.def.lure));
+    const b=!u.def.noLure&&S.units.find(e=>e.alive&&e.side!==u.side&&e.def.lure&&(u.dmg<=0||e.def.bribe)&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&!(u.ate&&u.ate[e.id])&&dist(u,e)<(e.def.bribe&&u.dmg>0?e.def.bribe:e.def.lure));
     if(b){ if(dist(u,b)<26){u.eatT=b.def.eat||2.5;(u.ate=u.ate||{})[b.id]=1;
         if(b.def.bribe){const own=S.units.find(x=>x.id===b.owner);if(own&&own.star>=2)u.eatT=2.5;b.alive=false;S.bribes[b.side]=(S.bribes[b.side]||0)+1}fx(S,u.x,u.y-22,b.def.lureTag==='Animale'?'sta mangiando':b.type==='monete'?'raccoglie i soldi':'spaventato!','#ffe6a8');log(S,`${nm(u)} si distrae con ${nm(b)}`)}
       else moveTo(u,b.x,b.y,dt,S); return }
@@ -1402,7 +1448,7 @@ function think(u,S,dt){
 function step(S,dt){
   CUR=S;S.t+=dt;
   const live=S.units.filter(u=>u.alive);
-  for(const u of live){u.cd=Math.max(0,u.cd-dt);if(u.boostT>0)u.boostT-=dt;if(u.chargeT>0)u.chargeT-=dt;if(u.chargeCd>0)u.chargeCd-=dt;if(u.pst>0)u.pst-=dt;if(u.stun>0)u.stun-=dt;if(u.snare>0)u.snare-=dt;if(u.invis>0){u.invis-=dt;if(u.invis<=0)fx(S,u.x,u.y-20,'visibile','#fff6c4')}
+  for(const u of live){if(u.def.unstoppable){u.stun=0;u.snare=0}if(u.shellT>0)u.shellT-=dt;if(u.shellCd>0)u.shellCd-=dt;u.cd=Math.max(0,u.cd-dt);if(u.boostT>0)u.boostT-=dt;if(u.chargeT>0)u.chargeT-=dt;if(u.chargeCd>0)u.chargeCd-=dt;if(u.pst>0)u.pst-=dt;if(u.stun>0)u.stun-=dt;if(u.snare>0)u.snare-=dt;if(u.invis>0){u.invis-=dt;if(u.invis<=0)fx(S,u.x,u.y-20,'visibile','#fff6c4')}
     if(u.hit>0)u.hit-=dt;if(u.lunge>0)u.lunge-=dt;if(u.lb>0)u.lb-=dt}
   for(const u of live){ if(!(u.underground||u.invis>0||u.disguised)) continue;
     for(const e of live){ if(e.side===u.side) continue; const d=dist(u,e);
@@ -1432,7 +1478,7 @@ function step(S,dt){
     if(u.def.heal){const r=u.def.healR||90,amt=u.def.heal*(u.star===2?1.5:1)*dt;
       for(const a of live) if(a.alive&&a.side===u.side&&a!==u&&a.role!=='static'&&(u.def.healAll||a.def.tags.includes('Animale'))&&a.hp<a.maxHp&&dist(a,u)<r) a.hp=Math.min(a.maxHp,a.hp+amt)}
     if(u.def.aura){for(const e of live) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&dist(u,e)<u.def.aura.r) damage(e,u.def.aura.dps*dt,S,u)}
-    if(u.def.push){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'){const d=dist(u,e);
+    if(u.def.push){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!e.def.unstoppable){const d=dist(u,e);
       if(d<u.def.push&&d>.1){const k=(u.def.push-d)*.5;e.x=clamp(e.x+(e.x-u.x)/d*k,14,W-14);e.y=clamp(e.y+(e.y-u.y)/d*k,16,H-16);
         if(u.def.pushStun&&!(e.pst>0)){e.stun=Math.max(e.stun,u.def.pushStun);e.pst=2}}}}
     if(u.chargeT>0){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!u.chargeHit[e.id]&&dist(u,e)<26){
@@ -1442,10 +1488,18 @@ function step(S,dt){
     u.spT=(u.spT??1.5)-dt; if(u.spT>0) continue;
     const sp=u.def.spawns,mine=S.units.filter(x=>x.alive&&x.owner===u.id);
     if(mine.length<sp.max&&!mine.some(x=>dist(x,u)<45)){const m=spawn({type:sp.type,star:1,order:null,px:u.side?W-u.x:u.x,py:clamp(u.y+8,20,H-20)},u.side,S.nextId++);m.owner=u.id;S.units.push(m);
-      fx(S,u.x,u.y-22,sp.type==='monete'?'lascia monete':'pianta un germoglio','#ffe6a8')}
+      if(sp.type==='staccionata'&&u.def.wallHp){m.hp=m.maxHp=u.def.wallHp}
+      fx(S,u.x,u.y-22,sp.type==='monete'?'lascia monete':sp.type==='staccionata'?'costruisce una staccionata':'pianta un germoglio','#ffe6a8')}
     u.spT=sp.every-(u.star===2?1:0);
   }
   for(const u of live) if(u.alive&&u.def.regen) u.hp=Math.min(u.maxHp,u.hp+u.def.regen*dt);
+  // Puzzola: nubi che fanno danni ai nemici dentro
+  for(const u of live) if(u.alive&&u.def.stink&&u.stun<=0){const k=u.def.stink;u.stT=(u.stT??1.5)-dt;
+    if(u.stT<=0){u.stT=k.every;const mine=S.clouds.filter(c=>c.owner===u.id);
+      if(mine.length<k.max&&!mine.some(c=>Math.hypot(c.x-u.x,c.y-u.y)<k.r)){S.clouds.push({owner:u.id,side:u.side,x:u.x,y:u.y,r:k.r,dps:k.dps,t:k.t});fx(S,u.x,u.y-22,'che puzza!','#d8f0a0')}}}
+  for(const c of S.clouds){c.t-=dt;if(c.t<=0)continue;const src=S.units.find(x=>x.id===c.owner)||{side:c.side,def:{n:'Puzzola'},star:1};
+    for(const e of live) if(e.alive&&e.side!==c.side&&!e.underground&&e.role!=='static'&&Math.hypot(e.x-c.x,e.y-c.y)<c.r) damage(e,c.dps*dt,S,src)}
+  S.clouds=S.clouds.filter(c=>c.t>0);
   for(const u of live) if(u.alive) think(u,S,dt);
   for(const u of live) if(u.alive&&u.def.traps&&u.stun<=0){
     u.trapT-=dt; if(u.trapT>0) continue;
@@ -1591,7 +1645,7 @@ function drawRiver(){
   ctx.fillStyle=g;ctx.fillRect(RX-RW,0,RW*2,H);
   ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1.5;
   for(let y=10;y<H;y+=26){const o=(performance.now()/60+y)%26;ctx.beginPath();ctx.moveTo(RX-10,y+o*.3);ctx.quadraticCurveTo(RX-4,y+o*.3-4,RX+2,y+o*.3);ctx.stroke()}
-  for(const b of BRIDGES){
+  for(const b of ((G&&G.sim&&G.phase!=='shop'&&G.sim.bridges)||BRIDGES)){
     ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(RX-RW-12,b-BW+4,RW*2+24,BW*2);
     for(let x=RX-RW-12;x<RX+RW+12;x+=7){ctx.fillStyle=(x/7)%2<1?'#b98a55':'#a87a46';ctx.fillRect(x,b-BW,6,BW*2);ctx.strokeStyle='#5a3a1a';ctx.lineWidth=1;ctx.strokeRect(x,b-BW,6,BW*2)}
     ctx.strokeStyle='#5a3a1a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(RX-RW-14,b-BW);ctx.lineTo(RX+RW+14,b-BW);ctx.moveTo(RX-RW-14,b+BW);ctx.lineTo(RX+RW+14,b+BW);ctx.stroke();
@@ -1629,6 +1683,9 @@ function render(){
   if(S.fog) drawFog();
   for(const f of S.fakes) if(f.state==='home'){drawEgg(X(f.x),f.y-4,.85,false);
     if(f.side===G.me){ctx.font='bold 9px Nunito,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.strokeText('finto',X(f.x),f.y+14);ctx.fillText('finto',X(f.x),f.y+14)}}
+  for(const c of S.clouds){ctx.save();ctx.globalAlpha=Math.min(1,c.t)*.35;ctx.fillStyle='#9bbf3a';ctx.beginPath();ctx.arc(X(c.x),c.y,c.r,0,7);ctx.fill();
+    ctx.globalAlpha=Math.min(1,c.t)*.5;ctx.fillStyle='#c9e07a';for(let k=0;k<5;k++){const a=k*1.26+S.t*.6;ctx.beginPath();ctx.arc(X(c.x)+Math.cos(a)*c.r*.5,c.y+Math.sin(a)*c.r*.4,c.r*.28,0,7);ctx.fill()}ctx.restore()}
+  for(const w of S.units) if(w.alive&&w.def.wall){ctx.save();ctx.strokeStyle='#7a5230';ctx.lineWidth=5;ctx.setLineDash([7,4]);ctx.beginPath();ctx.arc(X(w.x),w.y,w.def.wall,0,7);ctx.stroke();ctx.restore()}
   const us=S.units.filter(u=>u.alive).sort((a,b)=>(a.def.flying-b.def.flying)||(a.y-b.y));
   for(const u of us){
     if(S.fog&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
@@ -1762,7 +1819,7 @@ function renderAll(){
   let hb=bench.map(card).join('');
   if(bench.length<MAXBENCH) hb+=`<div class="slot" style="min-height:60px;text-align:center;padding:6px">${MAXBENCH-bench.length} posti liberi<br>trascina qui un'unità o usa ↓ Panchina</div>`;
   $('bench').innerHTML=hb;
-  const RO=['thief','def','atk','sup'],pl=[...G.pool].sort((a,b)=>RO.indexOf(roleOf(a))-RO.indexOf(roleOf(b))||UNITS[a].t-UNITS[b].t);
+  const RO=['thief','def','ctl','atk','sup'],pl=[...G.pool].sort((a,b)=>RO.indexOf(roleOf(a))-RO.indexOf(roleOf(b))||UNITS[a].t-UNITS[b].t);
   $('poolCount').textContent=`${pl.length} personaggi`;
   $('poolList').innerHTML=pl.map(k=>{const u=UNITS[k],lock=!avail(k,G.round);return `<span class="mini pchip r-${roleOf(k)}${lock?' lock':''}" data-card="${k}:1" role="button" tabindex="0" title="${lock?`Disponibile dal round ${Math.max(u.minRound||1,u.t===3?3:1)}`:u.n}">${IC(u)} ${u.n}${lock?` <small>dal r${Math.max(u.minRound||1,u.t===3?3:1)}</small>`:''}</span>`}).join('');
   const lc=G.lastComp[1-G.me];
@@ -1780,9 +1837,9 @@ const STATMAX={};
 function statMax(star,key){if(!STATMAX[star]){const m={};for(const k in UNITS){if(UNITS[k].hidden)continue;const st=statsOf(k,star);for(const [key2] of STATDEF)m[key2]=Math.max(m[key2]||1,st[key2]||0)}STATMAX[star]=m}return STATMAX[star][key]}
 function statVal(s,k){return k==='rng'&&s.atk&&!s.ranged?'mischia':(s[k]||'—')}
 function statChips(type,star){const s=statsOf(type,star);return `<span class="stats">${STATDEF.map(([k,i,l])=>`<span class="sc" title="${l}"><i aria-hidden="true">${i}</i><span class="sr">${l} </span>${statVal(s,k)}</span>`).join('')}</span>`}
-const ROLES={thief:{n:'Ladro',d:"Ruba l'uovo"},def:{n:'Difensore',d:"Protegge l'uovo"},atk:{n:'Attaccante',d:'Caccia le unità nemiche'},sup:{n:'Supporto',d:'Esche, trappole e trucchi'}};
-const ROLEOF={topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'def',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
-  cacciatore:'atk',assassino:'atk',spazzino:'atk',mais:'sup',spaventa:'sup',coltivatore:'sup',benefattore:'sup'};
+const ROLES={thief:{n:'Ladro',d:"Ruba l'uovo"},def:{n:'Difensore',d:"Protegge l'uovo"},atk:{n:'Attaccante',d:'Caccia le unità nemiche'},sup:{n:'Supporto',d:'Esche, trappole e trucchi'},ctl:{n:'Controllo',d:'Domina il centro del campo'}};
+const ROLEOF={topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'ctl',gufo:'ctl',puzzola:'ctl',carpentiera:'ctl',castoro:'ctl',lepre:'thief',tartaruga:'thief',postina:'thief',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
+  cacciatore:'atk',assassino:'atk',spazzino:'atk',mais:'sup',spaventa:'sup',coltivatore:'ctl',benefattore:'ctl'};
 const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
   const roleTag={thief:'Ladro',def:'Guardiano'}[r];
@@ -1808,7 +1865,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard();const c=e.target.closest&&e.target.closest('.tcgbtn');if(c&&e.target===c&&!c.dataset.sel&&(e.key==='Enter'||e.key===' ')){e.preventDefault();c.click()}});
 function renderCodex(){
-  const RO=['thief','def','atk','sup'],ks=Object.keys(UNITS).filter(k=>!UNITS[k].hidden).sort((a,b)=>RO.indexOf(roleOf(a))-RO.indexOf(roleOf(b))||UNITS[a].t-UNITS[b].t);
+  const RO=['thief','def','ctl','atk','sup'],ks=Object.keys(UNITS).filter(k=>!UNITS[k].hidden).sort((a,b)=>RO.indexOf(roleOf(a))-RO.indexOf(roleOf(b))||UNITS[a].t-UNITS[b].t);
   $('codex').innerHTML=`<div class="rolelegend">${RO.map(r=>`<span><i style="background:var(--r${r})"></i><b>${ROLES[r].n}</b> · ${ROLES[r].d}</span>`).join('')}</div>
     <p class="empty" style="margin:10px 0 0">Tocca una carta per aprirla e vedere come cambiano le statistiche a ★★ e ★★★.</p>
     <div class="tcggrid">${ks.map(k=>`<div class="tcgbtn" role="button" tabindex="0" data-card="${k}:1" aria-label="Scheda ${UNITS[k].n}">${tcgCard(k,1)}</div>`).join('')}</div>
