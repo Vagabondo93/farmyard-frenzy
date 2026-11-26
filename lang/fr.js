@@ -731,5 +731,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "offline": "hors ligne",
 "amico": "ami",
 "★★ già pronta": "★★ déjà prête",
-"Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.": "Prolongations : à partir de cette manche, celui qui mène à la fin d'une manche gagne. La boutique propose aussi des cartes ★★ déjà prêtes."
+"Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.": "Prolongations : à partir de cette manche, celui qui mène à la fin d'une manche gagne. La boutique propose aussi des cartes ★★ déjà prêtes.",
+"Solo Classica": "Classique uniquement"
 };

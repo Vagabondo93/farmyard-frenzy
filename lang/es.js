@@ -731,5 +731,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "offline": "desconectado",
 "amico": "amigo",
 "★★ già pronta": "★★ ya lista",
-"Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.": "Prórroga: desde esta ronda gana quien vaya por delante al final de una ronda. En la tienda aparecen también cartas ★★ ya listas."
+"Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.": "Prórroga: desde esta ronda gana quien vaya por delante al final de una ronda. En la tienda aparecen también cartas ★★ ya listas.",
+"Solo Classica": "Solo Clásica"
 };

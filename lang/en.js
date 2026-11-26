@@ -731,5 +731,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "offline": "offline",
 "amico": "friend",
 "★★ già pronta": "★★ ready-made",
-"Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.": "Overtime: from this round, whoever is ahead at the end of a round wins. The shop also offers ready-made ★★ cards."
+"Supplementari: da questo round vince chi è in vantaggio alla fine di un round. Nel market compaiono anche carte ★★ già pronte.": "Overtime: from this round, whoever is ahead at the end of a round wins. The shop also offers ready-made ★★ cards.",
+"Solo Classica": "Classic only"
 };
