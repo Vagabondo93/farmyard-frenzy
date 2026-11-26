@@ -6,6 +6,7 @@
 </head>
 <body>
 <title>Farmyard Frenzy: The Golden Egg</title>
+<link rel="icon" type="image/png" href="favicon.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&display=swap">
@@ -204,7 +205,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tcg.s2 .temo{font-size:72px;filter:drop-shadow(0 0 8px rgba(255,255,255,.8)) drop-shadow(0 4px 4px rgba(0,0,0,.3))}
 /* ★★★: oro, raggi e aura */
 .tcg.s3 .tart{background:radial-gradient(circle at 50% 58%,#fff6c4,#f2c230 38%,#a8730a 75%,#5a3a00)}
-.tcg.s3 .tart::before{inset:-40%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,248,200,.55) 0 8deg,transparent 8deg 22deg);animation:spin 18s linear infinite}
+.tcg.s3 .tart::before{inset:auto;left:50%;top:50%;width:160%;height:auto;aspect-ratio:1;translate:-50% -50%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,248,200,.55) 0 8deg,transparent 8deg 22deg);animation:spin 18s linear infinite}
 .tcg.s3 .tart::after{background:radial-gradient(circle at 50% 55%,rgba(255,250,210,.85),transparent 45%)}
 .tcg.s3 .temo{font-size:82px;filter:drop-shadow(0 0 12px #fff3a0) drop-shadow(0 0 4px #ffd54a) drop-shadow(0 5px 4px rgba(0,0,0,.35))}
 .tcg.s3 .tstars{font-size:20px;color:#fff3a0}
@@ -893,8 +894,8 @@ arnia:`${SH(32,61,20,2.5)}
 
 const IC=d=>d.img?`<img class="uimg" src="${d.img}" alt="">`:d.i;
 const UNITS={
- tacchino:{n:'Tacchino',i:'🦃',t:1,tags:['Animale','Guardiano'],hp:125,dmg:5,spd:42,rng:18,cd:1,role:'guard',guardR:80,taunt:90,block:true,
-   d:"Scudo vivente vicino all'uovo: attira gli attacchi entro 90 e rallenta molto i ladri che gli passano accanto (non la Faina).",beats:'Ladro, Talpa scoperta',loses:'Cacciatrice, Faina, Mais'},
+ tacchino:{n:'Tacchino',i:'🦃',t:1,tags:['Animale','Guardiano'],hp:95,dmg:5,spd:42,rng:18,cd:1,role:'guard',guardR:80,taunt:80,block:true,blockMul:.55,
+   d:"Scudo vivente vicino all'uovo: attira gli attacchi entro 80 e rallenta molto i ladri che gli passano accanto (non la Faina).",beats:'Ladro, Talpa scoperta',loses:'Cacciatrice, Faina, Mais'},
  faina:{n:'Faina',i:'🦡',t:1,tags:['Animale','Ladro','Piccolo'],hp:32,dmg:0,spd:100,carry:.6,carry2:.7,role:'thief',dodge:.3,agile:true,
    d:"Velocissima all'andata, ma con l'uovo in bocca rallenta. Schiva il 30% dei colpi corpo a corpo e scavalca il Tacchino.",beats:'Tacchino, Bracconiere',loses:'Cane, Cacciatrice'},
  cane:{n:'Cane',i:'🐕',t:2,tags:['Animale','Guardiano'],hp:42,dmg:7,spd:74,rng:18,cd:.9,role:'guard',guardR:140,prio:{Ladro:4},bonus:{Ladro:1.5},carry:.7,sniff:60,
@@ -907,8 +908,8 @@ const UNITS={
    d:"Un gallo con l'elmo da gallo: la difesa avanzata del Tacchino. Attira gli attacchi entro 78, rallenta tutti i ladri che gli passano accanto, Faina compresa, e ogni beccata stordisce per un attimo.",beats:'Faina, Ladro, Talpa, Assassino',loses:'Cacciatrice, Gazza, Mais'},
  ladro:{n:'Ladro',i:'🦹',t:2,tags:['Umano','Ladro'],hp:70,dmg:0,spd:62,carry:1,role:'thief',invis:7,
    d:"Invisibile per i primi 7 secondi. Porta l'uovo senza rallentare. Il Corvo lo scopre.",beats:'Cane, Cacciatrice',loses:'Poliziotto, Assassino, Corvo'},
- cacciatore:{n:'Cacciatrice',i:'🤠',t:2,tags:['Umano','Tiratore'],hp:45,dmg:10,spd:40,rng:155,cd:1.4,ranged:true,role:'hunter',prio:{Animale:4},bonus:{Animale:1.35},
-   d:"Spara da lontano (155), +35% danno e priorità agli Animali. Colpisce anche chi vola.",beats:'Animali, Corvo',loses:'Assassino, Ladro'},
+ cacciatore:{n:'Cacciatrice',i:'🤠',t:2,tags:['Umano','Tiratore'],hp:45,dmg:9,spd:40,rng:155,cd:1.55,ranged:true,role:'hunter',prio:{Animale:4},bonus:{Animale:1.25},
+   d:"Spara da lontano (155), +25% danno e priorità agli Animali. Colpisce anche chi vola.",beats:'Animali, Corvo',loses:'Assassino, Ladro'},
  corvo:{n:'Corvo',i:'🐦',t:2,tags:['Animale','Volante'],hp:32,dmg:4,spd:85,rng:16,cd:.9,flying:true,role:'scout',guardR:200,reveal:115,prio:{Ladro:5},
    d:"Vola sopra il tuo uovo: scopre ladri invisibili e fa riemergere le talpe entro 115. Solo i tiratori lo colpiscono.",beats:'Talpa, Ladro, Gazza',loses:'Cacciatrice, Poliziotto, Spaventapasseri, Mais'},
  gazza:{n:'Gazza ladra',i:'🪶',t:2,tags:['Animale','Volante','Ladro'],hp:30,dmg:0,spd:78,carry:.55,flying:true,role:'thief',
@@ -925,14 +926,14 @@ const UNITS={
    d:"Si traveste da unità nemica: nessuno la attacca finché non tocca l'uovo o viene ferita. Il Cane la fiuta da vicino e il Corvo la smaschera.",beats:'Poliziotto, Galli-co, Tacchino',loses:'Cane, Corvo, Gatto'},
  procione:{n:'Procione',i:'🦝',t:2,fogOnly:true,minRound:3,tags:['Animale','Ladro'],hp:75,dmg:0,spd:78,carry:.9,role:'thief',pass:150,
    d:"Quando ha l'uovo lo lancia a un ladro alleato più vicino al tuo nido, entro 150. Rende al meglio con altri ladri in campo.",beats:'Cane, Galli-co, Mucca',loses:'Poliziotto, Lupo, Falco'},
- oca:{n:'Oca',i:'🪿',t:1,tags:['Animale','Guardiano'],hp:70,dmg:5,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,hitAir:true,swim:true,
+ oca:{n:'Oca',i:'🪿',t:1,tags:['Animale','Guardiano'],hp:60,dmg:4,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,hitAir:true,swim:true,
    d:"Starnazza quando vede un ladro entro 170: i difensori alleati vicini corrono il 35% più veloci per 3 s. Becca anche i volanti (pur non volando) e in Nebbia attraversa il ruscello a nuoto (più lenta in acqua).",beats:'Ladro, Faina, Topi, Gazza',loses:'Assassino, Volpe, Lupo'},
  gatto:{n:'Gatto',i:'🐈',t:2,tags:['Animale','Guardiano'],hp:48,dmg:7,spd:84,rng:18,cd:.75,role:'center',guardR:200,fullSlow:.1,prio:{Piccolo:6,Ladro:2},bonus:{Piccolo:1.4},hearUnder:75,
    d:"Si apposta a metà campo e caccia gli animali piccoli (Topi, Faina, Talpa, Lepre, Puzzola) con danno +40%. Sente le talpe sottoterra entro 75 e le fa riemergere. Ogni animale piccolo che elimina lo rende più sazio e lento del 10%.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatrice'},
  mucca:{n:'Mucca',i:'🐄',t:2,minRound:3,tags:['Animale','Guardiano'],hp:340,dmg:9,spd:34,rng:20,cd:1.1,role:'guard',guardR:120,push:56,block:true,
    d:"Un muro lento e gigantesco vicino all'uovo: spinge via i nemici che le passano accanto e rallenta molto i ladri.",beats:'Ladro, Topi, Toro',loses:'Gazza, Cacciatrice, Mais'},
- lupo:{n:'Lupo',i:'🐺',t:2,minRound:2,tags:['Animale','Killer'],hp:65,dmg:9,spd:90,rng:18,cd:.8,role:'hunter',advance:true,prio:{Guardiano:5},bonus:{Guardiano:1.8},
-   d:"Avanza nel campo nemico e caccia i difensori, con quasi il doppio del danno su Cane, Gatto, Oca, Tacchino e Poliziotto.",beats:'Cane, Gatto, Oca, Tacchino',loses:'Cacciatrice, Galli-co, Mais'},
+ lupo:{n:'Lupo',i:'🐺',t:2,minRound:2,tags:['Animale','Killer'],hp:65,dmg:8,spd:90,rng:18,cd:.8,role:'hunter',advance:true,prio:{Guardiano:5},bonus:{Guardiano:1.6},
+   d:"Avanza nel campo nemico e caccia i difensori, con il 60% di danno in più su Cane, Gatto, Oca, Tacchino e Poliziotto.",beats:'Cane, Gatto, Oca, Tacchino',loses:'Cacciatrice, Galli-co, Mais'},
  falco:{n:'Falco',i:'🦅',t:2,tags:['Animale','Volante'],hp:36,dmg:3,spd:105,rng:16,cd:.7,flying:true,role:'hunter',prio:{Volante:8},bonus:{Volante:6},
    d:"Vola e caccia chi vola, con danno triplo su Corvo, Gazza e altri falchi. Senza bersagli volanti attacca il resto con poco danno.",beats:'Corvo, Gazza, Falco',loses:'Cacciatrice, Spaventapasseri, Poliziotto'},
  toro:{n:'Toro',i:'🐂',t:3,minRound:4,tags:['Animale'],hp:150,dmg:8,spd:55,rng:20,cd:1,role:'hunter',advance:true,charge:true,
@@ -951,25 +952,25 @@ const UNITS={
    d:"Lavora a metà campo e costruisce una staccionata ogni 3 s (fino a 3): i nemici a terra devono girarci intorno o abbatterla.",beats:'Ladro, Faina, Topi, Toro',loses:'Volanti, Talpa, Spazzino'},
  castoro:{n:'Castoro',i:'🦫',t:1,fogOnly:true,tags:['Animale'],hp:100,dmg:8,spd:55,rng:18,cd:1,role:'guard',guardR:120,bridge:2,
    d:"Solo in Nebbia. All'inizio costruisce in 2 s un ponte in più sul ruscello, all'altezza a cui lo metti, poi lo difende. Il ponte resta per tutto il round e lo usano tutti.",beats:'Talpa, squadre lente',loses:'Falco, Cacciatrice, Lupo'},
- lepre:{n:'Lepre',i:'🐇',t:2,tags:['Animale','Ladro','Piccolo'],hp:36,dmg:0,spd:112,carry:.85,role:'thief',nap:4,
-   d:"La ladra più veloce del campo, anche con l'uovo. Ma la prima volta che supera la metà campo si ferma a fare un pisolino di 4 s (3 s se ★★): se la colpiscono si sveglia.",beats:'Squadre lente, Tacchino, Mucca',loses:'Gatto, Gufo, Oca'},
+ lepre:{n:'Lepre',i:'🐇',t:2,tags:['Animale','Ladro','Piccolo'],hp:34,dmg:0,spd:106,carry:.85,role:'thief',nap:4,
+   d:"La ladra più veloce del campo, anche con l'uovo. Ma quando torna con l'uovo, appena rientra nella sua metà campo, si ferma a fare un pisolino di 4 s (3 s se ★★): se la colpiscono si sveglia.",beats:'Squadre lente, Tacchino, Mucca',loses:'Gatto, Gufo, Oca'},
  tartaruga:{n:'Tartaruga',i:'🐢',t:2,tags:['Animale','Ladro'],hp:200,dmg:0,spd:40,carry:1,role:'thief',unstoppable:true,noLure:true,shell:true,
    d:"Lenta ma inarrestabile: immune a trappole, stordimenti, arresti, esche e rallentamenti, e con l'uovo non rallenta. Se in 1 s perde più di un quarto della vita si chiude nel guscio per 2 s: ferma, ma subisce l'80% di danni in meno.",beats:'Poliziotto, Bracconiere, Apicoltore, Spaventapasseri',loses:'Lupo, Assassino, Cacciatrice'},
- postina:{n:'Postina',i:'📮',t:2,tags:['Umano','Ladro'],hp:50,dmg:0,spd:80,carry:1,role:'thief',dodge:.25,
+ postina:{n:'Postina',i:'📮',t:2,tags:['Umano','Ladro'],hp:46,dmg:0,spd:76,carry:1,role:'thief',dodge:.25,
    d:"In bicicletta porta l'uovo a casa senza rallentare: le consegne sono il suo mestiere. Schiva il 25% dei colpi corpo a corpo.",beats:'Cane, Gatto, Tacchino',loses:'Poliziotto, Cacciatrice, Spaventapasseri, Benefattore'},
  staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
    d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 100.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
- trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:45,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:8,
-   d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 8 s (10 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
+ trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:45,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:6,
+   d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro; se sono sottoterra segue chi va all'attacco. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
  arnia:{n:'Arnia',i:'🍯',t:1,hidden:true,tags:['Oggetto'],hp:60,dmg:0,spd:0,role:'static',aura:{r:100,dps:5,slow:.6}},
  germoglio:{n:'Germoglio',i:'🌱',t:1,hidden:true,tags:['Oggetto','Esca'],hp:25,dmg:0,spd:0,role:'static',lure:110,lureTag:'Animale',eat:.75},
  monete:{n:'Monete',i:'🪙',t:1,hidden:true,tags:['Oggetto','Esca'],hp:40,dmg:0,spd:0,role:'static',lure:120,lureTag:'Umano',eat:1.5,bribe:220},
- poliziotto:{n:'Poliziotto',i:'👮',t:2,tags:['Umano','Guardiano'],hp:55,dmg:5,spd:55,rng:100,cd:1,ranged:true,role:'guard',guardR:230,prio:{Ladro:4,Umano:1},bonus:{Ladro:1.5},bonusType:{ladro:1.4},arrest:true,missFly:.5,
-   d:"Spara a distanza media e dà la caccia ai ladri: +50% di danno su tutti i ladri e più del doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.",beats:'Tutti i ladri visibili',loses:'Assassino, Ladro invisibile'},
+ poliziotto:{n:'Poliziotto',i:'👮',t:2,tags:['Umano','Guardiano'],hp:55,dmg:5,spd:55,rng:100,cd:1,ranged:true,role:'guard',guardR:230,prio:{Ladro:4,Umano:1},bonus:{Ladro:1.35},bonusType:{ladro:1.4},arrest:true,missFly:.5,
+   d:"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.",beats:'Tutti i ladri visibili',loses:'Assassino, Ladro invisibile'},
  bracconiere:{n:'Bracconiere',i:'🧔',t:2,tags:['Umano','Trappole'],hp:50,dmg:6,spd:50,rng:18,cd:1,role:'guard',guardR:200,traps:3,trapEvery:5,
    d:"Si aggira davanti al tuo uovo e piazza una trappola ogni 5 s (4 s se ★★), fino a 3 attive (4 se ★★). Bloccano 2,5 s e fanno 15 danni. Non prendono chi vola o scava. Se la tua squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Ladro, Cane, Assassino',loses:'Corvo, Talpa'},
- assassino:{n:'Assassino',i:'🥷',t:3,tags:['Umano','Killer'],hp:50,dmg:8,spd:88,rng:18,cd:.8,role:'hunter',advance:true,prio:{Umano:5},bonus:{Umano:4},
+ assassino:{n:'Assassino',i:'🥷',t:3,tags:['Umano','Killer'],hp:45,dmg:7,spd:88,rng:18,cd:.8,role:'hunter',advance:true,prio:{Umano:5},bonus:{Umano:4},
    d:"Rapido, avanza verso il campo nemico e fa 4× danno agli Umani, che caccia per primi.",beats:'Cacciatrice, Poliziotto, Ladro',loses:'Cane, Tacchino'},
  talpa:{n:'Talpa',i:'🦫',t:3,tags:['Animale','Ladro','Scavatore','Piccolo'],hp:90,dmg:0,spd:65,carry:.85,role:'thief',burrow:true,
    d:"Viaggia sottoterra: non si vede, non si colpisce e ignora le trappole. Sbuca sotto l'uovo, ma torna lenta in superficie.",beats:'Cane, Bracconiere, Poliziotto',loses:'Corvo, Tacchino'},
@@ -1061,7 +1062,7 @@ function newMatch(o={}){
 // Ogni partita usa solo una selezione di personaggi: così le copie per le ★★ si trovano davvero.
 const COUNTERS=[{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
   {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco','oca']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
-  {if:['avicoltore'],need:['corvo','gazza','falco']}]; // l'Avicoltore esce solo se nella partita c'è almeno un volante
+  ];
 const POOLQ={thief:3,def:3,atk:3,sup:3,ctl:2},POOLQR={thief:4,def:4,atk:4,sup:3,ctl:3};
 function makePool(variant,rng,big){
   const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly,pool=[],Q=big?POOLQR:POOLQ;
@@ -1073,6 +1074,9 @@ function makePool(variant,rng,big){
     pool.push(...pick);
   }
   if(variant==='fog') for(const k in UNITS) if(UNITS[k].fogOnly) pool.push(k);
+  // l'Avicoltore esce solo se nella partita ci sono almeno 2 volanti
+  if(pool.includes('avicoltore')){const fl=['corvo','gazza','falco','gufo'].filter(k=>!pool.includes(k));
+    while(pool.filter(k=>UNITS[k].flying).length<2&&fl.length)pool.push(fl.splice(Math.floor(rng()*fl.length),1)[0])}
   // ogni meccanica speciale deve avere almeno un contro nella selezione
   for(let pass=0;pass<4;pass++) for(const r of COUNTERS) if(r.if.some(k=>pool.includes(k))&&!r.need.some(k=>pool.includes(k))){
     const c=r.need.filter(k=>variant==='fog'||!UNITS[k].fogOnly);pool.push(c[Math.floor(rng()*c.length)])}
@@ -1121,7 +1125,7 @@ function sellUnit(p,uid){const b=p.board.find(x=>x.uid===uid);if(b&&G&&G.rmb&&!p
 
 // Tempo per il Pronto nelle partite con più giocatori: nessun limite al primo round, poi 60 s (+5 s per round, max 120)
 // che partono quando il primo giocatore preme Pronto.
-const isMP=()=>!!G&&(G.mode==='pvp'||(G.rmb&&G.rmb.online));
+const isMP=()=>!!(G&&(G.mode==='pvp'||(G.rmb&&G.rmb.online)));
 const turnLimit=r=>r<=1?null:Math.min(120,60+5*(r-2));
 function setDeadline(at){const T=turnLimit(G.round);if(T&&at&&(!G.deadline||at+T*1000<G.deadline))G.deadline=at+T*1000}
 function startShop(){
@@ -1414,7 +1418,7 @@ function think(u,S,dt){
   if(u.role==='static'||u.stun>0) return;
   if(u.sleep>0){u.sleep-=dt;return}
   if(u.shellT>0) return;
-  if(u.def.nap&&!u.napped&&(u.side===0?u.x>W/2+20:u.x<W/2-20)){u.napped=true;u.sleep=u.star===2?u.def.nap-1:u.def.nap;fx(S,u.x,u.y-24,'zzz… pisolino','#e8f0ff');log(S,`${nm(u)} si ferma a fare un pisolino`);return}
+  if(u.def.nap&&!u.napped&&u.carrying!==null&&(u.side===0?u.x<W/2-20:u.x>W/2+20)){u.napped=true;u.sleep=u.star===2?u.def.nap-1:u.def.nap;fx(S,u.x,u.y-24,'zzz… pisolino','#e8f0ff');log(S,`${nm(u)} si ferma a fare un pisolino`);return}
   if(u.def.bridge&&!u.built){const sx=RX+(u.side?1:-1)*(RW+18),site={x:sx,y:clamp(u.sy,40,H-40)};
     if(!S.fog){u.built=true}else if(dist(u,site)>8){moveTo(u,site.x,site.y,dt,S);return}
     else{u.buildT=(u.buildT||0)+dt;if(!u.buildFx){u.buildFx=1;fx(S,u.x,u.y-24,'costruisce un ponte','#ffe6a8')}
