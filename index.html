@@ -59,7 +59,9 @@ button:focus-visible,.bu:focus-visible,select:focus-visible{outline:3px solid va
 .mmbox{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--chip);border-radius:12px;padding:8px 12px}
 .rank li b .linkbtn{margin-left:6px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa;margin-right:6px;vertical-align:1px}.dot.on{background:#3fae3f}
-.coach{position:fixed;z-index:60;width:min(340px,calc(100vw - 16px));background:var(--panel);border:3px solid #f2c230;border-radius:16px;padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.35);display:grid;gap:8px}
+.coach{position:fixed;z-index:60;}
+#cardModal{z-index:70}
+.coach{width:min(340px,calc(100vw - 16px));background:var(--panel);border:3px solid #f2c230;border-radius:16px;padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.35);display:grid;gap:8px}
 .coach p{margin:0;line-height:1.45}.coachtop{display:flex;justify-content:space-between;align-items:center}
 .coach-hl{outline:4px solid #f2c230!important;outline-offset:3px;border-radius:12px;position:relative;z-index:5;animation:coachpulse 1.2s ease-in-out infinite}
 @keyframes coachpulse{50%{outline-color:#ffe680}}
