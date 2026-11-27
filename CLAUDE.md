@@ -11,4 +11,4 @@
 - Le nuove immagini vanno anche in `PRECACHE` di `sw.js`; se si sostituisce un'immagine esistente, aumentare `VERSION`.
 - Sfondo nero: non scontornare per soglia di luminosità (i contorni scuri si fondono con lo sfondo e restano aloni). Chiedere l'immagine su bianco o trasparente.
 - Topi: l'icona resta quella con più topi, ma le animazioni in campo sono di un solo topo (ogni topo è un'unità).
-- Prompt per le immagini: chiedere sempre **transparent background (no background)**, mai "pure white background".
+- Prompt per le immagini: scrivere sempre **no background** (non "transparent background", che lascia una nebbiolina, né "pure white background").

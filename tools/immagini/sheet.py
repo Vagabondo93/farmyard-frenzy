@@ -43,10 +43,10 @@ else: anc=[(b[0]+b[2])/2 for b in boxes]
 # ogni fotogramma resta nella sua posizione verticale originale (piedi sulla stessa linea)
 L=max(a-b[0] for a,b in zip(anc,boxes))+3;Rr=max(b[2]-a for a,b in zip(anc,boxes))+3
 yt=min(b[1] for b in boxes)-3;yb=max(b[3] for b in boxes)+3
-med=sorted(b[3]-b[1] for b in boxes)[N//2];s=BASE/med
+med=sorted(b[3]-b[1] for b in boxes)[N//2];s=float(os.environ['SCALE']) if os.environ.get('SCALE') else BASE/med  # SCALE: stessa scala di un altro foglio dello stesso personaggio
 FW=round((L+Rr)*s);FH=round((yb-yt)*s)
 out=Image.new('RGBA',(FW*N,FH),(0,0,0,0))
 for i,(f,a) in enumerate(zip(frames,anc)):
     l=int(round(a-L));cr=f.crop((l,yt,l+int(L+Rr),yb)).resize((FW,FH),Image.LANCZOS);out.alpha_composite(cr,(i*FW,0))
 out.save(dst,'WEBP',quality=86,method=6)
-print(json.dumps({'n':N,'fw':FW,'fh':FH,'ax':round(L/(L+Rr),3)}))
+print(json.dumps({'n':N,'fw':FW,'fh':FH,'ax':round(L/(L+Rr),3),'scale':round(s,4)}))
