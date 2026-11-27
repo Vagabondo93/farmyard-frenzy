@@ -1300,8 +1300,8 @@ const UNITS={
    d:"Lento e corazzato, gira da solo vicino al centro e non prende ordini. Ha tanta vita, la corazza gli toglie il 30% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Dopo i primi 4 s, quando un nemico gli arriva vicino raglia: per 2,5 s tutti i nemici entro 160 vanno da lui (chi è armato lo attacca, gli altri si distraggono), poi deve riprendere fiato per 5 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta. Non sopporta Apicoltore e Coltivatore: se l'avversario ne ha uno, lascia tutto e va ad aggredirlo.",
    beats:'Cacciatrice, Poliziotto, Assassino, Apicoltore, Coltivatore',loses:'Lupo, Toro, Gazza'},
  staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
- apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
-   d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
+ apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:70,cd:1,ranged:true,smoke:true,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
+   d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
  trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:36,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:6,
    d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro, anche quando la Talpa è sottoterra. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
  arnia:{n:'Arnia',i:'🍯',t:1,hidden:true,tags:['Oggetto'],hp:60,dmg:0,spd:0,role:'static',aura:{r:85,dps:5,slow:.6}},
@@ -1864,7 +1864,7 @@ function attack(u,t,S){
   let dmg=u.dmg; if(u.def.bonus) for(const tag of t.def.tags) if(u.def.bonus[tag]) dmg*=u.def.bonus[tag];
   if(u.def.bonusType&&u.def.bonusType[t.type]) dmg*=u.def.bonusType[t.type];
   if(u.def.ranged) u.shots=(u.shots||0)+1;
-  if(u.def.ranged) S.tracers.push({x1:u.x,y1:u.y-(u.def.flying?10:0),x2:t.x,y2:t.y-(t.def.flying?10:0),t:.16,col:u.side?'#ffd2c8':'#d6e4ff'});
+  if(u.def.ranged) S.tracers.push({x1:u.x,y1:u.y-(u.def.flying?10:0),x2:t.x,y2:t.y-(t.def.flying?10:0),t:.16,col:u.def.smoke?'#cfc6b4':u.side?'#ffd2c8':'#d6e4ff'});
   else u.lunge=.12;
   if(u.def.missFly&&t.def.flying&&S.rng()<u.def.missFly){fx(S,t.x,t.y-24,'mancato!','#fff6c4');return}
   if(!u.def.ranged&&t.def.dodge&&S.rng()<t.def.dodge){fx(S,t.x,t.y-18,'schivata','#fff6c4');return}

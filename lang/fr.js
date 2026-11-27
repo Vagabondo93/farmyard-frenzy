@@ -958,5 +958,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Campo e panchina": "Terrain et banc",
 "Ruota il telefono": "Tourne ton téléphone",
 "Il gioco è pensato in orizzontale: campo più grande e market a fianco.": "Le jeu est pensé à l’horizontale : terrain plus grand et marché à côté.",
-"Continua in verticale": "Continuer en vertical"
+"Continua in verticale": "Continuer en vertical",
+"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).": "Au début, il place une ruche : les abeilles piquent (5 dégâts par seconde) et ralentissent de 40 % les ennemis à moins de 85. Avec l'enfumoir il frappe de près, jusqu'à 70, même ceux qui volent (3 dégâts)."
 };
