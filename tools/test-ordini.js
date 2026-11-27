@@ -68,9 +68,13 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
     // calci: un Umano finisce più lontano di un Animale
     const kick=t=>{const S=sim([mk('asino',null,440,270),mk('ladro','attesa',60,60)],[mk(t,'attesa',475,270),mk('tartaruga',null,40,40)],1.2);const a=S.units.find(u=>u.type==='asino'),e=S.units.find(u=>u.type===t);return Math.hypot(e.x-a.x,e.y-a.y)};
     const q=t=>lossVs(t,'asino')/Math.max(1,lossVs(t,'mucca'));
-    return{lured,ord,hunter:q('cacciatore').toFixed(2),wolf:q('lupo').toFixed(2),human:Math.round(kick('poliziotto')),animal:Math.round(kick('cane'))}});
+    // un Apicoltore nemico lontano: l'Asino lascia il centro e va ad aggredirlo
+    {const S=sim([mk('asino',null,300,270),mk('ladro','attesa',60,60)],[mk('apicoltore',null,150,500),mk('tartaruga',null,40,40)],25);
+     const a=S.units.find(u=>u.type==='asino'),k=S.units.find(u=>u.type==='apicoltore');var beek={dist:Math.round(Math.hypot(a.x-k.x,a.y-k.y)),hit:!k.alive||k.hp<k.maxHp}}
+    return{beek,lured,ord,hunter:q('cacciatore').toFixed(2),wolf:q('lupo').toFixed(2),human:Math.round(kick('poliziotto')),animal:Math.round(kick('cane'))}});
     ok(r.lured,'la Cacciatrice nemica spara all\'Asino invece che al Cane più vicino');
     ok(r.ord===null,'l\'Asino non prende ordini (Guardia ignorata)');
+    ok(r.beek.hit,`con un Apicoltore nemico l'Asino va ad aggredirlo (distanza finale ${r.beek.dist})`);
     ok(+r.hunter<.8&&+r.wolf>.85,`corazza: danni rispetto alla Mucca ×${r.hunter} contro la Cacciatrice, ×${r.wolf} contro il Lupo (che la ignora)`);
     ok(r.human>r.animal,`i calci spingono un Umano più lontano di un Animale (${r.human} contro ${r.animal})`)}
   ok(errs.length===0,errs.length?'errori: '+errs.join(' | '):'nessun errore JavaScript');

@@ -1187,8 +1187,8 @@ const UNITS={
    d:"In bicicletta porta l'uovo a casa senza rallentare: le consegne sono il suo mestiere. Schiva il 25% dei colpi corpo a corpo.",beats:'Cane, Gatto, Tacchino',loses:'Poliziotto, Cacciatrice, Spaventapasseri, Benefattore'},
  asino:{n:'Asino',i:'🫏',t:2,cost:3,minRound:2,tags:['Animale','Guardiano'],hp:260,dmg:5,spd:28,rng:20,cd:1.2,role:'donkey',push:46,pushHuman:true,armor:.35,lure:150,lureTag:'*',
    alarm:110,alarmAny:true,alarmT:3,bray:'IH-OH!',stubborn:true,noOrders:true,
-   d:"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta.",
-   beats:'Cacciatrice, Poliziotto, Assassino, Cane',loses:'Lupo, Toro, Gazza'},
+   d:"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta. Non sopporta Apicoltore e Coltivatore: se l'avversario ne ha uno, lascia tutto e va ad aggredirlo.",
+   beats:'Cacciatrice, Poliziotto, Assassino, Apicoltore, Coltivatore',loses:'Lupo, Toro, Gazza'},
  staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
    d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
@@ -1622,7 +1622,9 @@ function anchorOf(u,S){
 }
 function pickTarget(u,S){
   const en=S.units.filter(e=>e.alive&&e.side!==u.side),esc=u.order==='scorta';
-  if(u.def.stubborn) return en.filter(e=>canTarget(u,e)&&dist(u,e)<u.def.rng+16).sort((a,b)=>dist(u,a)-dist(u,b))[0]||null; // l'Asino non insegue: scalcia chi gli sta addosso
+  if(u.def.stubborn){ // l'Asino non insegue nessuno... tranne Apicoltore e Coltivatore nemici, che va ad aggredire ovunque siano
+    const h=en.filter(e=>(e.type==='apicoltore'||e.type==='coltivatore')&&canTarget(u,e)).sort((a,b)=>dist(u,a)-dist(u,b))[0];if(h)return h;
+    return en.filter(e=>canTarget(u,e)&&dist(u,e)<u.def.rng+16).sort((a,b)=>dist(u,a)-dist(u,b))[0]||null}
   // Scorta: resta attaccata a chi accompagna; se se ne allontana prima lo raggiunge, e non si fa distrarre da esche e provocazioni
   if(esc){const a=anchorOf(u,S);if(a&&dist(u,a)>90)return null}
   if(u.def.followFly&&!esc) return en.filter(e=>canTarget(u,e)&&dist(u,e)<60).sort((a,b)=>dist(u,a)-dist(u,b))[0]||null; // l'Avicoltore si difende solo da vicino
