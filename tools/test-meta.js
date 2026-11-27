@@ -18,7 +18,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   await p.goto(url+'?u=meta');await p.waitForSelector('#nickIn',{state:'visible'});await p.fill('#nickIn','MetaM');await p.click('#regBtn');await p.waitForSelector('#meBox:not(.hidden)');
   console.log('Meta dei giocatori');
   await p.evaluate(()=>openPlay('bot','classic'));await p.selectOption('#winSel','1');await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
-  for(let r=0;r<12;r++){
+  for(let r=0;r<20;r++){
     {// compra la carta più economica, così resta oro per l'ordine
      const i=await p.evaluate(()=>{let best=-1,bc=99;for(const el of document.querySelectorAll('#shop [data-shopcard]:not(.off)')){if(/Asino/.test(el.getAttribute('aria-label')))continue;
        const c=+(el.querySelector('.si-cost')?.textContent??el.querySelector('[data-buy]').getAttribute('aria-label').match(/per (\d+) oro/)[1]);if(c<bc){bc=c;best=+el.dataset.shopcard}}return best});

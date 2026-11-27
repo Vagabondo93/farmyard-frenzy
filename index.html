@@ -563,6 +563,7 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
       <span class="goal" id="goalTxt">primo a 3 prese</span>
     </div>
     <div class="meta">
+      <span class="pill gold hidden" id="topGold">Oro 0</span>
       <span class="pill hidden" id="roundPill">Round 1</span>
       <span class="pill hidden" id="phasePill">Market</span>
       <select id="langSel" class="langsel" aria-label="Lingua" data-notr><option value="it">🇮🇹 Italiano</option><option value="en">🇬🇧 English</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option></select>
@@ -2581,7 +2582,7 @@ function renderAll0(){
       (R.opp==='ghost'?`<li><span class="pos">·</span><span>${esc(R.ghost.name)} ⚔️</span><span class="wl">bot extra</span><b></b></li>`:'');}
   renderTop();
   const p=ME(),shop=G.phase==='shop';
-  $('goldPill').textContent=`Oro ${p.gold}`;
+  $('goldPill').textContent=`Oro ${p.gold}`;$('topGold').textContent=`Oro ${p.gold}`;
   $('readyBtn').classList.toggle('hidden',!shop);document.body.classList.toggle('inbattle',!shop);if(!shop)setPop(null);
   $('speedBox').classList.toggle('hidden',shop||isMP());
   $('rerollBtn').disabled=!shop||p.gold<REROLL;
@@ -2806,7 +2807,7 @@ let RAW=null,GUEST=(()=>{try{return sessionStorage.getItem('ff-guest')==='1'}cat
 function showGame(on){
   if(on)$('playModal').classList.add('hidden');
   $('game').classList.toggle('hidden',!on);$('lobby').classList.toggle('hidden',on);
-  for(const id of ['topTitle','scoreBox','roundPill','phasePill','menuBtn']) $(id).classList.toggle('hidden',!on);
+  for(const id of ['topTitle','scoreBox','topGold','roundPill','phasePill','menuBtn']) $(id).classList.toggle('hidden',!on);
   tip.classList.add('hidden');
 }
 function showLobby(){wakeOff();
