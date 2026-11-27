@@ -320,6 +320,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tpow{font-size:12.5px;border:2px dashed var(--line);border-radius:12px;padding:6px 9px;color:var(--muted)}
 .tpow.on{border-style:solid;border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--ink)}
 .qn-roster{display:none!important}
+.qni{width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 .rbox{width:100%;max-width:760px;max-height:100%;overflow:auto;background:var(--panel);border-radius:18px;padding:12px;display:grid;gap:10px}
 .rcols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rcols section{background:var(--chip);border-radius:14px;padding:8px}
 .rcols h3{margin:0 0 6px;font-size:16px}.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
@@ -430,6 +431,7 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   #game .quicknav button{border:2px solid #3a240f;border-radius:14px;padding:6px 8px;gap:6px;font-size:17px;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),0 4px 0 #2a1a0a,0 6px 12px rgba(0,0,0,.3)}
   #game .quicknav button{background:linear-gradient(180deg,#7a5230,#55381e);color:#fff3d6;text-shadow:0 1px 0 rgba(0,0,0,.4);font-family:var(--f-body)}
   #game .quicknav button.on{background:linear-gradient(180deg,#ffd75e,#e0a91c);border-color:#8a5d00;color:#3a2600;text-shadow:none}
+  #game .quicknav .qni{width:30px;height:30px;margin:-4px 0}
   #game .quicknav button:active{transform:translateY(3px);box-shadow:inset 0 2px 0 rgba(255,255,255,.18),0 1px 0 #2a1a0a}
   .ctrl{margin-top:6px;gap:6px}.ctrl .btn{padding:6px 10px;font-size:14px}
   #readyBtn{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:50;padding:12px 20px!important;font-size:17px!important;box-shadow:0 6px 18px rgba(0,0,0,.35)}
@@ -688,9 +690,9 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   <div class="main">
     <nav class="quicknav" id="quickNav" aria-label="Vai a">
       <button data-go="arenaSec" aria-label="Campo">🏟️<span>Campo</span></button>
-      <button data-go="shopPanel" aria-label="Market e ordini">🛒<span>Market</span></button>
-      <button data-go="teamPanel" aria-label="Squadra e panchina">👥<span>Squadra</span></button>
-      <button data-roster class="qn-roster" aria-label="Riserva: campo e panchina">🔁<span>Riserva</span></button>
+      <button data-go="shopPanel" aria-label="Market e ordini"><img class="qni" src="icons/nav/market.webp" alt=""><span>Market</span></button>
+      <button data-go="teamPanel" aria-label="Squadra e panchina"><img class="qni" src="icons/nav/squadra.webp" alt=""><span>Squadra</span></button>
+      <button data-roster class="qn-roster" aria-label="Riserva: campo e panchina"><img class="qni" src="icons/nav/riserva.webp" alt=""><span>Riserva</span></button>
     </nav>
     <section class="arena" id="arenaSec">
       <canvas id="field" width="960" height="540" aria-label="Campo di gioco"></canvas>
