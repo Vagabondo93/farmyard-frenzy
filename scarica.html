@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Scarica Farmyard Frenzy</title>
+<meta name="description" content="Installa Farmyard Frenzy: The Golden Egg sul telefono.">
+<meta name="theme-color" content="#2f5f1a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:title" content="Farmyard Frenzy: The Golden Egg">
+<meta property="og:description" content="Due uova d'oro. Due pollai. Zero pietà. Installa il gioco sul telefono.">
+<meta property="og:image" content="banner.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700;800&display=swap">
+<style>
+:root{--bg:#f4f1e4;--panel:#fffdf4;--ink:#2a2416;--muted:#6b6450;--green:#3f7d1f;--gold:#e0a91c;--line:#e2dcc6}
+@media (prefers-color-scheme:dark){:root{--bg:#1d2117;--panel:#272c1f;--ink:#f1ecd9;--muted:#b3ad97;--line:#3b4230}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Nunito,system-ui,sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+.wrap{max-width:560px;margin:0 auto;display:grid;gap:16px}
+.hero{border-radius:20px;overflow:hidden;background:#2f5f1a;color:#fff7d6;text-align:center}
+.hero img.banner{display:block;width:100%;aspect-ratio:3/1;object-fit:cover}
+.hero .in{padding:12px 16px 18px;display:grid;justify-items:center;gap:6px}
+.hero .logo{width:min(280px,70%);margin-top:-14%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+h1{font-family:'Lilita One',sans-serif;font-weight:400;font-size:26px;margin:0;line-height:1.1}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:12px}
+.btn{display:block;text-align:center;text-decoration:none;font-weight:800;font-size:18px;border:0;border-radius:14px;padding:14px 16px;cursor:pointer;font-family:inherit}
+.btn.go{background:var(--green);color:#fff;box-shadow:0 4px 0 #2b5a13}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--line)}
+ol{margin:0;padding-left:22px;display:grid;gap:10px}
+.ic{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:#e8eef9;color:#1a5fd0;vertical-align:-7px;margin:0 2px}
+.ic svg{width:16px;height:16px}
+.muted{color:var(--muted);font-size:14px;margin:0}
+.qr{justify-self:center;background:#fff;padding:8px;border-radius:12px;width:200px;height:200px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <img class="banner" src="banner.jpg" alt="">
+    <div class="in"><img class="logo" src="logo.webp" alt="Farmyard Frenzy: The Golden Egg"><h1 data-t="slogan">Due uova d'oro. Due pollai. Zero pietà.</h1></div>
+  </div>
+
+  <!-- Android -->
+  <div class="card hidden" id="android">
+    <b data-t="aTitle">Installa l'app sul tuo Android</b>
+    <button class="btn go" id="installA" data-t="aBtn">📲 Installa l'app</button>
+    <p class="muted" id="aHelp" data-t="aHelp">Se il tasto non fa nulla: apri il menu ⋮ di Chrome e scegli "Installa app" o "Aggiungi a schermata Home".</p>
+    <a class="btn alt" href="./" data-t="play">▶ Gioca subito nel browser</a>
+  </div>
+
+  <!-- iPhone -->
+  <div class="card hidden" id="ios">
+    <b data-t="iTitle">Installa l'app sul tuo iPhone</b>
+    <ol>
+      <li data-t="i1h">Apri questa pagina in <b>Safari</b>.</li>
+      <li><span data-t="i2a">Tocca</span> <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span> <b data-t="i2b">Condividi</b> <span data-t="i2c">in basso.</span></li>
+      <li><span data-t="i3a">Scegli</span> <b data-t="i3b">Aggiungi alla schermata Home</b> <span data-t="i3c">e poi</span> <b data-t="i3d">Aggiungi</b>.</li>
+    </ol>
+    <p class="muted" data-t="iNote">Il gioco comparirà tra le tue app con l'icona dell'uovo d'oro e si aprirà a tutto schermo.</p>
+    <a class="btn go" href="./" data-t="play">▶ Gioca subito nel browser</a>
+  </div>
+
+  <!-- computer -->
+  <div class="card hidden" id="desktop">
+    <b data-t="dTitle">Inquadra il codice con il telefono</b>
+    <img class="qr" id="qr" src="icons/qr-scarica.png" width="200" height="200" alt="Codice QR per aprire questa pagina sul telefono">
+    <p class="muted" data-t="dNote">Si apre questa pagina sul telefono, con le istruzioni giuste per iPhone o Android.</p>
+    <a class="btn go" href="./" data-t="playPc">▶ Gioca dal computer</a>
+  </div>
+</div>
+<script>
+// Indirizzi degli store: quando l'app sarà pubblicata, inseriscili qui e la pagina ci manderà direttamente.
+const PLAY_URL='',APPSTORE_URL='';
+const ua=navigator.userAgent,IOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),ANDROID=/android/i.test(ua);
+if(ANDROID&&PLAY_URL)location.replace(PLAY_URL);
+if(IOS&&APPSTORE_URL)location.replace(APPSTORE_URL);
+// testi nelle quattro lingue del gioco
+const L=(localStorage.getItem('ff-lang')||navigator.language||'it').slice(0,2);
+const T={
+ en:{slogan:'Two golden eggs. Two henhouses. Zero mercy.',aTitle:'Install the app on your Android',aBtn:'📲 Install the app',aHelp:'If the button does nothing: open Chrome\'s ⋮ menu and choose "Install app" or "Add to Home screen".',play:'▶ Play now in the browser',
+  iTitle:'Install the app on your iPhone',i1h:'Open this page in <b>Safari</b>.',i2a:'Tap',i2b:'Share',i2c:'at the bottom.',i3a:'Choose',i3b:'Add to Home Screen',i3c:'and then',i3d:'Add',iNote:'The game will appear among your apps with the golden egg icon and open full screen.',
+  dTitle:'Scan the code with your phone',dNote:'This page opens on your phone, with the right steps for iPhone or Android.',playPc:'▶ Play on the computer'},
+ es:{slogan:'Dos huevos de oro. Dos gallineros. Cero piedad.',aTitle:'Instala la app en tu Android',aBtn:'📲 Instalar la app',aHelp:'Si el botón no hace nada: abre el menú ⋮ de Chrome y elige "Instalar aplicación" o "Añadir a pantalla de inicio".',play:'▶ Jugar ya en el navegador',
+  iTitle:'Instala la app en tu iPhone',i1h:'Abre esta página en <b>Safari</b>.',i2a:'Toca',i2b:'Compartir',i2c:'abajo.',i3a:'Elige',i3b:'Añadir a pantalla de inicio',i3c:'y luego',i3d:'Añadir',iNote:'El juego aparecerá entre tus apps con el icono del huevo de oro y se abrirá a pantalla completa.',
+  dTitle:'Escanea el código con el móvil',dNote:'Se abre esta página en el móvil, con los pasos correctos para iPhone o Android.',playPc:'▶ Jugar en el ordenador'},
+ fr:{slogan:'Deux œufs d\'or. Deux poulaillers. Zéro pitié.',aTitle:'Installe l\'app sur ton Android',aBtn:'📲 Installer l\'app',aHelp:'Si le bouton ne fait rien : ouvre le menu ⋮ de Chrome et choisis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ».',play:'▶ Jouer tout de suite dans le navigateur',
+  iTitle:'Installe l\'app sur ton iPhone',i1h:'Ouvre cette page dans <b>Safari</b>.',i2a:'Touche',i2b:'Partager',i2c:'en bas.',i3a:'Choisis',i3b:'Sur l\'écran d\'accueil',i3c:'puis',i3d:'Ajouter',iNote:'Le jeu apparaîtra parmi tes apps avec l\'icône de l\'œuf d\'or et s\'ouvrira en plein écran.',
+  dTitle:'Scanne le code avec ton téléphone',dNote:'Cette page s\'ouvre sur le téléphone, avec les bonnes étapes pour iPhone ou Android.',playPc:'▶ Jouer sur l\'ordinateur'}};
+if(T[L]){document.documentElement.lang=L;for(const el of document.querySelectorAll('[data-t]')){const v=T[L][el.dataset.t];if(v)el.innerHTML=v}document.title='Farmyard Frenzy'}
+// mostra la sezione giusta
+const show=id=>document.getElementById(id).classList.remove('hidden');
+if(IOS)show('ios');else if(ANDROID)show('android');else show('desktop'); // il QR (icons/qr-scarica.png) porta a https://vagabondo93.github.io/farmyard-frenzy/scarica.html
+// Android: installazione con un tocco dove il browser la offre
+let prompt=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();prompt=e});
+document.getElementById('installA').onclick=async()=>{if(prompt){prompt.prompt();try{await prompt.userChoice}catch(e){}prompt=null}else document.getElementById('aHelp').style.fontWeight='800'};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
