@@ -1401,6 +1401,8 @@ const ANIM={
   topi:{h:20,stride:5,walk:{n:4,fw:223,fh:137,ax:.5},carry:{n:4,fw:208,fh:225,ax:.5}},
   assassino:{h:34,stride:7,walk:{n:4,fw:136,fh:135,ax:.5},atk:{n:4,fw:167,fh:117,ax:.441}},
   talpa:{h:34,stride:5,walk:{n:4,fw:120,fh:130,ax:.5},emerge:{n:4,fw:153,fh:152,ax:.583},dig:{n:4,fw:120,fh:72,ax:.5},burrow:{n:4,fw:129,fh:118,ax:.572},carry:{n:4,fw:106,fh:137,ax:.5}},
+  volpe:{h:31,stride:7,walk:{n:4,fw:222,fh:134,ax:.5},disg:{n:4,fw:211,fh:166,ax:.5},carry:{n:4,fw:209,fh:148,ax:.5}},
+  asino:{h:40,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:130,fh:134,ax:.578},alarm:{n:4,fw:130,fh:134,ax:.578}},
   puzzola:{h:32,stride:6,walk:{n:4,fw:120,fh:130,ax:.5},atk:{n:4,fw:122,fh:119,ax:.544}},
   oca:{h:38,stride:5,walk:{n:4,fw:126,fh:130,ax:.5},atk:{n:4,fw:185,fh:132,ax:.501},alarm:{n:4,fw:135,fh:142,ax:.491}},
   poliziotto:{h:38,stride:6,walk:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:99,fh:129,ax:.475}},
@@ -1416,7 +1418,7 @@ const ANIM={
   gazza:{h:34,fly:{n:4,fw:186,fh:193,ax:.994,ox:78},carry:{n:4,fw:184,fh:192,ax:.994,ox:78}},
 };
 // file: icons/anim/<personaggio>-walk|atk|fly.webp; ax = punto d'aggancio nel fotogramma (0 sinistra, 1 destra), ox = suo spostamento dal centro (px a scala 128)
-for(const k in ANIM)for(const m of ['walk','atk','fly','st','carry','hit','alarm','emerge','dig','burrow'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
+for(const k in ANIM)for(const m of ['walk','atk','fly','st','carry','hit','alarm','emerge','dig','burrow','disg'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
 // icone disegnate degli ordini (cartella icons/, file ord-<chiave>.webp); se non si caricano resta l'emoji
 const OIMG={};
 for(const k in ORDERS){ORDERS[k].img='icons/ord-'+k+'.webp';const im=new Image();im.src=ORDERS[k].img;OIMG[k]=im}
@@ -2200,6 +2202,7 @@ function drawToken1(x,y,side,type,star,order,o={}){
     ctx.strokeStyle=ring;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,ry,16.5,6,0,0,7);ctx.stroke();
     if(star>1){ctx.save();if(star===3){ctx.shadowColor='#ffd54a';ctx.shadowBlur=8}ctx.strokeStyle=star===3?'#ffd54a':'#e6ebf2';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,ry,19.5,7.5,0,0,7);ctx.stroke();ctx.restore()}
     let sh=base,f=0,bob=0;const AT=.08;
+    if(o.disguised&&ld(A.disg))sh=A.disg;// travestita (Volpe)
     if(o.carry&&ld(A.carry))sh=A.carry;// con l'uovo in mano: corsa apposita (l'uovo è già disegnato nel foglio)
     if(ld(A.atk)&&o.atk!=null&&o.atk<A.atk.n*AT){sh=A.atk;f=Math.floor(o.atk/AT)}
     else if(ld(A.alarm)&&o.alAge!=null&&o.alAge<A.alarm.n*.15){sh=A.alarm;f=Math.floor(o.alAge/.15)}// grido d'allarme (Oca)
