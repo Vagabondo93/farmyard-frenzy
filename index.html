@@ -1185,7 +1185,7 @@ const UNITS={
    d:"Lenta ma inarrestabile: immune a trappole, stordimenti, arresti, esche e rallentamenti, e con l'uovo non rallenta. Se in 1 s perde più di un quarto della vita si chiude nel guscio per 2 s: ferma, ma subisce l'80% di danni in meno.",beats:'Poliziotto, Bracconiere, Apicoltore, Spaventapasseri',loses:'Lupo, Assassino, Cacciatrice'},
  postina:{n:'Postina',i:'📮',t:2,tags:['Umano','Ladro'],hp:46,dmg:0,spd:76,carry:1,role:'thief',dodge:.25,
    d:"In bicicletta porta l'uovo a casa senza rallentare: le consegne sono il suo mestiere. Schiva il 25% dei colpi corpo a corpo.",beats:'Cane, Gatto, Tacchino',loses:'Poliziotto, Cacciatrice, Spaventapasseri, Benefattore'},
- asino:{n:'Asino',i:'🫏',t:2,cost:3,minRound:2,tags:['Animale','Guardiano'],hp:260,dmg:5,spd:28,rng:20,cd:1.2,role:'donkey',push:46,pushHuman:true,armor:.35,lure:150,lureTag:'*',
+ asino:{n:'Asino',i:'🫏',t:2,cost:3,minRound:2,classicOnly:true,tags:['Animale','Guardiano'],hp:260,dmg:5,spd:28,rng:20,cd:1.2,role:'donkey',push:46,pushHuman:true,armor:.35,lure:150,lureTag:'*',
    alarm:110,alarmAny:true,alarmT:3,bray:'IH-OH!',stubborn:true,noOrders:true,
    d:"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta. Non sopporta Apicoltore e Coltivatore: se l'avversario ne ha uno, lascia tutto e va ad aggredirlo.",
    beats:'Cacciatrice, Poliziotto, Assassino, Apicoltore, Coltivatore',loses:'Lupo, Toro, Gazza'},
@@ -1289,7 +1289,7 @@ function newMatch(o={}){
   const seed=(Date.now()&0xffffff)^0x5bd1;
   G={round:1,score:[0,0],phase:'shop',players:[mkPlayer(),mkPlayer()],lastComp:[null,null],rng:mulberry(seed),
      brng:mulberry(seed^0x9e37),sel:null,sim:null,speed:1,lost:[false,false],acc:0,revealT:0,logN:0,
-     pool:makePool(o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online||o.poolSeed)?mulberry(((o.poolSeed||o.seed)||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||o.mode==='duo'||!!o.ranked||!!o.big,o.bans||[],o.picks||[]),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
+     pool:makePool(o.mode==='duo'?'duo':o.variant==='fog'?'fog':'classic',(o.mode==='pvp'||o.online||o.poolSeed)?mulberry(((o.poolSeed||o.seed)||1)^0x51ed27):mulberry(seed^0x77),o.mode==='rumble'||o.mode==='duo'||!!o.ranked||!!o.big,o.bans||[],o.picks||[]),variant:o.variant==='fog'?'fog':'classic',win:o.variant==='fog'?7:(o.win||3),mode:o.mode||'bot',me:o.me||0,room:o.room||null,ranked:!!o.ranked,seedBase:o.seed||0,oppName:o.oppName||'Bot',oppElo:o.oppElo||1000,unsub:[]};
   setField(G.mode==='duo'?DUO_H:540);
   if(G.mode==='rumble') initRumble(o);
   if(G.mode==='duo') initDuo(o);
@@ -1310,7 +1310,7 @@ const COUNTERS=[{if:['asino'],need:['lupo','toro']},{if:['volpe'],need:['cane','
 const POOLQ={thief:3,def:3,atk:3,sup:3,ctl:2},POOLQR={thief:4,def:4,atk:4,sup:3,ctl:3};
 // ex: personaggi bannati (mai nel pool); force: personaggi scelti nella fase di scelta (sempre nel pool)
 function makePool(variant,rng,big,ex=[],force=[]){
-  const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly&&!(variant==='fog'&&UNITS[k].classicOnly)&&!ex.includes(k),pool=[],Q=big?POOLQR:POOLQ;
+  const ok=k=>!UNITS[k].hidden&&!UNITS[k].fogOnly&&!(variant!=='classic'&&UNITS[k].classicOnly)&&!ex.includes(k),pool=[],Q=big?POOLQR:POOLQ;
   for(const r of Object.keys(Q)){
     const all=Object.keys(UNITS).filter(k=>ok(k)&&roleOf(k)===r);
     for(let i=all.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
@@ -1325,7 +1325,7 @@ function makePool(variant,rng,big,ex=[],force=[]){
     while(pool.filter(k=>UNITS[k].flying).length<2&&fl.length)pool.push(fl.splice(Math.floor(rng()*fl.length),1)[0])}
   // ogni meccanica speciale deve avere almeno un contro nella selezione
   for(let pass=0;pass<4;pass++) for(const r of COUNTERS) if(r.if.some(k=>pool.includes(k))&&!r.need.some(k=>pool.includes(k))){
-    const c=r.need.filter(k=>(variant==='fog'||!UNITS[k].fogOnly)&&!ex.includes(k)&&!(variant==='fog'&&UNITS[k].classicOnly));if(c.length)pool.push(c[Math.floor(rng()*c.length)])}
+    const c=r.need.filter(k=>(variant==='fog'||!UNITS[k].fogOnly)&&!ex.includes(k)&&!(variant!=='classic'&&UNITS[k].classicOnly));if(c.length)pool.push(c[Math.floor(rng()*c.length)])}
   return pool;
 }
 const avail=(k,round)=>(UNITS[k].minRound||1)<=round&&(UNITS[k].t<3||round>=3);

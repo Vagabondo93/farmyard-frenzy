@@ -14,7 +14,7 @@ await p.goto('file://'+tmp);
 const res=await p.evaluate(({N,BUDGET,STAR2,ROUND,VAR,ORDP})=>{
   const A=window.__api,U=A.UNITS(),O=Object.keys(A.ORD()),C=A.COST(),DUO=VAR==='duo';if(DUO)A.field(760);
   // solo i personaggi davvero acquistabili in questa mappa e in questo round
-  const types=Object.keys(U).filter(k=>!U[k].hidden&&(VAR==='fog'||!U[k].fogOnly)&&!(VAR==='fog'&&U[k].classicOnly)&&(U[k].minRound||1)<=ROUND&&(U[k].t<3||ROUND>=3));
+  const types=Object.keys(U).filter(k=>!U[k].hidden&&(VAR==='fog'||!U[k].fogOnly)&&!(VAR!=='classic'&&U[k].classicOnly)&&(U[k].minRound||1)<=ROUND&&(U[k].t<3||ROUND>=3));
   const rng=A.mul(12345);
   const thieves=types.filter(t=>U[t].tags.includes('Ladro'));
   const team1=()=>{let g=BUDGET,list=[];let guard=0;

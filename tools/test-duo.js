@@ -29,6 +29,8 @@ const inside=p=>p.evaluate(()=>{const S=window.__g().sim;if(!S)return 0;let n=0;
   {const p=await ctx.newPage();p.on('pageerror',e=>errs.push('bot: '+e.message));await p.goto(url+'?u=solo');await p.waitForTimeout(500);
     await p.evaluate(()=>openPlay('bot','duo'));await p.click('#duoBot');await p.waitForSelector('#game:not(.hidden)');
     ok(await p.evaluate(()=>window.__g().duo.P.length===4&&document.getElementById('field').style.aspectRatio.replace(/\s/g,'')==='960/760'),'4 giocatori e campo alto 760');
+    {const bad=await p.evaluate(()=>window.__g().pool.filter(k=>['asino','carpentiera','volpe','procione','chioccia','castoro'].includes(k)));
+     ok(bad.length===0,`nel 2 contro 2 niente personaggi solo Classica o solo Nebbia nel pool (${bad.join(', ')||'nessuno'})`)}
     let bad=0,blk=0;
     for(let r=0;r<4;r++){await buy(p);await p.click('#readyBtn');await p.waitForFunction(()=>window.__g().phase==='battle',null,{timeout:20000});
       if(await p.isVisible('[data-speed="4"]'))await p.click('[data-speed="4"]');
