@@ -1256,7 +1256,7 @@ const ORDERS={
  scorta:{n:'Scorta',i:'🤝',d:"Segue il tuo ladro (prima chi porta l'uovo) e attacca chi gli si avvicina."},
  fianco:{n:'Aggiramento',i:'↪️',d:"Passa dal bordo del campo invece che dal centro, all'andata e al ritorno."},
  attesa:{n:'Attesa',i:'⏳',d:"Resta fermo i primi 4 secondi, poi agisce. Utile per far partire prima gli altri."},
- scatto:{n:'Scatto',i:'💨',d:"+35% velocità, −25% vita."},
+ scatto:{n:'Scatto',i:'💨',d:"+25% velocità, −25% vita."},
  corazza:{n:'Corazza',i:'🧱',d:"+40% vita, −15% velocità."},
  ritirata:{n:'Ritirata',i:'🩹',d:"Sotto il 35% di vita torna all'uovo e si cura fino all'80%."},
  mirinoT:{n:'Mirino: Tiratori',i:'🏹',d:"Priorità assoluta alla Cacciatrice, al Poliziotto e agli altri che sparano da lontano.",prio:{Tiratore:7,Guardiano:1}},
@@ -1448,7 +1448,7 @@ function spawn(b,side,id){
   if(UNITS[b.type]&&UNITS[b.type].noOrders&&b.order)b={...b,order:null}; // l'Asino fa di testa sua
   const d=b.star===3?Object.assign({},UNITS[b.type],P3[b.type].m):UNITS[b.type],st=b.star>=2,sm=[1,1,1.8,3][b.star];
   let hp=d.hp*sm,spd=d.spd*(b.star===3?1.15:st?1.08:1),dmg=d.dmg*sm;
-  if(b.order==='scatto'){spd*=1.35;hp*=.75} if(b.order==='corazza'){hp*=1.4;spd*=.85}
+  if(b.order==='scatto'){spd*=1.25;hp*=.75} if(b.order==='corazza'){hp*=1.4;spd*=.85}
   const prio=Object.assign({},d.prio||{}); const o=ORDERS[b.order];
   if(o&&o.prio) for(const k in o.prio) prio[k]=(prio[k]||0)+o.prio[k];
   let role=d.role,leash=d.guardR||0;
@@ -3389,7 +3389,7 @@ const COACH_STEPS=[
  {el:'#shop',t:"Nuovo round, nuovo oro. Vedi le due Faine? Con 3 copie uguali i personaggi si uniscono e diventano ★★, più forti. Tre ★★ fanno una ★★★ con un potere speciale.",next:true},
  {el:'#shop',t:"Compra le due Faine: insieme a quella che hai già diventano una Faina ★★.",wait:()=>ME().board.some(b=>b.type==='faina'&&b.star>=2)},
  {el:'#board',t:"Ecco la tua Faina ★★! Ora gli ordini: tocca la Faina nella tua squadra per selezionarla.",wait:()=>{const u=ME().board.find(b=>b.uid===G.sel);return !!u}},
- {el:'#orders',t:"Poi tocca un ordine, per esempio Scatto (+35% velocità). Ogni ordine costa 1 oro e cambia come si comporta l'unità.",wait:()=>ME().board.some(b=>b.order)},
+ {el:'#orders',t:"Poi tocca un ordine, per esempio Scatto (+25% velocità). Ogni ordine costa 1 oro e cambia come si comporta l'unità.",wait:()=>ME().board.some(b=>b.order)},
  {el:'#shop',t:"A ogni nuovo round il market si ricarica con personaggi nuovi, scelti a caso.",next:true},
  {el:'#lockBtn',t:"Se ti piacciono le carte rimaste, premi Blocca: al prossimo round le ritrovi, e si riempiono solo i posti delle carte che hai comprato.",next:true},
  {el:'#rerollBtn',t:"Con Rimescola invece cambi subito tutte le carte del market, per 1 oro.",next:true},
