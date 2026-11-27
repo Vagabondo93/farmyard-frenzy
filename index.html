@@ -320,6 +320,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tpow{font-size:12.5px;border:2px dashed var(--line);border-radius:12px;padding:6px 9px;color:var(--muted)}
 .tpow.on{border-style:solid;border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--ink)}
 .qn-roster{display:none!important}
+.popx{display:none}
 .qni{width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 .rbox{width:100%;max-width:760px;max-height:100%;overflow:auto;background:var(--panel);border-radius:18px;padding:12px;display:grid;gap:10px}
 .rcols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rcols section{background:var(--chip);border-radius:14px;padding:8px}
@@ -469,6 +470,71 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   .umenu>.umh,.umenu>.umsub{grid-column:1/-1}.umenu>.umgrid{grid-column:1;grid-row:span 2}.umenu>.umdesc,.umenu>.umfoot{grid-column:2}
   .umenu>.umgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.umgrid button{padding:3px 1px;font-size:8.5px;letter-spacing:-.2px}.umgrid button .oimg{width:22px;height:22px}
   .umfoot{display:grid;gap:6px}.umfoot .btn{padding:7px 8px;font-size:13px}.umdesc{font-size:12px;min-height:0}
+
+  /* telefono in orizzontale: niente scorrimento della pagina. In alto il punteggio, a sinistra il campo,
+     a destra i personaggi della partita sempre visibili e, a fisarmonica, avversario, cronaca e chat.
+     Market e Squadra si aprono come finestre dai tasti in basso. */
+  body:has(#game:not(.hidden)){height:100dvh;overflow:hidden;padding-bottom:0}
+  body:has(#game:not(.hidden)) .top{position:sticky;top:0;z-index:40}
+  #game{height:calc(100dvh - 52px);overflow-y:auto;overscroll-behavior:contain;align-content:start;padding-bottom:70px}
+  #game .arena{top:0}
+  #game{overflow:hidden}
+  #game .side{grid-row:1/span 30;align-self:stretch;height:calc(100dvh - 60px);display:flex;flex-direction:column;gap:6px;overflow:hidden;min-height:0}
+  #game .side>.panel{flex:none;padding:7px 10px}#game .side>.panel h3{font-size:15px}#game .side>.panel h3 small{font-size:11px}
+  #game .side>.panel:not(.acc):not(.hidden){flex:1 1 auto;min-height:60px;overflow-y:auto}
+  #sidePanel #logPanel.open,#sidePanel #chatPanel.open{flex:1 1 auto}
+  #sidePanel .acc.open{flex:0 1 auto;min-height:0;overflow-y:auto}
+  #sidePanel .popable>h3::after{content:'⧉'!important;transform:none!important}#sidePanel .popable>.popx{display:none}
+  body.pop-pool #sidePanel #poolPanel,body.pop-intel #sidePanel #intelPanel{position:fixed;z-index:44;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));top:8px;bottom:62px;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,.45);border:2px solid var(--line);padding:10px 12px}
+  body.pop-intel #sidePanel #intelPanel>*,body.pop-pool #sidePanel #poolPanel>*{display:revert}body.pop-intel #intelPanel>h3::after,body.pop-pool #poolPanel>h3::after{display:none}
+  body.pop-intel #intelPanel>.popx,body.pop-pool #poolPanel>.popx{display:grid}
+  body.pop-pool #sidePanel #poolPanel #poolList{display:flex}body.pop-pool #game .side #poolList .pchip{font-size:13px;padding:3px 8px 3px 4px;line-height:1.2;gap:4px}
+  body.pop-pool #game .side #poolList .pchip small{display:revert}
+  #game .side #poolList{gap:4px}#game .side #poolList .pchip{font-size:0;padding:2px;border-left-width:3px;border-radius:8px;gap:0;line-height:0}
+  #game .side #poolList .pchip .uimg{width:26px;height:26px;font-size:20px}#game .side #poolList .pchip small,#game .side #poolList .pchip .dal{display:none}
+  #game .side #poolList .pchip.lock{opacity:.45}
+  #teamPanel>h3:nth-of-type(2),#teamPanel>#bench{display:none}
+  #teamPanel>.ordbox{margin-top:10px;padding-top:8px;border-top:2px dashed var(--line)}
+  #teamPanel .ords{grid-template-columns:repeat(8,minmax(0,1fr));gap:3px}#teamPanel .ord{padding:3px 1px;gap:0}#teamPanel .ord .ic .oimg{width:22px;height:22px}
+  #teamPanel .ord .nm{font-size:9.5px}#teamPanel .ord .cost{width:15px;min-width:15px;height:15px;font-size:9px;top:1px;right:1px}#teamPanel #ordHint{font-size:12px}
+  #shopPanel>h3,#shopPanel>#ordHint,#shopPanel>#orders{display:none}
+  body.pop-shop #game>#shopPanel{display:block!important}#shopPanel>.shopbar{padding-right:48px;margin-bottom:8px}#shopPanel #shop.compact{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))!important}
+  #shopPanel .shopbar{flex-wrap:nowrap}#shopPanel .shopbar .l{flex-wrap:nowrap}
+  #game>details.codex{display:none}
+  #sidePanel .acc>h3{cursor:pointer;display:flex;align-items:center;gap:6px;margin:0}
+  #sidePanel .acc>h3::after{content:'▾';margin-left:auto;transition:transform .2s;color:var(--muted)}
+  #sidePanel .acc:not(.open)>h3::after{transform:rotate(-90deg)}
+  #sidePanel .acc:not(.open)>:not(h3){display:none}
+  #sidePanel .acc.open>h3{margin-bottom:6px}
+  #sidePanel .acc .log{max-height:38dvh}#sidePanel .acc .chatlog{max-height:30dvh}
+  #game>#shopPanel,#game>#teamPanel{display:none;position:fixed;z-index:44;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));
+    top:8px;bottom:62px;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 12px 32px rgba(0,0,0,.45);border:2px solid var(--line);padding:10px 12px}
+  body.pop-shop #game>#shopPanel,body.pop-team #game>#teamPanel{display:block}
+  .popx{display:grid;place-items:center;position:sticky;top:0;float:right;margin:-2px -4px 0 8px;width:34px;height:34px;border-radius:50%;border:0;background:var(--chip);color:var(--ink);font-size:17px;cursor:pointer;z-index:2}
+  /* finestra Market: a sinistra le carte, a destra gli ordini, tutto senza scorrere */
+  body.pop-shop #game>#shopPanel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:14px;align-content:start}
+  #shopPanel>.popx{position:absolute;top:6px;right:6px;margin:0;float:none}
+  #shopPanel>.shopbar{grid-column:1;grid-row:1;padding-right:0}
+  #shopPanel>#shop{grid-column:1;grid-row:2/4;align-self:start}
+  #shopPanel>h3{grid-column:2;grid-row:1;margin:4px 40px 0 0!important}
+  #shopPanel>#ordHint{grid-column:2;grid-row:2;font-size:12px;line-height:1.3}
+  #shopPanel>#orders{grid-column:2;grid-row:3;align-self:start}
+  #shopPanel #shop.compact{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}#shopPanel .shopic{--rs:62px;padding:4px 2px}
+  #shopPanel .si-cost{width:24px;height:24px;font-size:13px}#shopPanel .si-name{font-size:11.5px}
+  #shopPanel .ords{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}#shopPanel .ord{padding:3px 1px;gap:0}#shopPanel .ord .ic .oimg{width:22px;height:22px}#shopPanel .ord .cost{width:15px;min-width:15px;height:15px;font-size:9px;top:1px;right:1px}
+  #shopPanel .ord .nm{font-size:9.5px}#shopPanel .shopbar .btn{padding:4px 8px;font-size:12.5px}#shopPanel .shopbar h3{font-size:17px}
+  #rosterModal{padding:8px 8px 62px}.rbox{max-height:calc(100dvh - 70px)}
+  #game .quicknav button{padding:3px 6px!important;font-size:15px!important}#game .quicknav .qni{width:24px;height:24px;margin:-2px 0}
+  #game .quicknav button span{font-size:12px!important}
+  #game .quicknav button.on:not(.pop){background:linear-gradient(180deg,#7a5230,#55381e);border-color:#3a240f;color:#fff3d6}
+  #game .quicknav button.pop{background:linear-gradient(180deg,#ffd75e,#e0a91c);border-color:#8a5d00;color:#3a2600;text-shadow:none}
+  #readyBtn{padding:9px 16px!important;font-size:16px!important}
+  /* tutorial: fumetto compatto fisso nella colonna di destra, le finestre gli lasciano spazio */
+  #coach.coach{position:fixed!important;left:auto!important;top:auto!important;right:max(8px,env(safe-area-inset-right,0px))!important;bottom:8px!important;
+    width:min(300px,35vw)!important;max-height:calc(100dvh - 70px);overflow:auto;padding:8px 10px;gap:6px;z-index:80}
+  #coach #coachT{font-size:13px;line-height:1.35;margin:0}#coach .btn{padding:7px 10px;font-size:14px}
+  body:has(#coach:not(.hidden)) #game>#shopPanel,body:has(#coach:not(.hidden)) #game>#teamPanel{right:calc(min(300px,35vw) + 16px)}
+  body:has(#coach:not(.hidden)) #shopPanel #shop.compact{grid-template-columns:repeat(3,minmax(0,1fr))}body:has(#coach:not(.hidden)) #shopPanel .ords{grid-template-columns:repeat(4,minmax(0,1fr))}
   #game .quicknav [data-go="arenaSec"]{display:none!important}#game .quicknav .qn-roster{display:grid!important}
   #rosterModal,#cardModal{padding:8px}
   .rbox{max-height:calc(100dvh - 16px)}
@@ -732,20 +798,22 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
         <h3>👑 Royal Rumble <small id="rumbleRound"></small></h3>
         <ol class="rank" id="rumbleStand"></ol>
       </div>
-      <div class="panel">
+      <div class="panel acc popable" id="poolPanel">
+        <button class="popx" data-popclose aria-label="Chiudi">✕</button>
         <h3>In questa partita <small id="poolCount"></small></h3>
         <div class="intel" id="poolList"></div>
       </div>
-      <div class="panel">
+      <div class="panel acc popable" id="intelPanel">
+        <button class="popx" data-popclose aria-label="Chiudi">✕</button>
         <h3>Formazione avversaria <small>round precedente</small></h3>
         <div class="intel" id="intel"></div>
         <p class="empty" style="margin:8px 0 0">L'avversario vede la tua del round precedente. Contrattacca!</p>
       </div>
-      <div class="panel">
+      <div class="panel acc" id="logPanel">
         <h3>Cronaca</h3>
         <div class="log" id="log"><div class="empty">Gli eventi della battaglia appariranno qui.</div></div>
       </div>
-      <div class="panel hidden" id="chatPanel">
+      <div class="panel acc hidden" id="chatPanel">
         <h3>💬 Chat</h3>
         <div class="chatlog" id="chatLog" aria-live="polite"></div>
         <div class="field-row"><input id="chatIn" maxlength="200" placeholder="Scrivi un messaggio…" autocomplete="off"><button class="btn primary" id="chatSend">Invia</button></div>
@@ -754,6 +822,7 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   </div>
 
   <section class="panel" id="shopPanel">
+    <button class="popx" data-popclose aria-label="Chiudi">✕</button>
     <div class="shopbar">
       <h3 style="margin:0">Market</h3>
       <div class="l">
@@ -769,6 +838,7 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   </section>
 
   <section class="panel" id="teamPanel">
+    <button class="popx" data-popclose aria-label="Chiudi">✕</button>
     <h3>La tua squadra <small id="boardCount">0/7 · tocca un'unità per darle un ordine</small></h3>
     <div class="board" id="board"></div>
     <h3 style="margin-top:14px;padding-top:12px;border-top:2px dashed var(--line)">🪑 Panchina <small id="benchCount">0/5 · non scende in campo, ma conta per le copie ★★</small></h3>
@@ -2331,7 +2401,7 @@ function render(){
     ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.font='44px "Lilita One",sans-serif';ctx.fillText('?',W*.75,H/2-14);
     ctx.font='bold 15px Nunito,sans-serif';ctx.fillText('Formazione avversaria nascosta',W*.75,H/2+22);
-    if(!p.board.some(b=>!b.bench)){ctx.font='bold 16px Nunito,sans-serif';ctx.fillText('Compra unità dal market qui sotto',W*.25,H/2+60)}
+    if(!p.board.some(b=>!b.bench)){ctx.font='bold 16px Nunito,sans-serif';ctx.fillText(LANDS.matches?'Compra unità dal Market qui sotto ▾':'Compra unità dal market qui sotto',W*.25,H/2+60)}
     else{ctx.font='bold 12px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillText('Trascina le unità · le esche anche in campo nemico',W*.25,H-16)}
     return;
   }
@@ -2635,7 +2705,7 @@ document.addEventListener('keydown',e=>{const t=e.target.closest&&e.target.close
 $('rerollBtn').onclick=()=>{if(!G)return;const p=ME();if(G.phase!=='shop'||p.gold<REROLL)return;p.gold-=REROLL;p.locked=false;rollShop(p,G.rng,G.round);renderAll()};
 $('lockBtn').onclick=()=>{if(!G||G.phase!=='shop')return;const p=ME();p.locked=!p.locked;toast(p.locked?'Market bloccato: al prossimo round ritrovi queste carte.':'Market sbloccato.');renderAll()};
 $('readyBtn').onclick=()=>{
-  if(!G||G.phase!=='shop')return;
+  if(!G||G.phase!=='shop')return;setPop(null);
   const p=ME();
   if(!p.board.some(b=>!b.bench)){toast('Metti almeno un\'unità in campo prima di iniziare.');return}
   if(!p.board.some(b=>!b.bench&&UNITS[b.type].tags.includes('Ladro'))) toast('Attenzione: senza ladri non puoi rubare l\'uovo nemico.');
@@ -3688,7 +3758,10 @@ function coachTick(){
     $('coachT').textContent=st.t;$('coachStep').textContent=`${COACH.i+1}/${COACH_STEPS.length}`;
     const nb=$('coachNext');nb.classList.toggle('hidden',!st.next);nb.textContent=st.next===true?'Avanti ›':st.next||'';
     document.querySelectorAll('.coach-hl').forEach(e=>e.classList.remove('coach-hl'));
-    const tg=st.el&&document.querySelector(st.el);if(tg){tg.classList.add('coach-hl');tg.scrollIntoView({block:'center',behavior:'smooth'})}
+    const tg=st.el&&document.querySelector(st.el);
+    if(LANDS.matches){setPop(tg&&tg.closest('#shopPanel')?'shop':tg&&tg.closest('#teamPanel')?'team':null);
+      const ac=tg&&tg.closest('#sidePanel .acc');if(ac){document.querySelectorAll('#sidePanel .acc').forEach(x=>x.classList.remove('open'));ac.classList.add('open')}}
+    if(tg){tg.classList.add('coach-hl');if(!LANDS.matches)tg.scrollIntoView({block:'center',behavior:'smooth'});else{scrollTo(0,0);$('game').scrollTop=0}}
   }
   const tg=st.el&&document.querySelector(st.el);box.classList.remove('hidden');
   if(tg&&!tg.classList.contains('coach-hl')){document.querySelectorAll('.coach-hl').forEach(e=>e.classList.remove('coach-hl'));tg.classList.add('coach-hl')}
@@ -3708,7 +3781,7 @@ $('coachNext').onclick=()=>{if(!COACH)return;COACH.i++;coachTick()};
 $('coachExit').onclick=()=>endGuided();
 // finestra Riserva (telefono in orizzontale): da un lato chi è in campo, dall'altro la panchina; si sposta, si scambia o si vende
 let RSEL=[];
-function openRoster(){RSEL=[];renderRoster();$('rosterModal').classList.remove('hidden')}
+function openRoster(){RSEL=[];setPop(null);renderRoster();$('rosterModal').classList.remove('hidden')}
 function closeRoster(){$('rosterModal').classList.add('hidden')}
 function renderRoster(){if(!G)return;const p=ME(),shop=G.phase==='shop',field=p.board.filter(b=>!b.bench),bench=p.board.filter(b=>b.bench);
   RSEL=RSEL.filter(u=>p.board.some(b=>b.uid===u));
@@ -3740,7 +3813,25 @@ document.addEventListener('click',e=>{
   RSEL=[];renderAll();renderRoster()});
 $('rotKeep').onclick=()=>document.body.classList.add('keepport');
 // linguette rapide (telefono): portano alla sezione e si illumina quella che stai guardando
-document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'})});
+function placeOrders(){let box=$('ordBox');if(!box){box=document.createElement('div');box.id='ordBox';box.className='ordbox'}
+  const sp=$('shopPanel'),tp=$('teamPanel'),h=[...sp.querySelectorAll(':scope>h3')].find(x=>x.textContent.includes('Ordini'))||box.querySelector('h3');
+  const parts=[h,$('ordHint'),$('orders')];
+  if(LANDS.matches){if(box.parentNode!==tp)tp.appendChild(box);for(const x of parts)if(x&&x.parentNode!==box)box.appendChild(x)}
+  else{for(const x of parts)if(x&&x.parentNode!==sp)sp.appendChild(x);box.remove()}}
+function setPop(w){placeOrders();document.body.classList.toggle('pop-intel',w==='intel');document.body.classList.toggle('pop-pool',w==='pool');document.body.classList.toggle('pop-shop',w==='shop');document.body.classList.toggle('pop-team',w==='team');
+  for(const b of document.querySelectorAll('#quickNav [data-go]'))b.classList.toggle('pop',(w==='shop'&&b.dataset.go==='shopPanel')||(w==='team'&&b.dataset.go==='teamPanel'))}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-popclose]')){setPop(null);return}
+  const b=e.target.closest('[data-go]');if(!b)return;
+  if(LANDS.matches&&!$('game').classList.contains('hidden')){const w=b.dataset.go==='shopPanel'?'shop':b.dataset.go==='teamPanel'?'team':null;
+    setPop(document.body.classList.contains('pop-'+w)?null:w);return}
+  $(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'})});
+// pannelli a fisarmonica a destra (in orizzontale): se ne apre uno, l'altro si chiude
+document.addEventListener('click',e=>{const h=e.target.closest('#sidePanel .acc>h3');if(!h||!LANDS.matches)return;const p=h.parentElement,o=!p.classList.contains('open');
+  if(p.classList.contains('popable')){const w=p.id==='poolPanel'?'pool':'intel';setPop(document.body.classList.contains('pop-'+w)?null:w);return}
+  document.querySelectorAll('#sidePanel .acc').forEach(x=>x.classList.remove('open'));p.classList.toggle('open',o)});
+try{LANDS.addEventListener('change',()=>{setPop(null)})}catch(e){}
+placeOrders();
 addEventListener('scroll',()=>{if($('game').classList.contains('hidden'))return;let cur='arenaSec';
   for(const id of ['arenaSec','shopPanel','teamPanel']){const r=$(id).getBoundingClientRect();if(r.top<innerHeight*.4)cur=id}
   for(const b of document.querySelectorAll('[data-go]'))b.classList.toggle('on',b.dataset.go===cur)},{passive:true});

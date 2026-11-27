@@ -960,5 +960,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Il gioco è pensato in orizzontale: campo più grande e market a fianco.": "El juego está pensado en horizontal: campo más grande y mercado al lado.",
 "Continua in verticale": "Seguir en vertical",
 "All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).": "Al empezar coloca una colmena: las abejas pican (5 de daño por segundo) y frenan un 40% a los enemigos a menos de 85. Con el ahumador golpea de cerca, hasta 70, también a los voladores (3 de daño).",
-"Suona la carica ogni 9 secondi.": "Toca a la carga cada 9 segundos."
+"Suona la carica ogni 9 secondi.": "Toca a la carga cada 9 segundos.",
+"Compra unità dal Market qui sotto ▾": "Compra unidades en el Mercado de abajo ▾",
+"Spaventapasseri ★★": "Espantapájaros ★★"
 };
