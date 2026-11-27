@@ -33,6 +33,7 @@ const PRECACHE=[
  "icons/coltivatore.webp",
  "icons/corvo.webp",
  "icons/faina.webp",
+ "icons/anim/faina-walk.webp",
  "icons/falco.webp",
  "icons/gallico.webp",
  "icons/gatto.webp",
