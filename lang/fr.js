@@ -946,5 +946,14 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Costruisce": "Construit",
 "Spara da lontano": "Tire de loin",
 "Uovo finto": "Faux œuf",
-"Grido d'allarme": "Cri d’alarme"
+"Grido d'allarme": "Cri d’alarme",
+"Riserva": "Réserve",
+"🏟️ In campo": "🏟️ Sur le terrain",
+"Nessuno in campo": "Personne sur le terrain",
+"Panchina vuota": "Banc vide",
+"Puoi cambiare la squadra solo durante il market.": "Tu peux changer l’équipe seulement pendant le marché.",
+"Tocca un'unità per spostarla o venderla. Toccane una in campo e una in panchina per scambiarle.": "Touche une unité pour la déplacer ou la vendre. Touches-en une sur le terrain et une sur le banc pour les échanger.",
+"↓ In panchina": "↓ Sur le banc",
+"Riserva: campo e panchina": "Réserve : terrain et banc",
+"Campo e panchina": "Terrain et banc"
 };

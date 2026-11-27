@@ -12,6 +12,9 @@ im=Image.open(src).convert('RGB');W,H=im.size;A=np.array(im).astype(int)
 white=(A.min(axis=2)>226)&((A.max(axis=2)-A.min(axis=2))<22)
 lab,n=nd.label(white);border=set(np.unique(np.concatenate([lab[0],lab[-1],lab[:,0],lab[:,-1]])))-{0}
 bg=np.isin(lab,list(border));ink=~bg
+src_rgba=Image.open(src).convert('RGBA');AL=np.array(src_rgba)[:,:,3]
+if AL.min()<10:  # immagine già trasparente: la forma è dove c'è colore
+    ink=AL>40;bg=~ink;white=np.zeros_like(ink);im=src_rgba
 pl,pn=nd.label(ink);objs=nd.find_objects(pl);psz=nd.sum(ink,pl,range(1,pn+1));com=nd.center_of_mass(ink,pl,range(1,pn+1))
 cell={}
 for k in range(pn):
@@ -25,8 +28,8 @@ for idx,name in enumerate(names):
             if z>120: m&=~(hl==k)
     ys,xs=np.where(m);x0,x1,y0,y1=xs.min(),xs.max()+1,ys.min(),ys.max()+1
     al=Image.fromarray((m*255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(.7))
-    rgba=im.convert('RGBA');rgba.putalpha(al);cr=rgba.crop((x0,y0,x1,y1))
-    S=128;k=120/max(cr.size);cr=cr.resize((round(cr.width*k),round(cr.height*k)),Image.LANCZOS)
+    rgba=im.convert('RGBA');rgba.putalpha(Image.fromarray(np.minimum(np.array(al),np.array(im.convert('RGBA'))[:,:,3])));cr=rgba.crop((x0,y0,x1,y1))
+    import os;S=int(os.environ.get('SIZE','128'));k=S*.93/max(cr.size);cr=cr.resize((round(cr.width*k),round(cr.height*k)),Image.LANCZOS)
     out=Image.new('RGBA',(S,S),(0,0,0,0));out.alpha_composite(cr,((S-cr.width)//2,(S-cr.height)//2))
     out.save(f'{OUT}/{name}.webp','WEBP',quality=88,method=6)
 print('ok',len(names))

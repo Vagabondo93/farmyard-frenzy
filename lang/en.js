@@ -946,5 +946,14 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Costruisce": "Builds",
 "Spara da lontano": "Shoots from afar",
 "Uovo finto": "Fake egg",
-"Grido d'allarme": "Alarm call"
+"Grido d'allarme": "Alarm call",
+"Riserva": "Reserve",
+"🏟️ In campo": "🏟️ On the field",
+"Nessuno in campo": "Nobody on the field",
+"Panchina vuota": "Bench is empty",
+"Puoi cambiare la squadra solo durante il market.": "You can change the team only during the shop.",
+"Tocca un'unità per spostarla o venderla. Toccane una in campo e una in panchina per scambiarle.": "Tap a unit to move or sell it. Tap one on the field and one on the bench to swap them.",
+"↓ In panchina": "↓ To the bench",
+"Riserva: campo e panchina": "Reserve: field and bench",
+"Campo e panchina": "Field and bench"
 };
