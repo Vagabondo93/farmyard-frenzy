@@ -24,8 +24,12 @@ for idx,name in enumerate(names):
     ks=cell.get(idx,[]);m=np.isin(pl,ks)
     if name in holes:
         hl,hn=nd.label(white&m);hs=nd.sum(np.ones_like(hl),hl,range(1,hn+1))
+        ys0,_=np.where(m);top,bot=ys0.min(),ys0.max()
         for k,z in enumerate(hs,1):
-            if z>120: m&=~(hl==k)
+            if z<=120: continue
+            yy,_=np.where(hl==k)
+            # i buchi chiusi si tolgono solo nella metà bassa (tra gambe, braccia e attrezzi): gli occhi restano
+            if (yy.mean()-top)/(bot-top)>.45 or name.endswith('*'): m&=~(hl==k)
     ys,xs=np.where(m);x0,x1,y0,y1=xs.min(),xs.max()+1,ys.min(),ys.max()+1
     al=Image.fromarray((m*255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(.7))
     rgba=im.convert('RGBA');rgba.putalpha(Image.fromarray(np.minimum(np.array(al),np.array(im.convert('RGBA'))[:,:,3])));cr=rgba.crop((x0,y0,x1,y1))

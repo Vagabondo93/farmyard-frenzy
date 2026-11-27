@@ -2,7 +2,7 @@
 // Pagina e script: prima la rete (così gli aggiornamenti arrivano subito), poi la copia salvata.
 // Immagini: prima la copia salvata. Quando cambi immagini già esistenti, aumenta VERSION.
 // tools/test-pwa.js controlla che tutte le icone siano in PRECACHE.
-const VERSION='ff-v5';
+const VERSION='ff-v6';
 const PRECACHE=[
  "./",
  "index.html",
@@ -63,6 +63,8 @@ const PRECACHE=[
  "icons/anim/faina-walk.webp",
  "icons/anim/mucca-atk.webp",
  "icons/anim/mucca-walk.webp",
+ "icons/anim/spazzino-atk.webp",
+ "icons/anim/spazzino-walk.webp",
  "icons/falco.webp",
  "icons/gallico.webp",
  "icons/gatto.webp",
