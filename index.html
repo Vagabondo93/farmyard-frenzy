@@ -474,7 +474,9 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   /* telefono in orizzontale: niente scorrimento della pagina. In alto il punteggio, a sinistra il campo,
      a destra i personaggi della partita sempre visibili e, a fisarmonica, avversario, cronaca e chat.
      Market e Squadra si aprono come finestre dai tasti in basso. */
-  body:has(#game:not(.hidden)){height:100dvh;overflow:hidden;padding-bottom:0}
+  html:has(#game:not(.hidden)){overflow:hidden;height:100%}
+  body:has(#game:not(.hidden)){height:100dvh;overflow:hidden;padding-bottom:0;position:fixed;inset:0;width:100%;overscroll-behavior:none}
+  body:has(#game:not(.hidden)) .wrap>:not(.top):not(#game):not(.modal):not(.coach):not(.umenu):not([role=dialog]){display:none!important}
   body:has(#game:not(.hidden)) .top{position:sticky;top:0;z-index:40}
   #game{height:calc(100dvh - 52px);overflow-y:auto;overscroll-behavior:contain;align-content:start;padding-bottom:70px}
   #game .arena{top:0}
@@ -535,6 +537,8 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   #coach #coachT{font-size:13px;line-height:1.35;margin:0}#coach .btn{padding:7px 10px;font-size:14px}
   body:has(#coach:not(.hidden)) #game>#shopPanel,body:has(#coach:not(.hidden)) #game>#teamPanel{right:calc(min(300px,35vw) + 16px)}
   body:has(#coach:not(.hidden)) #shopPanel #shop.compact{grid-template-columns:repeat(3,minmax(0,1fr))}body:has(#coach:not(.hidden)) #shopPanel .ords{grid-template-columns:repeat(4,minmax(0,1fr))}
+  body.inbattle #game .quicknav{display:none!important}
+  #speedBox{position:fixed;left:calc(max(16px,env(safe-area-inset-left,0px)) + 8px);bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:45}#speedBox .btn{padding:4px 10px!important;font-size:13px!important;box-shadow:0 3px 10px rgba(0,0,0,.35)}
   #game .quicknav [data-go="arenaSec"]{display:none!important}#game .quicknav .qn-roster{display:grid!important}
   #rosterModal,#cardModal{padding:8px}
   .rbox{max-height:calc(100dvh - 16px)}
@@ -2578,7 +2582,7 @@ function renderAll0(){
   renderTop();
   const p=ME(),shop=G.phase==='shop';
   $('goldPill').textContent=`Oro ${p.gold}`;
-  $('readyBtn').classList.toggle('hidden',!shop);
+  $('readyBtn').classList.toggle('hidden',!shop);document.body.classList.toggle('inbattle',!shop);if(!shop)setPop(null);
   $('speedBox').classList.toggle('hidden',shop||isMP());
   $('rerollBtn').disabled=!shop||p.gold<REROLL;
   $('lockBtn').disabled=!shop;$('lockBtn').textContent=p.locked?'🔓 Sblocca':'🔒 Blocca';$('lockBtn').classList.toggle('on',!!p.locked);
