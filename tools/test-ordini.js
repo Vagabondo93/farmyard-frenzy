@@ -61,7 +61,8 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
     const sim=(mine,foe,secs)=>{g.players[0].ovr=mine;g.players[1].ovr=foe;const S=T.makeSim(11);g.players[0].ovr=null;g.players[1].ovr=null;for(let k=0;k<secs*60&&!S.over;k++)T.step(S,1/60);return S};
     // la Cacciatrice nemica spara all'Asino invece che al Ladro
     // senza l'Asino la Cacciatrice (a x 520) sparerebbe al Cane, più vicino; l'Asino è a 120 da lei, dentro l'area dell'esca
-    let S=sim([mk('asino','guardia',400,270),mk('cane','attesa',480,270),mk('ladro','attesa',60,60)],[mk('cacciatore','attesa',440,270),mk('tartaruga',null,40,40)],6);
+    // la Cacciatrice aspetta 4 s (Attesa): proprio allora l'Asino raglia e lei deve sparare a lui
+    let S=sim([mk('asino','guardia',430,270),mk('cane','attesa',480,270),mk('ladro','attesa',60,60)],[mk('cacciatore','attesa',440,270),mk('tartaruga',null,40,40)],6.5);
     const as=S.units.find(u=>u.type==='asino'),cn=S.units.find(u=>u.type==='cane'),lured=as.hp<as.maxHp&&cn.hp===cn.maxHp,ord=as.order;
     // corazza: danni presi dall'Asino rispetto a una Mucca (senza corazza) contro lo stesso attaccante
     const lossVs=(t,me)=>{const S=sim([mk(me,null,440,270),mk('ladro','attesa',60,60)],[mk(t,null,440,270),mk('tartaruga',null,40,40)],4);const a=S.units.find(u=>u.type===me);return a.maxHp-a.hp};
@@ -72,7 +73,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
     {const S=sim([mk('asino',null,300,270),mk('ladro','attesa',60,60)],[mk('apicoltore',null,150,500),mk('tartaruga',null,40,40)],25);
      const a=S.units.find(u=>u.type==='asino'),k=S.units.find(u=>u.type==='apicoltore');var beek={dist:Math.round(Math.hypot(a.x-k.x,a.y-k.y)),hit:!k.alive||k.hp<k.maxHp}}
     return{beek,lured,ord,hunter:q('cacciatore').toFixed(2),wolf:q('lupo').toFixed(2),human:Math.round(kick('poliziotto')),animal:Math.round(kick('cane'))}});
-    ok(r.lured,'la Cacciatrice nemica spara all\'Asino invece che al Cane più vicino');
+    ok(r.lured,'dopo il raglio la Cacciatrice nemica spara all\'Asino invece che al Cane più vicino');
     ok(r.ord===null,'l\'Asino non prende ordini (Guardia ignorata)');
     ok(r.beek.hit,`con un Apicoltore nemico l'Asino va ad aggredirlo (distanza finale ${r.beek.dist})`);
     ok(+r.hunter<.8&&+r.wolf>.85,`corazza: danni rispetto alla Mucca ×${r.hunter} contro la Cacciatrice, ×${r.wolf} contro il Lupo (che la ignora)`);

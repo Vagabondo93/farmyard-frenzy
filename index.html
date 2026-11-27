@@ -1185,9 +1185,9 @@ const UNITS={
    d:"Lenta ma inarrestabile: immune a trappole, stordimenti, arresti, esche e rallentamenti, e con l'uovo non rallenta. Se in 1 s perde più di un quarto della vita si chiude nel guscio per 2 s: ferma, ma subisce l'80% di danni in meno.",beats:'Poliziotto, Bracconiere, Apicoltore, Spaventapasseri',loses:'Lupo, Assassino, Cacciatrice'},
  postina:{n:'Postina',i:'📮',t:2,tags:['Umano','Ladro'],hp:46,dmg:0,spd:76,carry:1,role:'thief',dodge:.25,
    d:"In bicicletta porta l'uovo a casa senza rallentare: le consegne sono il suo mestiere. Schiva il 25% dei colpi corpo a corpo.",beats:'Cane, Gatto, Tacchino',loses:'Poliziotto, Cacciatrice, Spaventapasseri, Benefattore'},
- asino:{n:'Asino',i:'🫏',t:2,cost:3,minRound:2,classicOnly:true,tags:['Animale','Guardiano'],hp:260,dmg:5,spd:28,rng:20,cd:1.2,role:'donkey',push:46,pushHuman:true,armor:.35,lure:150,lureTag:'*',
-   alarm:110,alarmAny:true,alarmT:3,bray:'IH-OH!',stubborn:true,noOrders:true,
-   d:"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta. Non sopporta Apicoltore e Coltivatore: se l'avversario ne ha uno, lascia tutto e va ad aggredirlo.",
+ asino:{n:'Asino',i:'🫏',t:2,cost:3,minRound:2,classicOnly:true,tags:['Animale','Guardiano'],hp:260,dmg:5,spd:28,rng:20,cd:1.2,role:'donkey',push:46,pushHuman:true,armor:.35,
+   alarm:170,alarmAny:true,bray:'IH-OH!',brayR:170,brayT:3,brayCd:5,brayDelay:4,stubborn:true,noOrders:true,
+   d:"Lento e corazzato, gira da solo vicino al centro e non prende ordini. Ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Dopo i primi 4 s, quando un nemico gli arriva vicino raglia: per 3 s tutti i nemici entro 170 vanno da lui (chi è armato lo attacca, gli altri si distraggono), poi deve riprendere fiato per 5 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta. Non sopporta Apicoltore e Coltivatore: se l'avversario ne ha uno, lascia tutto e va ad aggredirlo.",
    beats:'Cacciatrice, Poliziotto, Assassino, Apicoltore, Coltivatore',loses:'Lupo, Toro, Gazza'},
  staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
@@ -1797,6 +1797,9 @@ function think(u,S,dt){
   if(u.chargeT>0&&u.chDir){moveTo(u,u.x+u.chDir.x*60,u.y+u.chDir.y*60,dt,S);return}
   if(u.wait>0){u.wait-=dt;return}
   if(u.eatT>0){u.eatT-=dt;return}
+  if(u.tauntT>0&&u.carrying===null){u.tauntT-=dt;const t=S.units.find(x=>x.id===u.tauntBy&&x.alive);
+    if(t){if(u.dmg>0&&canTarget(u,t)){if(dist(u,t)<=u.def.rng+(u.def.ranged?0:14)+(t.def.push?20:0)){if(u.cd<=0)attack(u,t,S)}else moveTo(u,t.x,t.y,dt,S)}
+      else if(dist(u,t)>40)moveTo(u,t.x,t.y,dt,S);return}}
   if(u.carrying===null&&!u.underground){
     const b=!u.def.noLure&&S.units.find(e=>e.alive&&e.side!==u.side&&e.def.lure&&(u.dmg<=0||e.def.bribe)&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&!(u.ate&&u.ate[e.id])&&dist(u,e)<(e.def.bribe&&u.dmg>0?e.def.bribe:e.def.lure));
     if(b){ if(dist(u,b)<26){u.eatT=b.def.eat||2.5;(u.ate=u.ate||{})[b.id]=1;
@@ -1842,11 +1845,14 @@ function step(S,dt){
   for(const u of live) if((u.def.traps||u.def.bugle||(u.type==='cane'&&live.some(x=>x.alive&&x.side===u.side&&x.type==='cacciatore')))&&u.alive&&!u.turned&&!POSORD.includes(u.order)&&!live.some(x=>x.alive&&x.side===u.side&&canCarry(x))){
     u.turned=true;u.role='thief';fx(S,u.x,u.y-24,'Diventa ladro!','#ffe680');log(S,u.type==='cane'?`${nm(u)} fa il cane da riporto: va a prendere l'uovo`:`${nm(u)} resta senza ladri e va a rubare l'uovo`)}
   for(const u of live){ if(!u.alive) continue;
-    if(u.def.alarm){u.alarmCd=(u.alarmCd||0)-dt;
+    if(u.def.alarm){if(u.alarmCd===undefined)u.alarmCd=u.def.brayDelay||0; // l'Asino aspetta che i nemici arrivino a metà campo
+      u.alarmCd-=dt;
       if(u.alarmCd<=0&&live.some(e=>e.alive&&e.side!==u.side&&(u.def.alarmAny?e.role!=='static':canCarry(e))&&!e.underground&&e.invis<=0&&!e.disguised&&dist(u,e)<u.def.alarm)){
         if(u.def.brayStun)for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.unstoppable&&dist(u,e)<u.def.alarm)e.stun=Math.max(e.stun,u.def.brayStun);
-        u.alarmCd=4;for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'&&a.role!=='thief'&&(u.def.alarmAll||dist(a,u)<220)){a.boostT=Math.max(a.boostT,u.def.alarmT||3);a.boostMul=1.35}
-        (S.rings=S.rings||[]).push({x:u.x,y:u.y,r:u.def.alarmAll?420:220,t:0,col:'255,246,196'});fx(S,u.x,u.y-24,u.def.bray||'QUA QUA!','#fff6c4');log(S,u.def.bray?`${nm(u)} raglia`:`${nm(u)} dà l'allarme`)}}
+        u.alarmCd=u.def.brayCd||4;
+        if(u.def.bray){for(const e of live) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.def.unstoppable&&!e.underground&&e.carrying===null&&dist(u,e)<u.def.brayR){e.tauntBy=u.id;e.tauntT=u.def.brayT}}
+        else for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'&&a.role!=='thief'&&(u.def.alarmAll||dist(a,u)<220)){a.boostT=Math.max(a.boostT,u.def.alarmT||3);a.boostMul=1.35}
+        (S.rings=S.rings||[]).push({x:u.x,y:u.y,r:u.def.bray?u.def.brayR:u.def.alarmAll?420:220,t:0,col:u.def.bray?'232,190,140':'255,246,196'});fx(S,u.x,u.y-24,u.def.bray||'QUA QUA!','#fff6c4');log(S,u.def.bray?`${nm(u)} raglia`:`${nm(u)} dà l'allarme`)}}
     if(u.def.bugle){if(u.bugleT===undefined)u.bugleT=1;u.bugleT-=dt;
       if(u.bugleT<=0){u.bugleT=u.def.bugleRepeat||1e9;const T=u.def.bugle+(u.star===2?2:0);
         for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'){a.boostT=Math.max(a.boostT,T);a.boostMul=Math.max(a.boostMul||1,1.35)}
