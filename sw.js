@@ -1,0 +1,91 @@
+// Service worker di Farmyard Frenzy: avvio rapido e gioco offline (tutorial e partite contro i bot).
+// Pagina e script: prima la rete (così gli aggiornamenti arrivano subito), poi la copia salvata.
+// Immagini: prima la copia salvata. Quando cambi immagini già esistenti, aumenta VERSION.
+// tools/test-pwa.js controlla che tutte le icone siano in PRECACHE.
+const VERSION='ff-v1';
+const PRECACHE=[
+ "./",
+ "index.html",
+ "news.js",
+ "tips.js",
+ "lang/en.js",
+ "lang/es.js",
+ "lang/fr.js",
+ "firebase-config.js",
+ "banner.jpg",
+ "logo.webp",
+ "favicon.png",
+ "manifest.webmanifest",
+ "icons/app-192.png",
+ "icons/app-512.png",
+ "icons/apicoltore.webp",
+ "icons/arnia.webp",
+ "icons/asino.webp",
+ "icons/assassino.webp",
+ "icons/avicoltore.webp",
+ "icons/benefattore.webp",
+ "icons/bracconiere.webp",
+ "icons/cacciatore.webp",
+ "icons/cane.webp",
+ "icons/carpentiera.webp",
+ "icons/castoro.webp",
+ "icons/chioccia.webp",
+ "icons/coltivatore.webp",
+ "icons/corvo.webp",
+ "icons/faina.webp",
+ "icons/falco.webp",
+ "icons/gallico.webp",
+ "icons/gatto.webp",
+ "icons/gazza.webp",
+ "icons/germoglio.webp",
+ "icons/gufo.webp",
+ "icons/ladro.webp",
+ "icons/lepre.webp",
+ "icons/lupo.webp",
+ "icons/mais.webp",
+ "icons/monete.webp",
+ "icons/mucca.webp",
+ "icons/nido-uovo.webp",
+ "icons/nube.webp",
+ "icons/oca.webp",
+ "icons/ord-assalto.webp",
+ "icons/ord-attesa.webp",
+ "icons/ord-centro.webp",
+ "icons/ord-corazza.webp",
+ "icons/ord-deboli.webp",
+ "icons/ord-fianco.webp",
+ "icons/ord-guardia.webp",
+ "icons/ord-mimetica.webp",
+ "icons/ord-mirinoA.webp",
+ "icons/ord-mirinoL.webp",
+ "icons/ord-mirinoO.webp",
+ "icons/ord-mirinoT.webp",
+ "icons/ord-mirinoU.webp",
+ "icons/ord-ritirata.webp",
+ "icons/ord-scatto.webp",
+ "icons/ord-scorta.webp",
+ "icons/poliziotto.webp",
+ "icons/postina.webp",
+ "icons/procione.webp",
+ "icons/puzzola.webp",
+ "icons/spaventa.webp",
+ "icons/spazzino.webp",
+ "icons/staccionata.webp",
+ "icons/tacchino.webp",
+ "icons/talpa.webp",
+ "icons/tartaruga.webp",
+ "icons/topi.webp",
+ "icons/toro.webp",
+ "icons/trombettiere.webp",
+ "icons/veterinario.webp",
+ "icons/volpe.webp"
+];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>Promise.all(PRECACHE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);
+  if(r.method!=='GET'||u.origin!==location.origin)return; // Firebase, font e CDN passano direttamente dalla rete
+  const img=/\.(webp|png|jpg|jpeg|svg)$/.test(u.pathname);
+  if(img){e.respondWith(caches.match(r).then(c=>c||fetch(r).then(res=>{if(res.ok){const cl=res.clone();caches.open(VERSION).then(ca=>ca.put(r,cl))}return res})));return}
+  e.respondWith(fetch(r).then(res=>{if(res.ok){const cl=res.clone();caches.open(VERSION).then(ca=>ca.put(r,cl))}return res})
+    .catch(()=>caches.match(r,{ignoreSearch:true}).then(c=>c||(r.mode==='navigate'?caches.match('index.html'):undefined))));
+});

@@ -1,0 +1,19 @@
+{
+  "name": "Farmyard Frenzy: The Golden Egg",
+  "short_name": "Farmyard Frenzy",
+  "description": "Due uova d'oro. Due pollai. Zero pietà. Compra la squadra, dai gli ordini e ruba l'uovo avversario.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#2f5f1a",
+  "theme_color": "#2f5f1a",
+  "categories": ["games"],
+  "icons": [
+    {"src": "icons/app-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/app-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/app-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
