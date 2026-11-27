@@ -1405,7 +1405,9 @@ const ANIM={
   asino:{h:40,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:130,fh:134,ax:.578},alarm:{n:4,fw:130,fh:134,ax:.578}},
   bracconiere:{h:38,stride:6,walk:{n:4,fw:93,fh:130,ax:.5},atk:{n:4,fw:130,fh:125,ax:.483},trap:{n:4,fw:124,fh:136,ax:.5}},
   benefattore:{h:38,stride:6,walk:{n:4,fw:99,fh:129,ax:.5},spawn:{n:4,fw:125,fh:132,ax:.488}},
-  apicoltore:{h:38,stride:6,walk:{n:4,fw:109,fh:130,ax:.5},spawn:{n:4,fw:112,fh:126,ax:.532}},
+  arnia:{h:36,idle:{n:4,fw:124,fh:130,ax:.5}},
+  trombettiere:{h:36,stride:6,walk:{n:4,fw:90,fh:129,ax:.5},alarm:{n:4,fw:116,fh:131,ax:.571},carry:{n:4,fw:86,fh:130,ax:.5}},
+  apicoltore:{h:38,stride:6,walk:{n:4,fw:109,fh:130,ax:.5},atk:{n:4,fw:164,fh:130,ax:.56},spawn:{n:4,fw:112,fh:126,ax:.532}},
   puzzola:{h:32,stride:6,walk:{n:4,fw:120,fh:130,ax:.5},atk:{n:4,fw:122,fh:119,ax:.544}},
   oca:{h:38,stride:5,walk:{n:4,fw:126,fh:130,ax:.5},atk:{n:4,fw:185,fh:132,ax:.501},alarm:{n:4,fw:135,fh:142,ax:.491}},
   poliziotto:{h:38,stride:6,walk:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:99,fh:129,ax:.475}},
@@ -1421,7 +1423,7 @@ const ANIM={
   gazza:{h:34,fly:{n:4,fw:186,fh:193,ax:.994,ox:78},carry:{n:4,fw:184,fh:192,ax:.994,ox:78}},
 };
 // file: icons/anim/<personaggio>-walk|atk|fly.webp; ax = punto d'aggancio nel fotogramma (0 sinistra, 1 destra), ox = suo spostamento dal centro (px a scala 128)
-for(const k in ANIM)for(const m of ['walk','atk','fly','st','carry','hit','alarm','emerge','dig','burrow','disg','trap','spawn'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
+for(const k in ANIM)for(const m of ['walk','atk','fly','st','carry','hit','alarm','emerge','dig','burrow','disg','trap','spawn','idle'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
 // icone disegnate degli ordini (cartella icons/, file ord-<chiave>.webp); se non si caricano resta l'emoji
 const OIMG={};
 for(const k in ORDERS){ORDERS[k].img='icons/ord-'+k+'.webp';const im=new Image();im.src=ORDERS[k].img;OIMG[k]=im}
@@ -2195,7 +2197,7 @@ function drawToken1(x,y,side,type,star,order,o={}){
   let yy=y; if(d.flying){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y+10,11,4,0,0,7);ctx.fill();yy=y-12}
   const lx=o.lunge>0?o.face*5:0;
   ctx.globalAlpha=o.invis?.38:o.disguised?.6:1;
-  const A=ANIM[type],ld=a=>a&&a.im.complete&&a.im.naturalWidth,base=A&&(ld(A.walk)?A.walk:ld(A.fly)?A.fly:ld(A.st)?A.st:ld(A.hit)?A.hit:null),sp=!!base;
+  const A=ANIM[type],ld=a=>a&&a.im.complete&&a.im.naturalWidth,base=A&&(ld(A.walk)?A.walk:ld(A.fly)?A.fly:ld(A.st)?A.st:ld(A.hit)?A.hit:ld(A.idle)?A.idle:null),sp=!!base;
   if(sp){// personaggio animato: anello ovale del colore della squadra ai piedi, poi il fotogramma giusto
     const fy=y+13,ring=o.col||SIDE[side].col,now=performance.now()/1000;
     if(d.flying){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y+10,13,4.5,0,0,7);ctx.fill()}
@@ -2213,6 +2215,7 @@ function drawToken1(x,y,side,type,star,order,o={}){
     else if(ld(A.alarm)&&o.alAge!=null&&o.alAge<A.alarm.n*.15){sh=A.alarm;f=Math.floor(o.alAge/.15)}// grido d'allarme (Oca)
     else if(ld(A.hit)&&o.hitAge!=null&&o.hitAge<A.hit.n*.09){sh=A.hit;f=Math.floor(o.hitAge/.09)}// colpito: animazione di danno
     else if(sh===A.hit){f=0}
+    else if(sh===A.idle){f=Math.floor(now*6)%sh.n}// oggetti animati da fermi (arnia con le api)
     else if(sh===A.st){const h=o.hpf??1;f=h>.75?0:h>.5?1:h>.25?2:3}// oggetti fermi: lo stato dipende dalla vita (il Mais perde pannocchie)
     else if(sh===A.fly||(sh===A.carry&&base===A.fly)){f=Math.floor(now*9)%sh.n;bob=Math.sin(now*4)*1.5}
     else if(o.moving){const ph=(o.walk||0)/A.stride;f=Math.floor(ph)%sh.n;bob=-Math.abs(Math.sin(ph*Math.PI))*1.6}
@@ -2359,7 +2362,7 @@ function render(){
   for(const u of us){
     if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
-    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0}
+    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0;if(u.def.bugle&&(u.bugleT||0)>(u._pbt??1)+.5)u._alT=performance.now();u._pbt=u.bugleT??1}
     drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{st:statusOf(u,S),carry:u.carrying!==null,emAge:u._emT?(performance.now()-u._emT)/1000:null,buAge:u._buT?(performance.now()-u._buT)/1000:null,trAge:u._trT?(performance.now()-u._trT)/1000:null,spAge:u._spT?(performance.now()-u._spT)/1000:null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null&&!(ANIM[u.type]&&ANIM[u.type].carry&&ANIM[u.type].carry.im.naturalWidth)) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
