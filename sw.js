@@ -2,7 +2,7 @@
 // Pagina e script: prima la rete (così gli aggiornamenti arrivano subito), poi la copia salvata.
 // Immagini: prima la copia salvata. Quando cambi immagini già esistenti, aumenta VERSION.
 // tools/test-pwa.js controlla che tutte le icone siano in PRECACHE.
-const VERSION='ff-v3';
+const VERSION='ff-v4';
 const PRECACHE=[
  "./",
  "index.html",
@@ -34,6 +34,30 @@ const PRECACHE=[
  "icons/corvo.webp",
  "icons/faina.webp",
  "icons/anim/corvo-atk.webp",
+ "icons/st/ali.webp",
+ "icons/st/ape.webp",
+ "icons/st/calamita.webp",
+ "icons/st/corazza.webp",
+ "icons/st/croce.webp",
+ "icons/st/fantasma.webp",
+ "icons/st/grido.webp",
+ "icons/st/lumaca.webp",
+ "icons/st/manette.webp",
+ "icons/st/maschera.webp",
+ "icons/st/mirino.webp",
+ "icons/st/moneta.webp",
+ "icons/st/nube.webp",
+ "icons/st/occhio.webp",
+ "icons/st/pala.webp",
+ "icons/st/pannocchia.webp",
+ "icons/st/sacco.webp",
+ "icons/st/spinta.webp",
+ "icons/st/staccionata.webp",
+ "icons/st/stivale.webp",
+ "icons/st/stordito.webp",
+ "icons/st/trappola.webp",
+ "icons/st/uovofinto.webp",
+ "icons/st/zzz.webp",
  "icons/anim/corvo-fly.webp",
  "icons/anim/faina-atk.webp",
  "icons/anim/faina-walk.webp",
