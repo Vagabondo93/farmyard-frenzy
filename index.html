@@ -1390,11 +1390,14 @@ const abilRow=k=>(ABIL[k]||[]).length?`<span class="tabil">${ABIL[k].map(a=>`<im
 const ANIM={
   faina:{h:31,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},atk:{n:4,fw:181,fh:130,ax:.47}},
   mucca:{h:40,stride:6,walk:{n:4,fw:176,fh:134,ax:.5},atk:{n:4,fw:204,fh:139,ax:.409}},
+  tacchino:{h:34,stride:5,walk:{n:4,fw:127,fh:130,ax:.5},atk:{n:4,fw:156,fh:137,ax:.432}},
+  lupo:{h:33,stride:9,walk:{n:4,fw:199,fh:158,ax:.5},atk:{n:4,fw:203,fh:143,ax:.496}},
+  mais:{h:42,st:{n:4,fw:95,fh:130,ax:.501}},
   spazzino:{h:38,stride:7,walk:{n:4,fw:92,fh:132,ax:.5},atk:{n:4,fw:145,fh:134,ax:.309}},
   corvo:{h:40,fly:{n:4,fw:151,fh:179,ax:.994,ox:62},atk:{n:4,fw:167,fh:173,ax:.968,ox:62}},
 };
 // file: icons/anim/<personaggio>-walk|atk|fly.webp; ax = punto d'aggancio nel fotogramma (0 sinistra, 1 destra), ox = suo spostamento dal centro (px a scala 128)
-for(const k in ANIM)for(const m of ['walk','atk','fly'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
+for(const k in ANIM)for(const m of ['walk','atk','fly','st'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
 // icone disegnate degli ordini (cartella icons/, file ord-<chiave>.webp); se non si caricano resta l'emoji
 const OIMG={};
 for(const k in ORDERS){ORDERS[k].img='icons/ord-'+k+'.webp';const im=new Image();im.src=ORDERS[k].img;OIMG[k]=im}
@@ -2155,7 +2158,7 @@ function drawToken1(x,y,side,type,star,order,o={}){
   let yy=y; if(d.flying){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y+10,11,4,0,0,7);ctx.fill();yy=y-12}
   const lx=o.lunge>0?o.face*5:0;
   ctx.globalAlpha=o.invis?.38:o.disguised?.6:1;
-  const A=ANIM[type],ld=a=>a&&a.im.complete&&a.im.naturalWidth,base=A&&(ld(A.walk)?A.walk:ld(A.fly)?A.fly:null),sp=!!base;
+  const A=ANIM[type],ld=a=>a&&a.im.complete&&a.im.naturalWidth,base=A&&(ld(A.walk)?A.walk:ld(A.fly)?A.fly:ld(A.st)?A.st:null),sp=!!base;
   if(sp){// personaggio animato: anello ovale del colore della squadra ai piedi, poi il fotogramma giusto
     const fy=y+13,ring=o.col||SIDE[side].col,now=performance.now()/1000;
     if(d.flying){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y+10,13,4.5,0,0,7);ctx.fill()}
@@ -2166,6 +2169,7 @@ function drawToken1(x,y,side,type,star,order,o={}){
     if(star>1){ctx.save();if(star===3){ctx.shadowColor='#ffd54a';ctx.shadowBlur=8}ctx.strokeStyle=star===3?'#ffd54a':'#e6ebf2';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,ry,19.5,7.5,0,0,7);ctx.stroke();ctx.restore()}
     let sh=base,f=0,bob=0;const AT=.08;
     if(ld(A.atk)&&o.atk!=null&&o.atk<A.atk.n*AT){sh=A.atk;f=Math.floor(o.atk/AT)}
+    else if(sh===A.st){const h=o.hpf??1;f=h>.75?0:h>.5?1:h>.25?2:3}// oggetti fermi: lo stato dipende dalla vita (il Mais perde pannocchie)
     else if(sh===A.fly){f=Math.floor(now*9)%sh.n;bob=Math.sin(now*4)*1.5}
     else if(o.moving){const ph=(o.walk||0)/A.stride;f=Math.floor(ph)%sh.n;bob=-Math.abs(Math.sin(ph*Math.PI))*1.6}
     const k=A.h/128,fw=sh.fw*k,fh=sh.fh*k,ax=sh.ax*fw-(sh.ox||0)*k,top=d.flying?yy-fh/2+bob:fy+2-fh+bob,px=sh===base&&o.lunge>0?(o.face||1)*4:0;

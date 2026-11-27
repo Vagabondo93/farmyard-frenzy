@@ -23,7 +23,7 @@ if len(edges)!=N+1: edges=[i*cw for i in range(N)]+[W]
 frames=[];boxes=[]
 for i in range(N):
     c=np.array(im.crop((edges[i],0,edges[i+1],Hh))).astype(int);h,w,_=c.shape
-    white=(c.min(axis=2)>228)&((c.max(axis=2)-c.min(axis=2))<20)
+    import os;WT=int(os.environ.get('WHITE','228'));white=(c.min(axis=2)>WT)&((c.max(axis=2)-c.min(axis=2))<(20 if WT<240 else 7))
     lab,n=nd.label(white);bg=np.zeros((h,w),bool)
     border=set(np.unique(np.concatenate([lab[0],lab[-1],lab[:,0],lab[:,-1]])))-{0}
     sz=nd.sum(np.ones_like(lab),lab,range(1,n+1))
