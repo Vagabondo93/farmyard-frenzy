@@ -959,5 +959,6 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Ruota il telefono": "Rotate your phone",
 "Il gioco è pensato in orizzontale: campo più grande e market a fianco.": "The game is designed for landscape: bigger field and shop on the side.",
 "Continua in verticale": "Keep playing in portrait",
-"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).": "Places a beehive at the start: the bees sting (5 damage per second) and slow enemies within 85 by 40%. With the smoker he hits up close, up to 70, flyers included (3 damage)."
+"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).": "Places a beehive at the start: the bees sting (5 damage per second) and slow enemies within 85 by 40%. With the smoker he hits up close, up to 70, flyers included (3 damage).",
+"Suona la carica ogni 9 secondi.": "Sounds the charge every 9 seconds."
 };
