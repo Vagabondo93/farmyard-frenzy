@@ -1394,7 +1394,9 @@ const ANIM={
   lupo:{h:33,stride:9,walk:{n:4,fw:199,fh:158,ax:.5},atk:{n:4,fw:227,fh:143,ax:.472}},
   cane:{h:31,stride:8,walk:{n:4,fw:185,fh:137,ax:.5},atk:{n:4,fw:199,fh:145,ax:.504}},
   gatto:{h:29,stride:6,walk:{n:4,fw:145,fh:133,ax:.5},atk:{n:4,fw:177,fh:138,ax:.459}},
-  topi:{h:20,stride:5,walk:{n:4,fw:223,fh:137,ax:.5}},
+  topi:{h:20,stride:5,walk:{n:4,fw:223,fh:137,ax:.5},carry:{n:4,fw:208,fh:225,ax:.5}},
+  assassino:{h:34,stride:7,walk:{n:4,fw:136,fh:135,ax:.5},atk:{n:4,fw:167,fh:117,ax:.441}},
+  talpa:{h:34,stride:5,walk:{n:4,fw:120,fh:130,ax:.5},emerge:{n:4,fw:153,fh:152,ax:.583}},
   oca:{h:34,stride:5,walk:{n:4,fw:126,fh:130,ax:.5},atk:{n:4,fw:185,fh:132,ax:.501},alarm:{n:4,fw:135,fh:142,ax:.491}},
   poliziotto:{h:38,stride:6,walk:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:99,fh:129,ax:.475}},
   ladro:{h:36,stride:6,walk:{n:4,fw:120,fh:130,ax:.5},carry:{n:4,fw:120,fh:134,ax:.5}},
@@ -1409,7 +1411,7 @@ const ANIM={
   gazza:{h:34,fly:{n:4,fw:186,fh:193,ax:.994,ox:78},carry:{n:4,fw:184,fh:192,ax:.994,ox:78}},
 };
 // file: icons/anim/<personaggio>-walk|atk|fly.webp; ax = punto d'aggancio nel fotogramma (0 sinistra, 1 destra), ox = suo spostamento dal centro (px a scala 128)
-for(const k in ANIM)for(const m of ['walk','atk','fly','st','carry','hit','alarm'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
+for(const k in ANIM)for(const m of ['walk','atk','fly','st','carry','hit','alarm','emerge'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
 // icone disegnate degli ordini (cartella icons/, file ord-<chiave>.webp); se non si caricano resta l'emoji
 const OIMG={};
 for(const k in ORDERS){ORDERS[k].img='icons/ord-'+k+'.webp';const im=new Image();im.src=ORDERS[k].img;OIMG[k]=im}
@@ -2163,6 +2165,13 @@ function drawToken(x,y,side,type,star,order,o={}){const k=sizeOf(type,star);
   ctx.save();ctx.translate(x,y);ctx.scale(k,k);ctx.translate(-x,-y);drawToken1(x,y,side,type,star,order,o);ctx.restore()}
 function drawToken1(x,y,side,type,star,order,o={}){
   const d=UNITS[type];
+  {const E=ANIM[type]&&ANIM[type].emerge;
+   if(E&&E.im.complete&&E.im.naturalWidth&&(o.underground||(o.emAge!=null&&o.emAge<E.n*.11))){
+    const k=ANIM[type].h/128,fw=E.fw*k,fh=E.fh*k,f=o.underground?0:Math.min(E.n-1,Math.floor(o.emAge/.11)),wob=o.underground&&o.moving?Math.sin(performance.now()/70)*1.2:0;
+    if(!o.underground){ctx.strokeStyle=o.col||SIDE[side].col;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,y+13,16.5,6,0,0,7);ctx.stroke()}
+    else{ctx.fillStyle=o.col||SIDE[side].col;ctx.beginPath();ctx.arc(x,y-14,3.5,0,7);ctx.fill()}
+    ctx.save();ctx.translate(x,0);if(o.face===-1)ctx.scale(-1,1);ctx.drawImage(E.im,f*E.fw,0,E.fw,E.fh,-E.ax*fw+wob,y+15-fh,fw,fh);ctx.restore();
+    if(o.underground)return}}
   if(o.underground){
     ctx.globalAlpha=.9;ctx.fillStyle='#6b4423';ctx.beginPath();ctx.ellipse(x,y+4,16,8,0,0,7);ctx.fill();
     ctx.fillStyle='#8b5e34';ctx.beginPath();ctx.ellipse(x,y+1,10,5,0,0,7);ctx.fill();
@@ -2330,8 +2339,8 @@ function render(){
   for(const u of us){
     if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
-    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0}
-    drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{st:statusOf(u,S),carry:u.carrying!==null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
+    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u._pu&&!u.underground)u._emT=performance.now();u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0}
+    drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{st:statusOf(u,S),carry:u.carrying!==null,emAge:u._emT?(performance.now()-u._emT)/1000:null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null&&!(ANIM[u.type]&&ANIM[u.type].carry&&ANIM[u.type].carry.im.naturalWidth)) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.lb>0){ctx.font='11px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.fillText('💨',X(u.x)-(F?-1:1)*u.face*18,u.y-22)}
