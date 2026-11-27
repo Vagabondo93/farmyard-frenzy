@@ -1307,7 +1307,7 @@ const IMG={};
 const ANIM={
   faina:{h:31,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},atk:{n:4,fw:167,fh:130,ax:.516}},
   mucca:{h:40,stride:6,walk:{n:4,fw:176,fh:134,ax:.5},atk:{n:4,fw:191,fh:139,ax:.459}},
-  corvo:{h:40,fly:{n:4,fw:153,fh:183,ax:.994,ox:62}},
+  corvo:{h:40,fly:{n:4,fw:151,fh:179,ax:.994,ox:62},atk:{n:4,fw:164,fh:173,ax:.994,ox:62}},
 };
 // file: icons/anim/<personaggio>-walk|atk|fly.webp; ax = punto d'aggancio nel fotogramma (0 sinistra, 1 destra), ox = suo spostamento dal centro (px a scala 128)
 for(const k in ANIM)for(const m of ['walk','atk','fly'])if(ANIM[k][m]){const a=ANIM[k][m];a.im=new Image();a.im.src=`icons/anim/${k}-${m}.webp`}
