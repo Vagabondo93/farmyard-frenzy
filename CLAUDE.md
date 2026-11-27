@@ -9,3 +9,5 @@
   Ogni figura si prende intera come forma collegata, anche se esce dalla sua cella.
 - Dopo ogni ritaglio controllare a occhio che nessuna figura abbia un bordo dritto (segno di taglio).
 - Le nuove immagini vanno anche in `PRECACHE` di `sw.js`; se si sostituisce un'immagine esistente, aumentare `VERSION`.
+- Sfondo nero: non scontornare per soglia di luminosità (i contorni scuri si fondono con lo sfondo e restano aloni). Chiedere l'immagine su bianco o trasparente.
+- Topi: l'icona resta quella con più topi, ma le animazioni in campo sono di un solo topo (ogni topo è un'unità).
