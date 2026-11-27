@@ -1388,7 +1388,7 @@ const abilRow=k=>(ABIL[k]||[]).length?`<span class="tabil">${ABIL[k].map(a=>`<im
 // personaggi animati (cartella icons/anim/): striscia orizzontale di n fotogrammi, il personaggio guarda a destra.
 // stride = pixel percorsi per fotogramma; h = altezza in campo. Chi non è qui usa l'icona nel tondino.
 const ANIM={
-  faina:{h:31,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},atk:{n:4,fw:181,fh:130,ax:.541}},
+  faina:{h:31,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},carry:{n:4,fw:158,fh:135,ax:.5},atk:{n:4,fw:181,fh:130,ax:.541}},
   mucca:{h:40,stride:6,walk:{n:4,fw:175,fh:134,ax:.5},atk:{n:4,fw:204,fh:139,ax:.519}},
   tacchino:{h:34,stride:5,walk:{n:4,fw:127,fh:130,ax:.5},atk:{n:4,fw:160,fh:137,ax:.46}},
   lupo:{h:33,stride:9,walk:{n:4,fw:199,fh:158,ax:.5},atk:{n:4,fw:227,fh:143,ax:.472}},
@@ -1402,6 +1402,8 @@ const ANIM={
   mais:{h:42,st:{n:4,fw:96,fh:130,ax:.504}},
   spaventa:{h:44,hit:{n:4,fw:122,fh:143,ax:.514}},
   corvo:{h:36,fly:{n:4,fw:151,fh:179,ax:.994,ox:62},atk:{n:4,fw:172,fh:173,ax:.983,ox:62}},
+  toro:{h:40,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},atk:{n:4,fw:167,fh:136,ax:0.456}},
+  cacciatore:{h:38,stride:6,walk:{n:4,fw:97,fh:130,ax:.5},atk:{n:4,fw:135,fh:131,ax:.518}},
   gallico:{h:35,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:152,fh:130,ax:.507}},
   falco:{h:40,fly:{n:4,fw:191,fh:216,ax:.542},atk:{n:4,fw:212,fh:207,ax:.515}},
   gazza:{h:34,fly:{n:4,fw:186,fh:193,ax:.994,ox:78},carry:{n:4,fw:184,fh:192,ax:.994,ox:78}},
