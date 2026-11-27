@@ -922,5 +922,8 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Su iPhone: tocca Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\". Il gioco si aprirà a tutto schermo come un'app.": "On iPhone: tap Share (the square with the arrow), then \"Add to Home Screen\". The game will open full screen like an app.",
 "App installata: la trovi tra le app del telefono.": "App installed: you will find it among your phone apps.",
 "Scheda di {0}": "{0} card",
-"Compra {0} · {1} oro": "Buy {0} · {1} gold"
+"Compra {0} · {1} oro": "Buy {0} · {1} gold",
+"Resta vicino al tuo uovo e ferma chi lo vuole rubare": "Stays near your egg and stops anyone trying to steal it",
+"Aiuta i compagni: cure, velocità ed esche": "Helps teammates: healing, speed and baits",
+"Tiene una zona del campo: ostacoli, aree e trappole": "Holds an area of the field: obstacles, zones and traps"
 };

@@ -922,5 +922,8 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Su iPhone: tocca Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\". Il gioco si aprirà a tutto schermo come un'app.": "En iPhone: toca Compartir (el cuadrado con la flecha) y luego \"Añadir a pantalla de inicio\". El juego se abrirá a pantalla completa como una app.",
 "App installata: la trovi tra le app del telefono.": "App instalada: la encontrarás entre las apps del móvil.",
 "Scheda di {0}": "Ficha de {0}",
-"Compra {0} · {1} oro": "Comprar {0} · {1} de oro"
+"Compra {0} · {1} oro": "Comprar {0} · {1} de oro",
+"Resta vicino al tuo uovo e ferma chi lo vuole rubare": "Se queda cerca de tu huevo y frena a quien quiera robarlo",
+"Aiuta i compagni: cure, velocità ed esche": "Ayuda a los compañeros: curas, velocidad y cebos",
+"Tiene una zona del campo: ostacoli, aree e trappole": "Controla una zona del campo: obstáculos, áreas y trampas"
 };

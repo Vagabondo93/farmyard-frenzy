@@ -2373,9 +2373,10 @@ const STATMAX={};
 function statMax(star,key){if(!STATMAX[star]){const m={};for(const k in UNITS){if(UNITS[k].hidden)continue;const st=statsOf(k,star);for(const [key2] of STATDEF)m[key2]=Math.max(m[key2]||1,st[key2]||0)}STATMAX[star]=m}return STATMAX[star][key]}
 function statVal(s,k){return k==='rng'&&s.atk&&!s.ranged?'mischia':(s[k]||'—')}
 function statChips(type,star){const s=statsOf(type,star);return `<span class="stats">${STATDEF.map(([k,i,l])=>`<span class="sc" title="${l}"><i aria-hidden="true">${i}</i><span class="sr">${l} </span>${statVal(s,k)}</span>`).join('')}</span>`}
-const ROLES={thief:{n:'Ladro',d:"Ruba l'uovo"},def:{n:'Difensore',d:"Protegge l'uovo"},atk:{n:'Attaccante',d:'Caccia le unità nemiche'},sup:{n:'Supporto',d:'Esche, trappole e trucchi'},ctl:{n:'Controllo',d:'Domina il centro del campo'}};
-const ROLEOF={asino:'ctl',topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'ctl',gufo:'ctl',puzzola:'ctl',carpentiera:'ctl',castoro:'ctl',lepre:'thief',tartaruga:'thief',postina:'thief',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
-  cacciatore:'atk',assassino:'atk',spazzino:'atk',mais:'sup',spaventa:'sup',coltivatore:'ctl',benefattore:'ctl'};
+// Ruoli: Difensore = il tuo uovo, Controllo = una zona del campo, Supporto = i compagni (cure, velocità, esche e contro-esche)
+const ROLES={thief:{n:'Ladro',d:"Ruba l'uovo"},def:{n:'Difensore',d:"Resta vicino al tuo uovo e ferma chi lo vuole rubare"},atk:{n:'Attaccante',d:'Caccia le unità nemiche'},sup:{n:'Supporto',d:'Aiuta i compagni: cure, velocità ed esche'},ctl:{n:'Controllo',d:'Tiene una zona del campo: ostacoli, aree e trappole'}};
+const ROLEOF={asino:'ctl',topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'ctl',gufo:'ctl',puzzola:'ctl',carpentiera:'ctl',castoro:'ctl',lepre:'thief',tartaruga:'thief',postina:'thief',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'ctl',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'ctl',corvo:'def',
+  cacciatore:'atk',assassino:'atk',spazzino:'sup',mais:'sup',spaventa:'sup',coltivatore:'sup',benefattore:'sup'};
 const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
   const roleTag={thief:'Ladro',def:'Guardiano'}[r];
