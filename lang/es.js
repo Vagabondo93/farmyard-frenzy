@@ -906,5 +906,15 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Vendi +1": "Vender +1",
 "Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Mantén pulsada una unidad para darle una orden, mandarla al banquillo o venderla.",
 "piazza un'arnia": "coloca una colmena",
-"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Gira el móvil en horizontal: campo más grande y tienda al lado."
+"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Gira el móvil en horizontal: campo más grande y tienda al lado.",
+"Asino": "Burro",
+"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta.": "Un cebo que camina: deambula solo cerca del centro y no acepta órdenes. Los Animales y Humanos enemigos armados a menos de 150 lo atacan creyendo que es una presa fácil, pero tiene mucha vida, su coraza le quita el 35% del daño y echa a coces a quien se le pega: los Humanos salen volando el doble de lejos, los Animales menos. Cuando un enemigo se le acerca rebuzna y los aliados cercanos corren un 35% más rápido durante 3 s. Lobo y Toro saben cómo tratarlo: contra ellos la coraza no cuenta.",
+"Cacciatrice, Poliziotto, Assassino, Cane": "Cazadora, Policía, Asesino, Perro",
+"Lupo, Toro, Gazza": "Lobo, Toro, Urraca",
+"Testardo come un mulo": "Terco como una mula",
+"Il raglio stordisce per mezzo secondo i nemici vicini e i calci spingono più lontano.": "Su rebuzno aturde medio segundo a los enemigos cercanos y sus coces empujan más lejos.",
+"IH-OH!": "¡IIIH-OOO!",
+"{0} raglia": "{0} rebuzna",
+"L'Asino fa di testa sua: non prende ordini.": "El Burro hace lo que quiere: no acepta órdenes.",
+"L'Asino fa di testa sua: non prende ordini. Scegli bene dove piazzarlo.": "El Burro hace lo que quiere: no acepta órdenes. Elige bien dónde colocarlo."
 };

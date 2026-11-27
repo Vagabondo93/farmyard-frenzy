@@ -906,5 +906,15 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Vendi +1": "Sell +1",
 "Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Press and hold a unit to give it an order, bench it or sell it.",
 "piazza un'arnia": "places a beehive",
-"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Turn your phone sideways: bigger field with the shop beside it."
+"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Turn your phone sideways: bigger field with the shop beside it.",
+"Asino": "Donkey",
+"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta.": "A walking bait: he wanders on his own near the middle and takes no orders. Armed enemy Animals and Humans within 150 attack him thinking he's easy prey, but he has lots of health, his armor takes away 35% of the damage and he kicks away whoever is on him: Humans fly twice as far, Animals less. When an enemy gets close he brays and nearby allies run 35% faster for 3 s. Wolf and Bull know how to handle him: against them the armor doesn't count.",
+"Cacciatrice, Poliziotto, Assassino, Cane": "Hunter, Police Officer, Assassin, Dog",
+"Lupo, Toro, Gazza": "Wolf, Bull, Magpie",
+"Testardo come un mulo": "Stubborn as a mule",
+"Il raglio stordisce per mezzo secondo i nemici vicini e i calci spingono più lontano.": "His bray stuns nearby enemies for half a second and his kicks push further.",
+"IH-OH!": "HEE-HAW!",
+"{0} raglia": "{0} brays",
+"L'Asino fa di testa sua: non prende ordini.": "The Donkey does as he pleases: he takes no orders.",
+"L'Asino fa di testa sua: non prende ordini. Scegli bene dove piazzarlo.": "The Donkey does as he pleases: he takes no orders. Choose carefully where to place him."
 };

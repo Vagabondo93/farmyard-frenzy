@@ -1185,6 +1185,10 @@ const UNITS={
    d:"Lenta ma inarrestabile: immune a trappole, stordimenti, arresti, esche e rallentamenti, e con l'uovo non rallenta. Se in 1 s perde più di un quarto della vita si chiude nel guscio per 2 s: ferma, ma subisce l'80% di danni in meno.",beats:'Poliziotto, Bracconiere, Apicoltore, Spaventapasseri',loses:'Lupo, Assassino, Cacciatrice'},
  postina:{n:'Postina',i:'📮',t:2,tags:['Umano','Ladro'],hp:46,dmg:0,spd:76,carry:1,role:'thief',dodge:.25,
    d:"In bicicletta porta l'uovo a casa senza rallentare: le consegne sono il suo mestiere. Schiva il 25% dei colpi corpo a corpo.",beats:'Cane, Gatto, Tacchino',loses:'Poliziotto, Cacciatrice, Spaventapasseri, Benefattore'},
+ asino:{n:'Asino',i:'🫏',t:2,cost:3,minRound:2,tags:['Animale','Guardiano'],hp:260,dmg:5,spd:28,rng:20,cd:1.2,role:'donkey',push:46,pushHuman:true,armor:.35,lure:150,lureTag:'*',
+   alarm:110,alarmAny:true,alarmT:3,bray:'IH-OH!',stubborn:true,noOrders:true,
+   d:"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta.",
+   beats:'Cacciatrice, Poliziotto, Assassino, Cane',loses:'Lupo, Toro, Gazza'},
  staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
  apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:18,cd:1,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
    d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
@@ -1224,6 +1228,7 @@ const P3={
  procione:{n:"Doppio passaggio",d:"Può passare l'uovo due volte e lanciarlo fino a 230.",m:{pass:230,passes:2}},
  oca:{n:"Allarme generale",d:"L'allarme fa correre tutti gli alleati in campo, per 5 secondi.",m:{alarmAll:true,alarmT:5}},
  gatto:{n:"Sette vite",d:"La prima volta che viene sconfitto si rialza con metà vita.",m:{lives:1}},
+ asino:{n:"Testardo come un mulo",d:"Il raglio stordisce per mezzo secondo i nemici vicini e i calci spingono più lontano.",m:{push:60,brayStun:.5}},
  mucca:{n:"Muggito",d:"Spinge via i nemici da più lontano e li stordisce per mezzo secondo.",m:{push:68,pushStun:.5}},
  lupo:{n:"Capobranco",d:"Entra in campo con un secondo lupo.",m:{pack:1}},
  falco:{n:"Picchiata",d:"Ogni attacco stordisce il bersaglio per 0,6 s.",m:{stunHit:.6}},
@@ -1299,7 +1304,7 @@ function newMatch(o={}){
 }
 
 // Ogni partita usa solo una selezione di personaggi: così le copie per le ★★ si trovano davvero.
-const COUNTERS=[{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
+const COUNTERS=[{if:['asino'],need:['lupo','toro']},{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
   {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco','oca']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
   ];
 const POOLQ={thief:3,def:3,atk:3,sup:3,ctl:2},POOLQR={thief:4,def:4,atk:4,sup:3,ctl:3};
@@ -1440,6 +1445,7 @@ function botTurn(p,rng,ec,sk=.7){
 
 // ---------- simulazione ----------
 function spawn(b,side,id){
+  if(UNITS[b.type]&&UNITS[b.type].noOrders&&b.order)b={...b,order:null}; // l'Asino fa di testa sua
   const d=b.star===3?Object.assign({},UNITS[b.type],P3[b.type].m):UNITS[b.type],st=b.star>=2,sm=[1,1,1.8,3][b.star];
   let hp=d.hp*sm,spd=d.spd*(b.star===3?1.15:st?1.08:1),dmg=d.dmg*sm;
   if(b.order==='scatto'){spd*=1.35;hp*=.75} if(b.order==='corazza'){hp*=1.4;spd*=.85}
@@ -1616,10 +1622,11 @@ function anchorOf(u,S){
 }
 function pickTarget(u,S){
   const en=S.units.filter(e=>e.alive&&e.side!==u.side),esc=u.order==='scorta';
+  if(u.def.stubborn) return en.filter(e=>canTarget(u,e)&&dist(u,e)<u.def.rng+16).sort((a,b)=>dist(u,a)-dist(u,b))[0]||null; // l'Asino non insegue: scalcia chi gli sta addosso
   // Scorta: resta attaccata a chi accompagna; se se ne allontana prima lo raggiunge, e non si fa distrarre da esche e provocazioni
   if(esc){const a=anchorOf(u,S);if(a&&dist(u,a)>90)return null}
   if(u.def.followFly&&!esc) return en.filter(e=>canTarget(u,e)&&dist(u,e)<60).sort((a,b)=>dist(u,a)-dist(u,b))[0]||null; // l'Avicoltore si difende solo da vicino
-  const l=!esc&&!u.def.noLure&&en.find(e=>e.def.lure&&dist(u,e)<e.def.lure&&u.def.tags.includes(e.def.lureTag)&&!(e.def.lureNoOrder&&u.order)&&canTarget(u,e));if(l)return l;
+  const l=!esc&&!u.def.noLure&&en.find(e=>e.def.lure&&dist(u,e)<e.def.lure&&(e.def.lureTag==='*'||u.def.tags.includes(e.def.lureTag))&&!(e.def.lureNoOrder&&u.order)&&canTarget(u,e));if(l)return l;
   const tz=!esc&&en.find(e=>e.def.taunt&&dist(u,e)<e.def.taunt&&canTarget(u,e)); if(tz) return tz;
   const anc=anchorOf(u,S); let best=null,bs=-1e9;
   for(const e of en){
@@ -1678,6 +1685,7 @@ function dropEgg(u,S){
 function damage(t,amt,S,src){
   if(t.def.registered&&t.carrying!==null&&!t.usedReg&&amt>0){t.usedReg=true;fx(S,t.x,t.y-22,'raccomandata!','#fff6c4');return}
   if(t.shellT>0) amt*=.2;
+  if(t.def.armor&&!(src&&(src.type==='lupo'||src.type==='toro'))) amt*=1-t.def.armor;
   for(const a of S.units) if(a.alive&&a!==t&&a.side===t.side&&a.def.shieldAura&&dist(a,t)<a.def.shieldAura){amt*=.7;break}
   if(t.def.shell&&amt>0){t.dmgWin=(t.dmgWin||[]).filter(x=>S.t-x[0]<1);t.dmgWin.push([S.t,amt]);
     if(!(t.shellCd>0)&&t.dmgWin.reduce((a,x)=>a+x[1],0)>t.maxHp*.25){t.shellT=2;t.shellCd=6;fx(S,t.x,t.y-24,'nel guscio!','#e8f0ff')}}
@@ -1755,6 +1763,8 @@ function idlePoint(u,S){
     case 'hunter':if(u.def.sweeper){const a=allyThief(u,S);if(a)return{x:a.x-(u.side?-1:1)*30,y:a.y+(u.id%2?20:-20)};return{x:W/2+(u.side?60:-60),y:u.sy}}
       return u.def.advance?{x:foe.x-(u.side?-1:1)*140,y:u.sy}:{x:u.sx,y:u.sy};
     case 'center':return{x:W/2-(u.side?-1:1)*60,y:u.sy};
+    case 'donkey':{const k=Math.floor(S.t/4)+u.id,a=Math.abs(Math.sin(k*12.9898)),b=Math.sin(k*78.233);
+      return{x:W/2-(u.side?-1:1)*(30+a*130),y:clamp(H/2+b*H*.35,40,H-40)}}
     case 'hold':return u.hold;
     case 'assault':return{x:foe.x-(u.side?-1:1)*75,y:foe.y+(u.sy-H/2)*.4};
     case 'medic':{let best=null,bd=1e9; // segue l'animale alleato più vicino
@@ -1831,9 +1841,10 @@ function step(S,dt){
     u.turned=true;u.role='thief';fx(S,u.x,u.y-24,'Diventa ladro!','#ffe680');log(S,u.type==='cane'?`${nm(u)} fa il cane da riporto: va a prendere l'uovo`:`${nm(u)} resta senza ladri e va a rubare l'uovo`)}
   for(const u of live){ if(!u.alive) continue;
     if(u.def.alarm){u.alarmCd=(u.alarmCd||0)-dt;
-      if(u.alarmCd<=0&&live.some(e=>e.alive&&e.side!==u.side&&canCarry(e)&&!e.underground&&e.invis<=0&&!e.disguised&&dist(u,e)<u.def.alarm)){
+      if(u.alarmCd<=0&&live.some(e=>e.alive&&e.side!==u.side&&(u.def.alarmAny?e.role!=='static':canCarry(e))&&!e.underground&&e.invis<=0&&!e.disguised&&dist(u,e)<u.def.alarm)){
+        if(u.def.brayStun)for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.unstoppable&&dist(u,e)<u.def.alarm)e.stun=Math.max(e.stun,u.def.brayStun);
         u.alarmCd=4;for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'&&a.role!=='thief'&&(u.def.alarmAll||dist(a,u)<220)){a.boostT=Math.max(a.boostT,u.def.alarmT||3);a.boostMul=1.35}
-        (S.rings=S.rings||[]).push({x:u.x,y:u.y,r:u.def.alarmAll?420:220,t:0,col:'255,246,196'});fx(S,u.x,u.y-24,'QUA QUA!','#fff6c4');log(S,`${nm(u)} dà l'allarme`)}}
+        (S.rings=S.rings||[]).push({x:u.x,y:u.y,r:u.def.alarmAll?420:220,t:0,col:'255,246,196'});fx(S,u.x,u.y-24,u.def.bray||'QUA QUA!','#fff6c4');log(S,u.def.bray?`${nm(u)} raglia`:`${nm(u)} dà l'allarme`)}}
     if(u.def.bugle){if(u.bugleT===undefined)u.bugleT=1;u.bugleT-=dt;
       if(u.bugleT<=0){u.bugleT=u.def.bugleRepeat||1e9;const T=u.def.bugle+(u.star===2?2:0);
         for(const a of live) if(a.alive&&a.side===u.side&&a.role!=='static'){a.boostT=Math.max(a.boostT,T);a.boostMul=Math.max(a.boostMul||1,1.35)}
@@ -1843,7 +1854,7 @@ function step(S,dt){
     if(u.def.aura){for(const e of live) if(e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&dist(u,e)<u.def.aura.r) damage(e,u.def.aura.dps*dt,S,u)}
     if(u.def.push){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!e.def.unstoppable){const d=dist(u,e);
       // spinta a colpi: 0,6 s di spinta, poi 1,2 s in cui si può passare (così l'uovo resta raggiungibile)
-      const PR=pushR(u);if(d<PR)e.pushA=(e.pushA||0)+dt;if(e.pushA>1.8)e.pushA=0;
+      const PR=pushR(u)*(u.def.pushHuman?(e.def.tags.includes('Umano')?2:.6):1);if(d<PR)e.pushA=(e.pushA||0)+dt;if(e.pushA>1.8)e.pushA=0;
       if(d<PR&&d>.1&&e.pushA<.6){const k=(PR-d)*.5;e.x=clamp(e.x+(e.x-u.x)/d*k,14,W-14);e.y=clamp(e.y+(e.y-u.y)/d*k,16,H-16);
         if(u.def.pushStun&&!(e.pst>0)){e.stun=Math.max(e.stun,u.def.pushStun);e.pst=2}}}}
     if(u.chargeT>0){for(const e of live) if(e.alive&&e.side!==u.side&&!e.def.flying&&!e.underground&&e.role!=='static'&&!u.chargeHit[e.id]&&dist(u,e)<26){
@@ -2294,7 +2305,7 @@ function statMax(star,key){if(!STATMAX[star]){const m={};for(const k in UNITS){i
 function statVal(s,k){return k==='rng'&&s.atk&&!s.ranged?'mischia':(s[k]||'—')}
 function statChips(type,star){const s=statsOf(type,star);return `<span class="stats">${STATDEF.map(([k,i,l])=>`<span class="sc" title="${l}"><i aria-hidden="true">${i}</i><span class="sr">${l} </span>${statVal(s,k)}</span>`).join('')}</span>`}
 const ROLES={thief:{n:'Ladro',d:"Ruba l'uovo"},def:{n:'Difensore',d:"Protegge l'uovo"},atk:{n:'Attaccante',d:'Caccia le unità nemiche'},sup:{n:'Supporto',d:'Esche, trappole e trucchi'},ctl:{n:'Controllo',d:'Domina il centro del campo'}};
-const ROLEOF={topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'ctl',gufo:'ctl',puzzola:'ctl',carpentiera:'ctl',castoro:'ctl',lepre:'thief',tartaruga:'thief',postina:'thief',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
+const ROLEOF={asino:'ctl',topi:'thief',volpe:'thief',procione:'thief',oca:'def',gatto:'ctl',gufo:'ctl',puzzola:'ctl',carpentiera:'ctl',castoro:'ctl',lepre:'thief',tartaruga:'thief',postina:'thief',mucca:'def',lupo:'atk',falco:'atk',toro:'atk',chioccia:'sup',veterinario:'sup',apicoltore:'sup',trombettiere:'sup',avicoltore:'sup',faina:'thief',ladro:'thief',gazza:'thief',talpa:'thief',tacchino:'def',gallico:'def',cane:'def',poliziotto:'def',bracconiere:'def',corvo:'def',
   cacciatore:'atk',assassino:'atk',spazzino:'atk',mais:'sup',spaventa:'sup',coltivatore:'ctl',benefattore:'ctl'};
 const roleOf=k=>ROLEOF[k]||'sup';
 function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
@@ -2344,6 +2355,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.ord!==undefined){
     const u=p.board.find(b=>b.uid===G.sel);
     if(!u){toast('Tocca prima una tua unità (sul campo o nella squadra), poi l\'ordine.');return}
+    if(UNITS[u.type].noOrders){toast('L\'Asino fa di testa sua: non prende ordini.');return}
     if(p.gold<ORDER_COST){toast('Oro insufficiente.');return}
     const k=t.dataset.ord;if(!ORDERS[k])return;if(u.order===k){toast('Ha già questo ordine.');return}u.order=k;p.gold-=ORDER_COST;toast(`${UNITS[u.type].n} ora ha l'ordine ${ORDERS[u.order].n}.`);renderAll();return}
   if(t.dataset.sel){G.sel=G.sel===+t.dataset.sel?null:+t.dataset.sel;renderAll()}
@@ -2391,8 +2403,8 @@ function renderUnitMenu(){const el=$('unitMenu');
   const d=UNITS[b.type],o=UMO&&ORDERS[UMO];
   el.innerHTML=`<div class="umh">${IC(d)}<b>${d.n}</b><span class="st">${'★'.repeat(b.star)}</span><span class="pill gold">Oro ${p.gold}</span><button class="umx" data-umclose aria-label="Chiudi">✕</button></div>
     <p class="umsub">${b.order?`Ordine attuale: ${OIC(ORDERS[b.order])} ${ORDERS[b.order].n}`:'Nessun ordine'} · ogni ordine costa ${ORDER_COST} oro</p>
-    <div class="umgrid">${Object.entries(ORDERS).map(([k,x])=>`<button data-umo="${k}" class="${k===UMO?'on':''}${b.order===k?' cur':''}" aria-label="${esc(x.n)}">${OIC(x)}<span>${x.n}</span></button>`).join('')}</div>
-    <p class="umdesc">${o?`<b>${OIC(o)} ${o.n}</b>: ${o.d}`:'Tocca un ordine per vedere cosa fa.'}</p>
+    ${d.noOrders?'<p class="umdesc">L\'Asino fa di testa sua: non prende ordini. Scegli bene dove piazzarlo.</p>':''}<div class="umgrid${d.noOrders?' hidden':''}">${Object.entries(ORDERS).map(([k,x])=>`<button data-umo="${k}" class="${k===UMO?'on':''}${b.order===k?' cur':''}" aria-label="${esc(x.n)}">${OIC(x)}<span>${x.n}</span></button>`).join('')}</div>
+    <p class="umdesc${d.noOrders?' hidden':''}">${o?`<b>${OIC(o)} ${o.n}</b>: ${o.d}`:'Tocca un ordine per vedere cosa fa.'}</p>
     <div class="umfoot">${o?`<button class="btn primary" data-ord="${UMO}" ${p.gold<ORDER_COST||b.order===UMO?'disabled':''}>${b.order===UMO?'Ha già questo ordine':p.gold<ORDER_COST?'Oro insufficiente':`Compra l'ordine · ${ORDER_COST} oro`}</button>`:''}
       <button class="btn" data-swap="${b.uid}">🪑 In panchina</button><button class="btn sell" data-sell="${b.uid}">Vendi +1</button></div>`;
   el.classList.remove('hidden');

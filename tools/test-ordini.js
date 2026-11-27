@@ -54,6 +54,25 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
       if(v&&last['d'+u.id]&&v!==last['d'+u.id])flips++;if(v)last['d'+u.id]=v;last[u.id]=u.x}}
     const pz=S.units.find(u=>u.type==='puzzola');return {flips,hp:Math.round(pz.hp),hp0:Math.round(hp0)}});
     ok(r.flips<12&&r.hp<r.hp0,`sul ponte in Nebbia Gatto e Puzzola si affrontano senza fare avanti e indietro (cambi di direzione ${r.flips}, vita Puzzola ${r.hp0}→${r.hp})`)}
+  // Asino: esca che si difende
+  console.log('Asino');
+  await p.click('#menuBtn');await p.evaluate(()=>openPlay('bot','classic'));await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
+  {const r=await p.evaluate(()=>{const g=window.__g(),T=window.__t,mk=(t,o,x,y)=>({uid:Math.floor(Math.random()*1e6),type:t,star:1,order:o,bench:false,px:x,py:y});
+    const sim=(mine,foe,secs)=>{g.players[0].ovr=mine;g.players[1].ovr=foe;const S=T.makeSim(11);g.players[0].ovr=null;g.players[1].ovr=null;for(let k=0;k<secs*60&&!S.over;k++)T.step(S,1/60);return S};
+    // la Cacciatrice nemica spara all'Asino invece che al Ladro
+    // senza l'Asino la Cacciatrice (a x 520) sparerebbe al Cane, più vicino; l'Asino è a 120 da lei, dentro l'area dell'esca
+    let S=sim([mk('asino','guardia',400,270),mk('cane','attesa',480,270),mk('ladro','attesa',60,60)],[mk('cacciatore','attesa',440,270),mk('tartaruga',null,40,40)],6);
+    const as=S.units.find(u=>u.type==='asino'),cn=S.units.find(u=>u.type==='cane'),lured=as.hp<as.maxHp&&cn.hp===cn.maxHp,ord=as.order;
+    // corazza: danni presi dall'Asino rispetto a una Mucca (senza corazza) contro lo stesso attaccante
+    const lossVs=(t,me)=>{const S=sim([mk(me,null,440,270),mk('ladro','attesa',60,60)],[mk(t,null,440,270),mk('tartaruga',null,40,40)],4);const a=S.units.find(u=>u.type===me);return a.maxHp-a.hp};
+    // calci: un Umano finisce più lontano di un Animale
+    const kick=t=>{const S=sim([mk('asino',null,440,270),mk('ladro','attesa',60,60)],[mk(t,'attesa',475,270),mk('tartaruga',null,40,40)],1.2);const a=S.units.find(u=>u.type==='asino'),e=S.units.find(u=>u.type===t);return Math.hypot(e.x-a.x,e.y-a.y)};
+    const q=t=>lossVs(t,'asino')/Math.max(1,lossVs(t,'mucca'));
+    return{lured,ord,hunter:q('cacciatore').toFixed(2),wolf:q('lupo').toFixed(2),human:Math.round(kick('poliziotto')),animal:Math.round(kick('cane'))}});
+    ok(r.lured,'la Cacciatrice nemica spara all\'Asino invece che al Cane più vicino');
+    ok(r.ord===null,'l\'Asino non prende ordini (Guardia ignorata)');
+    ok(+r.hunter<.8&&+r.wolf>.85,`corazza: danni rispetto alla Mucca ×${r.hunter} contro la Cacciatrice, ×${r.wolf} contro il Lupo (che la ignora)`);
+    ok(r.human>r.animal,`i calci spingono un Umano più lontano di un Animale (${r.human} contro ${r.animal})`)}
   ok(errs.length===0,errs.length?'errori: '+errs.join(' | '):'nessun errore JavaScript');
   await b.close();srv.close();
 })();

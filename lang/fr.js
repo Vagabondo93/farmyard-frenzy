@@ -906,5 +906,15 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Vendi +1": "Vendre +1",
 "Tieni premuta un'unità per darle un ordine, mandarla in panchina o venderla.": "Reste appuyé sur une unité pour lui donner un ordre, la mettre sur le banc ou la vendre.",
 "piazza un'arnia": "pose une ruche",
-"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Tourne ton téléphone à l’horizontale : terrain plus grand et boutique à côté."
+"📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.": "📱↻ Tourne ton téléphone à l’horizontale : terrain plus grand et boutique à côté.",
+"Asino": "Âne",
+"Un'esca che cammina: gira da solo vicino al centro e non prende ordini. Gli Animali e gli Umani nemici armati entro 150 lo attaccano pensando sia una preda facile, ma ha tanta vita, la corazza gli toglie il 35% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Quando un nemico gli arriva vicino raglia e gli alleati attorno corrono il 35% più veloci per 3 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta.": "Un appât qui marche : il se promène seul près du centre et n'accepte pas d'ordres. Les Animaux et Humains ennemis armés à moins de 150 l'attaquent en pensant que c'est une proie facile, mais il a beaucoup de vie, sa cuirasse lui retire 35 % des dégâts et il chasse à coups de sabot ceux qui le collent : les Humains volent deux fois plus loin, les Animaux moins. Quand un ennemi s'approche, il brait et les alliés proches courent 35 % plus vite pendant 3 s. Le Loup et le Taureau savent s'y prendre : contre eux la cuirasse ne compte pas.",
+"Cacciatrice, Poliziotto, Assassino, Cane": "Chasseuse, Policier, Assassin, Chien",
+"Lupo, Toro, Gazza": "Loup, Taureau, Pie",
+"Testardo come un mulo": "Têtu comme une mule",
+"Il raglio stordisce per mezzo secondo i nemici vicini e i calci spingono più lontano.": "Son braiment étourdit une demi-seconde les ennemis proches et ses coups de sabot poussent plus loin.",
+"IH-OH!": "HI-HAN !",
+"{0} raglia": "{0} brait",
+"L'Asino fa di testa sua: non prende ordini.": "L'Âne n'en fait qu'à sa tête : il n'accepte pas d'ordres.",
+"L'Asino fa di testa sua: non prende ordini. Scegli bene dove piazzarlo.": "L'Âne n'en fait qu'à sa tête : il n'accepte pas d'ordres. Choisis bien où le placer."
 };
