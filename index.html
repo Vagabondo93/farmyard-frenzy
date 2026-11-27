@@ -326,6 +326,21 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tfoot{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:8px}
 .buylbl{margin-left:auto;background:var(--accent);color:var(--accent-ink);font-weight:900;font-size:13px;border-radius:999px;padding:5px 12px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
 .tcgbtn.off .buylbl{background:var(--chip);color:var(--muted)}
+#shop.compact{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.shopic{position:relative;display:grid;justify-items:center;align-content:start;gap:5px;padding:8px 4px;border-radius:16px;cursor:pointer;transition:background .15s,transform .15s}
+.shopic:hover{background:var(--chip);transform:translateY(-2px)}.shopic:focus-visible{outline:3px solid #e0a91c}
+.si-ring{width:min(96px,100%);aspect-ratio:1;border-radius:50%;border:5px solid var(--rsup);background:radial-gradient(circle at 50% 35%,var(--panel),var(--chip));display:grid;place-items:center;overflow:hidden;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.shopic.r-thief .si-ring{border-color:var(--rthief)}.shopic.r-def .si-ring{border-color:var(--rdef)}.shopic.r-atk .si-ring{border-color:var(--ratk)}.shopic.r-ctl .si-ring{border-color:var(--rctl)}
+.si-ring .uimg{width:86%;height:86%;object-fit:contain;vertical-align:0}.si-emo{font-size:42px}
+.si-cost{position:absolute;top:4px;right:max(4px,calc(50% - 56px));width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:15px;color:#2b1d00;background:radial-gradient(circle at 35% 30%,#fff3b0,#f2c230 50%,#b8860b);box-shadow:0 0 0 2px rgba(0,0,0,.2)}
+.si-cost.up{background:radial-gradient(circle at 35% 30%,#ffd9b0,#f08a30 50%,#a3480b);color:#2b1000}
+.si-st{position:absolute;top:4px;left:max(4px,calc(50% - 56px));color:#d4a017;font-size:14px;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.si-have{position:absolute;top:calc(min(96px,100%) - 14px);font-size:11px;font-weight:900;background:var(--good);color:#fff;border-radius:999px;padding:1px 7px}
+.si-name{font-weight:800;font-size:13.5px;text-align:center;line-height:1.15}
+.shopic.off{opacity:.5}.shopic.off:hover{transform:none}
+@media (max-width:620px){#shop.compact{grid-template-columns:repeat(3,minmax(0,1fr))}}
+button.buylbl{border:0;font-family:inherit;cursor:pointer}
+.cmbuy{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.cmbuy .btn{flex:1 1 auto;font-size:17px;padding:12px 16px}
 .tcg .oc{font-size:12.5px;background:var(--chip);border-radius:6px;padding:2px 8px;font-weight:700}
 .tcg .oc.none{color:var(--muted);font-weight:600}
 .tcg .acts{display:flex;gap:6px;flex-wrap:wrap}
@@ -381,7 +396,8 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   #game .arena{grid-column:1;grid-row:1/span 30;position:sticky;top:6px}
   #game canvas{width:100%;border-radius:10px;border-width:2px}
   #game .side,#game>#shopPanel,#game>#teamPanel{grid-column:2}
-  #game .quicknav{display:flex;flex-direction:row;position:sticky;top:0;left:auto;transform:none;grid-column:2;z-index:30;background:var(--bg);padding:4px 0;gap:6px}
+  #game .quicknav{display:flex;flex-direction:row;position:fixed;top:auto;transform:none;z-index:45;gap:6px;
+    left:calc(max(16px,env(safe-area-inset-left,0px)) + 128px);bottom:max(10px,env(safe-area-inset-bottom,0px));width:calc(var(--fieldw) - 128px)}
   #game .quicknav button{flex:1;min-width:0;width:auto;grid-auto-flow:column;justify-content:center;align-items:center;gap:4px;border-radius:10px;font-size:14px;padding:5px 4px}
   #game .quicknav button span{font-size:11px;overflow:hidden;text-overflow:ellipsis}
   .ctrl{margin-top:6px;gap:6px}.ctrl .btn{padding:6px 10px;font-size:14px}
@@ -389,6 +405,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   .panel{padding:10px 12px}
   /* carte del market in orizzontale: immagine a sinistra, nome, testo e Compra a destra */
   .cards{grid-template-columns:minmax(0,1fr);gap:8px}
+  #shop.compact{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.si-name{font-size:12px}
   #shop .tcg{display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-areas:"art head" "art text" "foot foot";gap:4px 8px;padding:7px 8px;border-width:3px}
   #shop .tcg>header{grid-area:head;padding:3px 6px;gap:6px;min-width:0}#shop .tcg .tname{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   #shop .tcg .tcost{width:24px;height:24px;font-size:12px;flex:0 0 auto}
@@ -397,7 +414,14 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   #shop .tcg .ttext{grid-area:text;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;margin:0;line-height:1.3}
   #shop .tcg .tfoot{grid-area:foot;margin-top:2px;padding-top:6px}
   #shop .tcg .tstats,#shop .tcg .tvs,#shop .tcg .tpow,#shop .tcg .ttags{display:none}
-  .ords{grid-template-columns:repeat(2,minmax(0,1fr))}.ord .ds{display:none}
+  /* ordini compatti come il market: icona, nome e prezzo */
+  .ords{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ord .ds{display:none}
+  .ord{grid-template-columns:1fr;justify-items:center;text-align:center;padding:6px 4px;gap:2px}
+  .ord .ic{grid-row:auto}.ord .ic .oimg{width:34px;height:34px}.ord .nm{padding-right:0;font-size:10.5px;letter-spacing:-.2px;line-height:1.15;overflow-wrap:anywhere}
+  .ord .cost{top:3px;right:3px;min-width:20px;width:20px;height:20px;font-size:11px}
+  /* messaggi sopra il fondo del campo, non dietro al tasto Pronto */
+  #toast{position:fixed;left:calc(max(16px,env(safe-area-inset-left,0px)) + 6px);bottom:62px;width:calc(var(--fieldw) - 12px);z-index:46;font-size:12.5px;line-height:1.3;background:rgba(20,26,14,.86);color:#fff;border-radius:10px;padding:5px 10px;pointer-events:none}
+  #toast:empty{display:none}
   .board{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 }
 </style>
@@ -594,6 +618,7 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
   <div class="modal hidden" id="cardModal" role="dialog" aria-modal="true" aria-label="Scheda personaggio">
     <div class="cmbox">
       <div id="cmCard"></div>
+      <div class="cmbuy hidden" id="cmBuy"></div>
       <div class="row" style="align-items:center"><span class="seg"><button data-cs="1">★</button><button data-cs="2">★★</button><button data-cs="3">★★★</button></span><button class="btn" id="cmClose">Chiudi</button></div>
     </div>
   </div>
@@ -1953,6 +1978,8 @@ if(LANG!=='it')for(const f of ['fillText','strokeText','measureText']){const o=c
 // risoluzione del campo in base alla larghezza mostrata, così resta nitido anche a tutta pagina
 let DPR=1;
 const COARSE=matchMedia('(pointer:coarse)').matches;
+// market a icone solo da telefono (verticale o orizzontale); da PC restano le carte con Compra
+const COMPACT=matchMedia('(max-width:620px),(orientation:landscape) and (max-height:520px)');try{COMPACT.addEventListener('change',()=>{if(G&&G.phase)renderAll()})}catch(e){}
 function fitCanvas(){const k=Math.min(COARSE?2:3,Math.max(1,(window.devicePixelRatio||1)*(cv.clientWidth||W)/W));
   if(Math.abs(k-DPR)<.05&&cv.width===Math.round(W*DPR))return;DPR=k;cv.width=Math.round(W*k);cv.height=Math.round(H*k);ctx.setTransform(k,0,0,k,0,0)}
 fitCanvas();try{new ResizeObserver(fitCanvas).observe(cv)}catch(e){addEventListener('resize',fitCanvas)}
@@ -2304,11 +2331,14 @@ function renderAll0(){
   $('shopPanel').style.opacity=shop?1:.55;
   cv.classList.toggle('drag',shop);
   const selU=p.board.find(b=>b.uid===G.sel);
-  $('shop').innerHTML=p.shop.map((t,i)=>{
+  $('shop').classList.toggle('compact',COMPACT.matches);$('shop').innerHTML=p.shop.map((t,i)=>{
     if(!t) return `<div class="tcgbtn sold" aria-hidden="true"></div>`;
     const d=UNITS[t],two=(p.shopStar||[])[i]===2,c=shopCost(p,i),n=two?0:p.board.filter(b=>b.type===t&&b.star===1).length,off=!shop||p.gold<c;
     const hint=n===2?`<span class="merge">3ª copia → ★★${p.board.filter(b=>b.type===t&&b.star===2).length===2?'★ ⚡':''}</span>`:n===1?'<span class="merge" style="color:var(--muted)">ne hai 1</span>':'';
-    return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-disabled="${off}" aria-label="Compra ${d.n} per ${c} oro" data-buy="${i}">${tcgCard(t,two?2:1,{cost:c,foot:`${two?'<span class="merge">★★ già pronta</span>':hint}<span class="buylbl">${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</span>`})}</div>`}).join('');
+    if(!COMPACT.matches) return `<div class="tcgbtn buy${off?' off':''}" role="button" tabindex="0" aria-label="Scheda di ${d.n}" data-shopcard="${i}">${tcgCard(t,two?2:1,{cost:c,foot:`${two?'<span class="merge">★★ già pronta</span>':hint}<button class="buylbl${off?' off':''}" data-buy="${i}" aria-label="Compra ${d.n} per ${c} oro" ${off?'aria-disabled="true"':''}>${off&&shop?'Oro insufficiente':'Compra · '+c+' oro'}</button>`})}</div>`;
+    return `<div class="shopic r-${roleOf(t)}${off?' off':''}" role="button" tabindex="0" aria-label="Scheda di ${d.n} · ${c} oro" data-shopcard="${i}">
+      <span class="si-ring">${d.img?IC(d):`<span class="si-emo">${d.i}</span>`}</span><span class="si-cost${c!==(d.cost??COST[d.t])?' up':''}">${c}</span>
+      ${two?'<span class="si-st">★★</span>':n?`<span class="si-have" title="Copie che hai già">${n}/3</span>`:''}<span class="si-name">${d.n}</span></div>`}).join('');
   $('ordHint').textContent=selU?`Ordine per ${UNITS[selU.type].n}${selU.order?` (ora: ${ORDERS[selU.order].n})`:''}: tocca un ordine per comprarlo.`:'Tocca prima una tua unità, poi l\'ordine che vuoi darle. Ogni unità tiene un ordine alla volta. Sul campo puoi anche cliccarla (o tenerla premuta da telefono) per il menu rapido.';
   $('orders').innerHTML=Object.entries(ORDERS).map(([k,d])=>`<button class="ord${selU&&selU.order===k?' cur':''}" data-ord="${k}" ${!shop||p.gold<ORDER_COST||!selU?'disabled':''}>
       <span class="cost">${ORDER_COST}</span><span class="ic">${OIC(d)}</span>
@@ -2361,15 +2391,20 @@ function tcgCard(k,star,o={}){const d=UNITS[k],s=statsOf(k,star),r=roleOf(k);
     ${o.foot?`<div class="tfoot">${o.foot}</div>`:''}
   </article>`}
 let CM={type:null,star:1};
-function openCard(type,star){CM={type,star};drawCard();$('cardModal').classList.remove('hidden');$('cmClose').focus()}
-function drawCard(){$('cmCard').innerHTML=tcgCard(CM.type,CM.star);document.querySelectorAll('[data-cs]').forEach(b=>b.classList.toggle('on',+b.dataset.cs===CM.star))}
+function openCard(type,star){CM={type,star,buy:null};drawCard();$('cardModal').classList.remove('hidden');$('cmClose').focus()}
+function openShopCard(i){const p=ME(),t=p.shop[i];if(!t)return;CM={type:t,star:(p.shopStar||[])[i]===2?2:1,buy:i};drawCard();$('cardModal').classList.remove('hidden');$('cmClose').focus()}
+function drawCard(){const shopC=CM.buy!=null&&G&&ME().shop[CM.buy]===CM.type&&CM.star===(((ME().shopStar||[])[CM.buy]===2)?2:1)?shopCost(ME(),CM.buy):null;
+  $('cmCard').innerHTML=tcgCard(CM.type,CM.star,shopC!=null?{cost:shopC}:{});
+  {const el=$('cmBuy'),p=G&&ME(),i=CM.buy,ok=p&&i!=null&&G.phase==='shop'&&p.shop[i]===CM.type;el.classList.toggle('hidden',!ok);
+   if(ok){const c=shopCost(p,i),poor=p.gold<c;el.innerHTML=`<span class="pill gold">Oro ${p.gold}</span><button class="btn primary" data-buy="${i}" ${poor?'disabled':''}>${poor?'Oro insufficiente':`Compra ${UNITS[CM.type].n} · ${c} oro`}</button>`}}document.querySelectorAll('[data-cs]').forEach(b=>b.classList.toggle('on',+b.dataset.cs===CM.star))}
 function closeCard(){$('cardModal').classList.add('hidden')}
 document.addEventListener('click',e=>{
   const c=e.target.closest('[data-card]');if(c){e.preventDefault();const [t,st]=c.dataset.card.split(':');openCard(t,+st||1);return}
+  const sc=e.target.closest('[data-shopcard]');if(sc&&!e.target.closest('[data-buy]')&&G&&G.phase==='shop'){openShopCard(+sc.dataset.shopcard);return}
   const cs=e.target.closest('[data-cs]');if(cs){CM.star=+cs.dataset.cs;drawCard();return}
   if(e.target.id==='cmClose'||e.target.id==='cardModal')closeCard();
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard();const c=e.target.closest&&e.target.closest('.tcgbtn');if(c&&e.target===c&&!c.dataset.sel&&(e.key==='Enter'||e.key===' ')){e.preventDefault();c.click()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard();{const sc=e.target.closest&&e.target.closest('[data-shopcard]');if(sc&&(e.key==='Enter'||e.key===' ')){e.preventDefault();sc.click();return}}const c=e.target.closest&&e.target.closest('.tcgbtn');if(c&&e.target===c&&!c.dataset.sel&&(e.key==='Enter'||e.key===' ')){e.preventDefault();c.click()}});
 function renderCodex(){
   const RO=['thief','def','ctl','atk','sup'],ks=Object.keys(UNITS).filter(k=>!UNITS[k].hidden).sort((a,b)=>RO.indexOf(roleOf(a))-RO.indexOf(roleOf(b))||UNITS[a].t-UNITS[b].t);
   $('codex').innerHTML=`<div class="rolelegend">${RO.map(r=>`<span><i style="background:var(--r${r})"></i><b>${ROLES[r].n}</b> · ${ROLES[r].d}</span>`).join('')}</div>
@@ -2389,7 +2424,7 @@ document.addEventListener('click',e=>{
     if(b.bench){Object.assign(b,defaultPos(b.type,p.board.filter(x=>!x.bench).length,G.rng))}
     b.bench=!b.bench;renderAll();return}
   if(t.dataset.sell){sellUnit(p,+t.dataset.sell);if(G.sel===+t.dataset.sell)G.sel=null;toast('Venduta: +1 oro');renderAll();return}
-  if(t.dataset.buy!==undefined){const bt=p.shop[+t.dataset.buy],r=buyUnit(p,+t.dataset.buy,G.rng);if(bt&&!['gold','full','soldout','none'].includes(r)){telBuy(bt);buzz(10)}
+  if(t.dataset.buy!==undefined){const bt=p.shop[+t.dataset.buy],r=buyUnit(p,+t.dataset.buy,G.rng);if(bt&&!['gold','full','soldout','none'].includes(r)){telBuy(bt);buzz(10);if(!$('cardModal').classList.contains('hidden'))closeCard()}
     toast({gold:'Oro insufficiente.',full:'Campo e panchina pieni. Vendi un\'unità prima.',bench:'Campo pieno: l\'unità va in panchina.',merged:'Tre copie unite: unità ★★!',merged3:'Tre ★★ unite: unità ★★★ con potere speciale!',soldout:'Esaurito: tutte le copie di questo personaggio sono già in gioco.',ok:''}[r]||'');renderAll();return}
   if(t.dataset.ord!==undefined){
     const u=p.board.find(b=>b.uid===G.sel);
@@ -3409,8 +3444,8 @@ const COACH_STEPS=[
  {el:'#field',egg:1,t:"A destra c'è il nido del bot con il suo uovo: è quello da rubare e portare nel tuo nido. Ogni uovo portato a casa è una presa: vince chi arriva prima al numero di prese.",next:true},
  {el:'#shop',t:"Questo è il market: a ogni round ricevi oro e compri personaggi. Ogni carta mostra costo, ruolo, statistiche e contro chi è forte o debole.",next:true},
  {el:'#goldPill',t:"Qui vedi quanto oro hai: ora 4.",next:true},
- {el:'[data-buy="0"]',t:"Compra la Faina: è una ladra veloce che va a rubare l'uovo nemico. Tocca la sua carta.",wait:()=>ME().board.some(b=>b.type==='faina')},
- {el:'[data-buy="1"]',t:"Ora compra il Tacchino: un difensore che resta vicino al tuo uovo e rallenta i ladri.",wait:()=>ME().board.some(b=>b.type==='tacchino')},
+ {el:'[data-shopcard="0"]',t:"Compra la Faina: è una ladra veloce che va a rubare l'uovo nemico. Tocca la sua icona e poi Compra.",wait:()=>ME().board.some(b=>b.type==='faina')},
+ {el:'[data-shopcard="1"]',t:"Ora compra il Tacchino: un difensore che resta vicino al tuo uovo e rallenta i ladri. Tocca la sua icona e poi Compra.",wait:()=>ME().board.some(b=>b.type==='tacchino')},
  {el:'#board',t:"Questa è la tua squadra: le unità che compri scendono in campo, fino a 7. Le altre vanno in panchina.",next:true},
  {el:'#field',unit:'faina',t:"Trascina la Faina sul campo un po' più avanti, verso il centro: ognuno parte da dove lo metti.",start:()=>{const f=ME().board.find(b=>b.type==='faina');COACH.px=f?f.px:0},wait:()=>{const f=ME().board.find(b=>b.type==='faina');return f&&Math.abs(f.px-COACH.px)>25},next:'Salta'},
  {el:'#readyBtn',t:"Quando sei pronto premi Pronto: le squadre si rivelano e gli automi giocano da soli.",wait:()=>G.phase!=='shop'},

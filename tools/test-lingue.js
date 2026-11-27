@@ -2,6 +2,7 @@
 // e segnala i testi rimasti in italiano (a schermo e disegnati sul campo).
 // Uso: node tools/test-lingue.js [en|es|fr]   (senza argomento: tutte e tre)
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 // Un testo è "rimasto in italiano" se coincide con una frase del dizionario (o la contiene)
 // e quella frase nella lingua scelta ha una traduzione diversa.
@@ -35,9 +36,9 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
     // l'ultima scheda apre il tutorial guidato: leggo i primi fumetti e le scritte sul campo, poi esco
     await p.waitForSelector('#coach:not(.hidden)');
     for(let i=0;i<4;i++){await p.waitForTimeout(250);await grab();await p.click('#coachNext')}
-    await p.click('[data-buy="0"]');await p.waitForTimeout(250);await grab();await p.click('#coachExit');await p.waitForSelector('#lobby:not(.hidden)');await grab();
+    await p.click('[data-shopcard="0"]');await shopBuy(p);await p.waitForTimeout(250);await grab();await p.click('#coachExit');await p.waitForSelector('#lobby:not(.hidden)');await grab();
     await p.evaluate(()=>openPlay('bot','classic')).then(()=>p.click('#botBtn')).catch(()=>{});await p.waitForTimeout(400);await grab();
-    for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(cs[0])await cs[0].click();await grab()}
+    for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-shopcard]:not(.off)');if(cs[0])(await cs[0].click(),await shopBuy(p));await grab()}
     const c=await p.$('[data-card]:visible');if(c){await c.click();await p.waitForTimeout(200);await grab();await p.keyboard.press('Escape')}
     await p.click('#readyBtn');await p.waitForTimeout(1500);await grab();
     await p.click('[data-speed="4"]').catch(()=>{});

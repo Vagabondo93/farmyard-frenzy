@@ -920,5 +920,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Cane, Gatto, Oca, Tacchino, Asino": "Dog, Cat, Goose, Turkey, Donkey",
 "📲 Installa l'app sul telefono": "📲 Install the app on your phone",
 "Su iPhone: tocca Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\". Il gioco si aprirà a tutto schermo come un'app.": "On iPhone: tap Share (the square with the arrow), then \"Add to Home Screen\". The game will open full screen like an app.",
-"App installata: la trovi tra le app del telefono.": "App installed: you will find it among your phone apps."
+"App installata: la trovi tra le app del telefono.": "App installed: you will find it among your phone apps.",
+"Scheda di {0}": "{0} card",
+"Compra {0} · {1} oro": "Buy {0} · {1} gold"
 };

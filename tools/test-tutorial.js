@@ -1,6 +1,7 @@
 // Test del tutorial guidato: segue tutti i passi come un giocatore e controlla che arrivi alla fine.
 // Uso: node tools/test-tutorial.js
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 const ok=(c,m)=>{console.log((c?'  OK   ':'  NO   ')+m);if(!c)process.exitCode=1};
 function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let f=q.url.split('?')[0];if(f==='/')f='/index.html';
@@ -17,7 +18,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   const next=async()=>{await p.waitForSelector('#coachNext:not(.hidden)');await p.click('#coachNext')};
   await p.click('#tutBtn');await p.waitForSelector('#coach:not(.hidden)');ok(true,'il tutorial parte: '+(await p.textContent('#coachT')).slice(0,60)+'…');
   await next();await next();await next();await next();await next();
-  await p.click('[data-buy="0"]');await p.click('[data-buy="1"]');
+  await p.click('[data-shopcard="0"]');await shopBuy(p);await p.click('[data-shopcard="1"]');await shopBuy(p);
   ok(await p.evaluate(()=>window.__g().players[0].board.map(b=>b.type).join()==='faina,tacchino'),'comprati Faina e Tacchino');
   await next(); // squadra
   await next(); // salta il trascinamento
@@ -27,7 +28,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000});
   await p.waitForFunction(()=>document.getElementById('coachT').textContent.includes('secondo round'));await p.click('#bBtn');
   await next();
-  await p.click('[data-buy="0"]');await p.click('[data-buy="1"]');
+  await p.click('[data-shopcard="0"]');await shopBuy(p);await p.click('[data-shopcard="1"]');await shopBuy(p);
   ok(await p.evaluate(()=>window.__g().players[0].board.some(b=>b.type==='faina'&&b.star===2)),'tre Faine unite in una Faina ★★');
   await p.waitForFunction(()=>document.getElementById('coachT').textContent.includes('selezionarla'));
   await p.click('#board [data-sel]');await p.click('[data-ord="scatto"]');

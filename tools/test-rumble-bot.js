@@ -3,6 +3,7 @@
 // e i due giocatori umani vedono le stesse uova a ogni round.
 // Uso: node tools/test-rumble-bot.js
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 const ok=(c,m)=>{console.log((c?'  OK   ':'  NO   ')+m);if(!c)process.exitCode=1};
 function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let f=q.url.split('?')[0];if(f==='/')f='/index.html';
@@ -11,7 +12,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   r.writeHead(200,{'Content-Type':f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.js')?'text/javascript':'application/octet-stream'});r.end(body)});
   s.listen(0,'127.0.0.1',()=>res(s))})}
 const phase=p=>p.evaluate(()=>window.__g()?.phase);
-const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}};
+const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-shopcard]:not(.off)');if(!cs[0])break;(await cs[0].click(),await shopBuy(p))}};
 const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){if(await p.isHidden('#game')){all=false;const b=await p.$('#banPool [data-ban]:not([aria-disabled="true"])');if(b)await b.click().catch(()=>{})}}if(all)return;await ps[0].waitForTimeout(150)}};
 (async()=>{
   const srv=await serve(),url=`http://127.0.0.1:${srv.address().port}/`,errs=[];

@@ -3,6 +3,7 @@
 // in squadre diverse vedono lo stesso risultato a ogni round.
 // Uso: node tools/test-duo.js
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 const ok=(c,m)=>{console.log((c?'  OK   ':'  NO   ')+m);if(!c)process.exitCode=1};
 function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let f=q.url.split('?')[0];if(f==='/')f='/index.html';
@@ -11,7 +12,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   r.writeHead(200,{'Content-Type':f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.js')?'text/javascript':'application/octet-stream'});r.end(body)});
   s.listen(0,'127.0.0.1',()=>res(s))})}
 const phase=p=>p.evaluate(()=>window.__g()?.phase);
-const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}};
+const buy=async p=>{for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-shopcard]:not(.off)');if(!cs[0])break;(await cs[0].click(),await shopBuy(p))}};
 // unità che girano intorno a un ostacolo ma restano ferme nello stesso punto per più di 2 s
 const stuck=p=>p.evaluate(()=>{const S=window.__g().sim;if(!S)return 0;const M=window.__pos=window.__pos||{};let n=0;
   for(const u of S.units){if(!u.alive||!u.nav||!(S.t-(u.navT||-9)<.1)||u.stun>0||u.snare>0||u.sleep>0||u.eatT>0){delete M[u.id];continue}

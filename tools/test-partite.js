@@ -3,6 +3,7 @@
 // Controlla: partita contro il bot, Royal Rumble contro i bot, 1 contro 1 online e Rumble online
 // (l'online usa un database finto in memoria del browser, tools/mock-db.js).
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.jpg':'image/jpeg','.webp':'image/webp','.png':'image/png'};
 function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{
@@ -13,8 +14,8 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{
   s.listen(0,'127.0.0.1',()=>res(s))})}
 const ok=(c,m)=>{console.log((c?'  OK   ':'  NO   ')+m);if(!c)process.exitCode=1};
 async function buyAndReady(p){
-  for(let k=0;k<4;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');let c=null;
-    for(const x of cs){if((await x.textContent()).match(/Faina|Ladro|Gazza|Topi|Talpa|Cane/)){c=x;break}}if(!c)c=cs[0];if(!c)break;await c.click()}
+  for(let k=0;k<4;k++){const cs=await p.$$('#shop [data-shopcard]:not(.off)');let c=null;
+    for(const x of cs){if((await x.textContent()).match(/Faina|Ladro|Gazza|Topi|Talpa|Cane/)){c=x;break}}if(!c)c=cs[0];if(!c)break;await c.click();await shopBuy(p)}
   await p.click('#readyBtn');
 }
 const phase=p=>p.evaluate(()=>window.__g()?.phase);

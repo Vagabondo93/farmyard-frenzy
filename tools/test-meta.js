@@ -1,6 +1,7 @@
 // Test della sezione Meta: a fine partita si salva un riepilogo anonimo delle scelte e la home lo mostra.
 // Uso: node tools/test-meta.js
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 const ok=(c,m)=>{console.log((c?'  OK   ':'  NO   ')+m);if(!c)process.exitCode=1};
 function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let f=q.url.split('?')[0];if(f==='/')f='/index.html';
@@ -19,13 +20,13 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   await p.evaluate(()=>openPlay('bot','classic'));await p.selectOption('#winSel','1');await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<12;r++){
     {// compra la carta più economica, così resta oro per l'ordine
-     const i=await p.evaluate(()=>{let best=-1,bc=99;for(const el of document.querySelectorAll('#shop [data-buy]:not(.off)')){if(/Asino/.test(el.querySelector('.tname').textContent))continue;
-       const c=+el.querySelector('.tcost').textContent;if(c<bc){bc=c;best=+el.dataset.buy}}return best});
-     const c=i>=0&&await p.$(`#shop [data-buy="${i}"]:not(.off)`);if(c)await c.click()}
+     const i=await p.evaluate(()=>{let best=-1,bc=99;for(const el of document.querySelectorAll('#shop [data-shopcard]:not(.off)')){if(/Asino/.test(el.getAttribute('aria-label')))continue;
+       const c=+(el.querySelector('.si-cost')?.textContent??el.querySelector('[data-buy]').getAttribute('aria-label').match(/per (\d+) oro/)[1]);if(c<bc){bc=c;best=+el.dataset.shopcard}}return best});
+     const c=i>=0&&await p.$(`#shop [data-shopcard="${i}"]:not(.off)`);if(c){await c.click();await shopBuy(p)}}
     // sceglie un'unità che accetta ordini (l'Asino non ne prende)
     for(const s of await p.$$('[data-sel]')){const ty=await p.evaluate(el=>{const g=window.__g();const b=g.players[g.me].board.find(x=>x.uid===+el.dataset.sel);return b&&b.type},s);
       if(ty&&ty!=='asino'){await s.click();const o=await p.$('#orders [data-ord]:not([disabled])');if(o)await o.click();break}}
-    for(let k=0;k<2;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}
+    for(let k=0;k<2;k++){const cs=await p.$$('#shop [data-shopcard]:not(.off)');if(!cs[0])break;(await cs[0].click(),await shopBuy(p))}
     await p.click('#readyBtn');await p.waitForFunction(()=>window.__g().phase==='battle',null,{timeout:20000});
     if(await p.isVisible('[data-speed="4"]'))await p.click('[data-speed="4"]');
     await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000});

@@ -920,5 +920,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Cane, Gatto, Oca, Tacchino, Asino": "Chien, Chat, Oie, Dindon, Âne",
 "📲 Installa l'app sul telefono": "📲 Installer l’app sur le téléphone",
 "Su iPhone: tocca Condividi (il quadrato con la freccia) e poi \"Aggiungi alla schermata Home\". Il gioco si aprirà a tutto schermo come un'app.": "Sur iPhone : touche Partager (le carré avec la flèche) puis « Sur l’écran d’accueil ». Le jeu s’ouvrira en plein écran comme une app.",
-"App installata: la trovi tra le app del telefono.": "App installée : tu la trouveras parmi les apps du téléphone."
+"App installata: la trovi tra le app del telefono.": "App installée : tu la trouveras parmi les apps du téléphone.",
+"Scheda di {0}": "Fiche de {0}",
+"Compra {0} · {1} oro": "Acheter {0} · {1} or"
 };

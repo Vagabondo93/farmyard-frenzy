@@ -1,6 +1,7 @@
 // Test del sito pubblico con Firebase simulato (tools/mock-firebase.js): accesso, profilo, partita online, uscita.
 // Uso: node tools/test-firebase.js
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path'),http=require('http');
+const shopBuy=async p=>{const b=await p.$('#cmBuy:not(.hidden) [data-buy]:not([disabled])');if(b)await b.click();if(await p.isVisible('#cardModal'))await p.click('#cmClose')}; // compra dalla scheda del market
 const ROOT=path.join(__dirname,'..');
 const ok=(c,m)=>{console.log((c?'  OK   ':'  NO   ')+m);if(!c)process.exitCode=1};
 function serve(cfg){return new Promise(res=>{const s=http.createServer((q,r)=>{let f=q.url.split('?')[0];if(f==='/')f='/index.html';
@@ -34,7 +35,7 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
   await P[1].fill('#codeIn',await P[0].textContent('#roomCode'));await P[1].click('#joinBtn');await P[0].waitForSelector('#pvpStart:not([disabled]):not(.hidden)');await P[0].click('#pvpStart');
   await doBans(P);for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   for(let r=0;r<2;r++){
-    for(const p of P){for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-buy]:not(.off)');if(!cs[0])break;await cs[0].click()}await p.click('#readyBtn')}
+    for(const p of P){for(let k=0;k<3;k++){const cs=await p.$$('#shop [data-shopcard]:not(.off)');if(!cs[0])break;(await cs[0].click(),await shopBuy(p))}await p.click('#readyBtn')}
     for(const p of P){await p.bringToFront();await p.waitForFunction(()=>['battle','result','over'].includes(window.__g().phase),null,{timeout:60000});if(await p.evaluate(()=>window.__g().phase==='battle')&&await p.isVisible('[data-speed="4"]'))await p.click('[data-speed="4"]')}
     for(const p of P){await p.bringToFront();await p.waitForFunction(()=>['result','over'].includes(window.__g().phase),null,{timeout:120000})}
     const s=await Promise.all(P.map(p=>p.evaluate(()=>JSON.stringify([window.__g().score,window.__g().sim.t.toFixed(3)]))));
