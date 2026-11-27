@@ -409,6 +409,15 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
 #timerPill.urgent{background:var(--red);color:#fff}
 .hidden{display:none!important}
 .rotatehint{display:none}
+.rotateov{display:none}
+@media (orientation:portrait) and (max-width:600px){
+  body:has(#game:not(.hidden)):not(.keepport) .rotateov{display:grid;position:fixed;inset:0;z-index:200;place-items:center;padding:24px;background:rgba(12,18,8,.92);color:#fff;text-align:center}
+  .rotbox{display:grid;gap:14px;justify-items:center;max-width:320px}.rotbox h2{margin:0;font-size:30px;font-family:var(--f-title,inherit)}.rotbox p{margin:0;font-size:16px;line-height:1.4;opacity:.9}
+  .rotph{font-size:86px;line-height:1;animation:rotph 2.2s ease-in-out infinite}
+  .rotbox .btn{margin-top:8px;background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)}
+}
+@keyframes rotph{0%,20%{transform:rotate(0)}50%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.rotph{animation:none}}
 @media (orientation:portrait) and (max-width:600px){.rotatehint{display:block;margin:0;text-align:center;font-size:13px;font-weight:700;color:var(--muted);background:var(--chip);border-radius:10px;padding:6px 10px}}
 /* telefono in orizzontale: campo grande a sinistra sempre visibile, market, ordini e squadra in una colonna a destra */
 @media (orientation:landscape) and (max-height:520px){
@@ -687,6 +696,11 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   </div>
 
   <p class="rotatehint">📱↻ Gira il telefono in orizzontale: campo più grande e market a fianco.</p>
+  <div class="rotateov" id="rotateOv" role="dialog" aria-modal="true" aria-labelledby="rotT">
+    <div class="rotbox"><div class="rotph" aria-hidden="true">📱</div><h2 id="rotT">Ruota il telefono</h2>
+      <p>Il gioco è pensato in orizzontale: campo più grande e market a fianco.</p>
+      <button class="btn" id="rotKeep">Continua in verticale</button></div>
+  </div>
   <div class="main">
     <nav class="quicknav" id="quickNav" aria-label="Vai a">
       <button data-go="arenaSec" aria-label="Campo">🏟️<span>Campo</span></button>
@@ -3667,6 +3681,7 @@ document.addEventListener('click',e=>{
     else if(p.board.filter(x=>x.bench).length>=MAXBENCH)return;b.bench=!b.bench}
   if(act==='sell'){const b=sel[0];if(!b)return;sellUnit(p,b.uid);if(G.sel===b.uid)G.sel=null;toast('Venduta: +1 oro')}
   RSEL=[];renderAll();renderRoster()});
+$('rotKeep').onclick=()=>document.body.classList.add('keepport');
 // linguette rapide (telefono): portano alla sezione e si illumina quella che stai guardando
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'})});
 addEventListener('scroll',()=>{if($('game').classList.contains('hidden'))return;let cur='arenaSec';

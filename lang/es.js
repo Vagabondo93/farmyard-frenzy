@@ -955,5 +955,8 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Tocca un'unità per spostarla o venderla. Toccane una in campo e una in panchina per scambiarle.": "Toca una unidad para moverla o venderla. Toca una en el campo y una en el banquillo para cambiarlas.",
 "↓ In panchina": "↓ Al banquillo",
 "Riserva: campo e panchina": "Reserva: campo y banquillo",
-"Campo e panchina": "Campo y banquillo"
+"Campo e panchina": "Campo y banquillo",
+"Ruota il telefono": "Gira el teléfono",
+"Il gioco è pensato in orizzontale: campo più grande e market a fianco.": "El juego está pensado en horizontal: campo más grande y mercado al lado.",
+"Continua in verticale": "Seguir en vertical"
 };

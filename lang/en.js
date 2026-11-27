@@ -955,5 +955,8 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Tocca un'unità per spostarla o venderla. Toccane una in campo e una in panchina per scambiarle.": "Tap a unit to move or sell it. Tap one on the field and one on the bench to swap them.",
 "↓ In panchina": "↓ To the bench",
 "Riserva: campo e panchina": "Reserve: field and bench",
-"Campo e panchina": "Field and bench"
+"Campo e panchina": "Field and bench",
+"Ruota il telefono": "Rotate your phone",
+"Il gioco è pensato in orizzontale: campo più grande e market a fianco.": "The game is designed for landscape: bigger field and shop on the side.",
+"Continua in verticale": "Keep playing in portrait"
 };
