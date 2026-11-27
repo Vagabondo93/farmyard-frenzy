@@ -393,7 +393,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Battaglia": "Battle",
 "Fine round": "End of round",
 "Fine partita": "End of match",
-"Abbandona": "Quit",
+"Abbandona": "Leave",
 "Menu": "Menu",
 "Tu 🥚{0}": "You 🥚{0}",
 "👑 Royal Rumble · {0}/{1} in gara": "👑 Royal Rumble · {0}/{1} still in",
@@ -962,5 +962,12 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).": "Places a beehive at the start: the bees sting (5 damage per second) and slow enemies within 85 by 40%. With the smoker he hits up close, up to 70, flyers included (3 damage).",
 "Suona la carica ogni 9 secondi.": "Sounds the charge every 9 seconds.",
 "Compra unità dal Market qui sotto ▾": "Buy units from the Shop below ▾",
-"Spaventapasseri ★★": "Scarecrow ★★"
+"Spaventapasseri ★★": "Scarecrow ★★",
+"⚠️ Attenzione": "⚠️ Warning",
+"Proseguendo abbandoni la partita e concedi la vittoria.": "If you continue you leave the match and concede the win.",
+"Resta in partita": "Stay in the match",
+"Stai giocando contro il bot: la partita va persa, ma l'Elo non cambia.": "You are playing against the bot: the match is lost, but your Elo does not change.",
+"L'avversario vince la partita e tu perdi punti Elo, come in una sconfitta.": "Your opponent wins the match and you lose Elo points, as in a defeat.",
+"La tua squadra prosegue senza di te: i tuoi posti restano vuoti.": "Your team carries on without you: your slots stay empty.",
+"Concedi la vittoria all'avversario. È un'amichevole: l'Elo non cambia.": "You concede the win to your opponent. It is a friendly: your Elo does not change."
 };

@@ -45,7 +45,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   {const r=await run([{t:'mucca',x:110,y:270}],[{t:'ladro',x:120,y:270}],20);
     const l=r.hp['1ladro'];ok(l&&+l.split('/')[0]<+l.split('/')[1],`la Mucca che spinge fa anche danno al Ladro (vita ${l})`)}
   // Nebbia: due nemici sul ponte non devono fare avanti e indietro senza combattere
-  await p.click('#menuBtn');await p.evaluate(()=>openPlay('bot','fog'));await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
+  await p.click('#menuBtn');if(await p.isVisible('#leaveYes'))await p.click('#leaveYes');await p.evaluate(()=>openPlay('bot','fog'));await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
   {const r=await p.evaluate(()=>{const g=window.__g(),T=window.__t;
     g.players[0].ovr=[{uid:1,type:'gatto',star:1,order:null,bench:false,px:430,py:96},{uid:2,type:'ladro',star:1,order:'attesa',bench:false,px:40,py:500}];
     g.players[1].ovr=[{uid:1,type:'puzzola',star:1,order:'attesa',bench:false,px:455,py:96},{uid:2,type:'tartaruga',star:1,order:null,bench:false,px:40,py:40}];
@@ -56,7 +56,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
     ok(r.flips<12&&r.hp<r.hp0,`sul ponte in Nebbia Gatto e Puzzola si affrontano senza fare avanti e indietro (cambi di direzione ${r.flips}, vita Puzzola ${r.hp0}→${r.hp})`)}
   // Asino: esca che si difende
   console.log('Asino');
-  await p.click('#menuBtn');await p.evaluate(()=>openPlay('bot','classic'));await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
+  await p.click('#menuBtn');if(await p.isVisible('#leaveYes'))await p.click('#leaveYes');await p.evaluate(()=>openPlay('bot','classic'));await p.click('#botBtn');await p.waitForSelector('#game:not(.hidden)');
   {const r=await p.evaluate(()=>{const g=window.__g(),T=window.__t,mk=(t,o,x,y)=>({uid:Math.floor(Math.random()*1e6),type:t,star:1,order:o,bench:false,px:x,py:y});
     const sim=(mine,foe,secs)=>{g.players[0].ovr=mine;g.players[1].ovr=foe;const S=T.makeSim(11);g.players[0].ovr=null;g.players[1].ovr=null;for(let k=0;k<secs*60&&!S.over;k++)T.step(S,1/60);return S};
     // la Cacciatrice nemica spara all'Asino invece che al Ladro

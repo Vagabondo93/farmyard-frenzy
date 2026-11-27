@@ -39,7 +39,7 @@ function serve(){return new Promise(res=>{const s=http.createServer((q,r)=>{let 
   ok(sum(d.of)>0&&sum(d.bo)>0&&sum(d.fi)>0,`registra carte offerte (${sum(d.of)}), comprate (${sum(d.bo)}) e in campo (${sum(d.fi)})`);
   ok(sum(d.oc)>0&&Object.keys(d.ot||{}).length>0,`registra gli ordini dati (${sum(d.oc)})`);
   ok(!JSON.stringify(d).includes('MetaM')&&!JSON.stringify(d).includes('"meta"'),'il riepilogo non contiene nickname né id del giocatore');
-  await p.click('#menuBtn');await p.waitForSelector('#metaPanel');await p.waitForFunction(()=>document.querySelectorAll('#metaBody tr').length>0&&!/nessuna partita/i.test(document.getElementById('metaBody').textContent),null,{timeout:10000});
+  await p.click('#menuBtn');if(await p.isVisible('#leaveYes'))await p.click('#leaveYes');await p.waitForSelector('#metaPanel');await p.waitForFunction(()=>document.querySelectorAll('#metaBody tr').length>0&&!/nessuna partita/i.test(document.getElementById('metaBody').textContent),null,{timeout:10000});
   ok(true,'la sezione Meta mostra i personaggi: '+(await p.$$eval('#metaBody tr',r=>r.slice(0,3).map(x=>x.textContent.replace(/\s+/g,' ').trim()).join(' | '))));
   ok(errs.length===0,errs.length?'errori: '+errs.join(' | '):'nessun errore JavaScript');
   await b.close();srv.close();

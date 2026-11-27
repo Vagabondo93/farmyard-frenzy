@@ -537,7 +537,8 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
   #coach #coachT{font-size:13px;line-height:1.35;margin:0}#coach .btn{padding:7px 10px;font-size:14px}
   body:has(#coach:not(.hidden)) #game>#shopPanel,body:has(#coach:not(.hidden)) #game>#teamPanel{right:calc(min(300px,35vw) + 16px)}
   body:has(#coach:not(.hidden)) #shopPanel #shop.compact{grid-template-columns:repeat(3,minmax(0,1fr))}body:has(#coach:not(.hidden)) #shopPanel .ords{grid-template-columns:repeat(4,minmax(0,1fr))}
-  body.inbattle #game .quicknav{display:none!important}
+  body.inbattle #game .quicknav,body:has(.modal:not(.hidden)) #game .quicknav,body:has(.modal:not(.hidden)) #readyBtn{display:none!important}
+  #rosterModal,#cardModal{padding:8px!important}.rbox{max-height:calc(100dvh - 16px)!important}
   #speedBox{position:fixed;left:calc(max(16px,env(safe-area-inset-left,0px)) + 8px);bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:45}#speedBox .btn{padding:4px 10px!important;font-size:13px!important;box-shadow:0 3px 10px rgba(0,0,0,.35)}
   #game .quicknav [data-go="arenaSec"]{display:none!important}#game .quicknav .qn-roster{display:grid!important}
   #rosterModal,#cardModal{padding:8px}
@@ -753,6 +754,14 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
     </div>
   </div>
 
+  <div class="modal hidden" id="leaveModal" role="alertdialog" aria-modal="true" aria-labelledby="leaveH">
+    <div class="mbox" style="max-width:420px;display:grid;gap:12px;text-align:left">
+      <h2 id="leaveH" style="margin:0">⚠️ Attenzione</h2>
+      <p style="margin:0"><b>Proseguendo abbandoni la partita e concedi la vittoria.</b></p>
+      <p id="leaveT" style="margin:0"></p>
+      <div class="row" style="justify-content:flex-end;gap:8px"><button class="btn" id="leaveNo">Resta in partita</button><button class="btn sell" id="leaveYes">Abbandona</button></div>
+    </div>
+  </div>
   <div class="modal hidden" id="rosterModal" role="dialog" aria-modal="true" aria-label="Campo e panchina">
     <div class="rbox">
       <div class="rcols">
@@ -3322,11 +3331,20 @@ function pvpResolve(){
 // chi non risponde 15 s dopo la scadenza gioca il round con la squadra vuota, così gli altri non restano bloccati
 async function sendAfk(path,extra){try{const r=DB.doc(path),sn=await r.get();if(!sn.exists)await r.set({...extra,board:[],afk:true,at:Date.now(),by:'tempo scaduto'})}catch(e){}}
 let menuArm=0;
-$('menuBtn').onclick=async()=>{
+// uscire da una partita in corso chiede sempre conferma, spiegando cosa succede
+$('menuBtn').onclick=()=>{
+  if(!G) return;
+  if(G.phase==='over'||G.tutorial){showLobby();return}
+  const t=!isMP()?"Stai giocando contro il bot: la partita va persa, ma l'Elo non cambia."
+    :G.ranked?"L'avversario vince la partita e tu perdi punti Elo, come in una sconfitta."
+    :G.duo?"La tua squadra prosegue senza di te: i tuoi posti restano vuoti.":"Concedi la vittoria all'avversario. È un'amichevole: l'Elo non cambia.";
+  $('leaveT').textContent=t;$('leaveModal').classList.remove('hidden');$('leaveNo').focus()};
+$('leaveNo').onclick=()=>$('leaveModal').classList.add('hidden');
+$('leaveYes').onclick=()=>{$('leaveModal').classList.add('hidden');leaveGame()};
+async function leaveGame(){
   if(!G) return;
   const onlineR=G.rmb&&G.rmb.online;
   if(!isMP()||G.phase==='over'){showLobby();return}
-  if(Date.now()-menuArm>3000){menuArm=Date.now();toast('Premi di nuovo Abbandona entro 3 secondi per lasciare la partita: conta come sconfitta.');return}
   if(G.duo){const r=G.phase==='shop'?G.round:G.round+1;
     try{await DB.doc(`rooms/${G.room}/dd/r${r}p${G.duo.me}`).set({round:r,idx:G.duo.me,left:true,board:[],by:UID})}catch(e){}
     showLobby();return}

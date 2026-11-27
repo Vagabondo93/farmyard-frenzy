@@ -962,5 +962,12 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).": "Au début, il place une ruche : les abeilles piquent (5 dégâts par seconde) et ralentissent de 40 % les ennemis à moins de 85. Avec l'enfumoir il frappe de près, jusqu'à 70, même ceux qui volent (3 dégâts).",
 "Suona la carica ogni 9 secondi.": "Sonne la charge toutes les 9 secondes.",
 "Compra unità dal Market qui sotto ▾": "Achète des unités au Marché ci-dessous ▾",
-"Spaventapasseri ★★": "Épouvantail ★★"
+"Spaventapasseri ★★": "Épouvantail ★★",
+"⚠️ Attenzione": "⚠️ Attention",
+"Proseguendo abbandoni la partita e concedi la vittoria.": "Si tu continues, tu quittes la partie et concèdes la victoire.",
+"Resta in partita": "Rester dans la partie",
+"Stai giocando contro il bot: la partita va persa, ma l'Elo non cambia.": "Tu joues contre le bot : la partie est perdue, mais ton Elo ne change pas.",
+"L'avversario vince la partita e tu perdi punti Elo, come in una sconfitta.": "Ton adversaire gagne la partie et tu perds des points Elo, comme pour une défaite.",
+"La tua squadra prosegue senza di te: i tuoi posti restano vuoti.": "Ton équipe continue sans toi : tes places restent vides.",
+"Concedi la vittoria all'avversario. È un'amichevole: l'Elo non cambia.": "Tu concèdes la victoire à ton adversaire. C’est une amicale : ton Elo ne change pas."
 };

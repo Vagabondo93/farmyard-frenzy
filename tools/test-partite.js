@@ -34,11 +34,11 @@ const doBans=async(ps)=>{for(let i=0;i<200;i++){let all=true;for(const p of ps){
     await p.goto(url);await p.click('#tutSkip');
     console.log('Partita contro il bot');await p.evaluate(()=>openPlay('bot','classic')).then(()=>p.click('#botBtn'));
     for(let r=0;r<3;r++){await playRound([p]);if(await phase(p)==='over')break;await p.click('#bBtn')}
-    ok(true,'3 round giocati');await p.click('#menuBtn');
+    ok(true,'3 round giocati');await p.click('#menuBtn');if(await p.isVisible('#leaveYes'))await p.click('#leaveYes');
     console.log('Royal Rumble contro 7 bot');await p.evaluate(()=>openPlay('bot','rumble')).then(()=>p.click('#rumbleBot'));
     for(let r=0;r<3;r++){await playRound([p]);if(await phase(p)==='over')break;await p.click('#bBtn')}
     const st=await p.evaluate(()=>window.__g().rmb.P.map(x=>x.lives+(x.out?'x':'')).join(' '));ok(true,'uova dopo 3 round: '+st);
-    console.log('Contro il bot con ban e scelte');await p.click('#menuBtn');
+    console.log('Contro il bot con ban e scelte');await p.click('#menuBtn');if(await p.isVisible('#leaveYes'))await p.click('#leaveYes');
     await p.evaluate(()=>openPlay('bot','classic'));await p.check('#banOpt');await p.click('#botBtn');
     for(let i=0;i<300&&await p.isHidden('#game');i++){const c=await p.$('#botBanPool [data-bban]:not([aria-disabled="true"])');if(c)await c.click().catch(()=>{});await p.waitForTimeout(150)}
     const bb=await p.evaluate(()=>{const g=window.__g();return {pool:g.pool,bans:g.bans,picks:g.picks}});
