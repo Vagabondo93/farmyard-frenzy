@@ -1370,7 +1370,7 @@ const UNITS={
    d:"Si apposta a metà campo e caccia gli animali piccoli (Topi, Faina, Talpa, Lepre, Puzzola) con danno +40%. Sente le talpe sottoterra entro 75 e le fa riemergere. Ogni animale piccolo che elimina lo rende più sazio e lento del 10%.",beats:'Topi, Faina, Talpa',loses:'Cane, Lupo, Cacciatrice'},
  mucca:{n:'Mucca',i:'🐄',t:2,cost:2,minRound:3,tags:['Animale','Guardiano'],hp:340,dmg:9,spd:38,rng:20,cd:1.1,role:'guard',guardR:120,push:62,block:true,
    d:"Un muro lento e gigantesco vicino all'uovo: spinge via i nemici che le passano accanto e rallenta molto i ladri.",beats:'Ladro, Topi, Toro',loses:'Gazza, Cacciatrice, Mais'},
- lupo:{n:'Lupo',i:'🐺',t:2,cost:4,minRound:2,tags:['Animale','Killer'],hp:58,dmg:8,spd:90,rng:18,cd:.8,role:'hunter',advance:true,prio:{Guardiano:5},bonus:{Guardiano:1.6},bonusType:{asino:1.6},
+ lupo:{n:'Lupo',i:'🐺',t:2,cost:4,minRound:2,tags:['Animale','Killer'],hp:55,dmg:8,spd:90,rng:18,cd:.8,role:'hunter',advance:true,prio:{Guardiano:5},bonus:{Guardiano:1.6},bonusType:{asino:1.6},
    d:"Avanza nel campo nemico e caccia i difensori, con il 60% di danno in più su Cane, Gatto, Oca, Tacchino, Poliziotto e Asino.",beats:'Cane, Gatto, Oca, Tacchino, Asino',loses:'Cacciatrice, Galli-co, Mais'},
  falco:{n:'Falco',i:'🦅',t:2,tags:['Animale','Volante'],hp:27,dmg:3,spd:98,rng:16,cd:.7,flying:true,role:'hunter',prio:{Volante:8},bonus:{Volante:4.5},
    d:"Vola e caccia chi vola, con danno triplo su Corvo, Gazza e altri falchi. Senza bersagli volanti attacca il resto con poco danno.",beats:'Corvo, Gazza, Falco',loses:'Cacciatrice, Spaventapasseri, Poliziotto'},
@@ -1408,8 +1408,8 @@ const UNITS={
  arnia:{n:'Arnia',i:'🍯',t:1,hidden:true,tags:['Oggetto'],hp:60,dmg:0,spd:0,role:'static',aura:{r:85,dps:5,slow:.6}},
  germoglio:{n:'Germoglio',i:'🌱',t:1,hidden:true,tags:['Oggetto','Esca'],hp:45,dmg:0,spd:0,role:'static',lure:150,lureTag:'Animale',eat:.75},
  monete:{n:'Monete',i:'🪙',t:1,hidden:true,tags:['Oggetto','Esca'],hp:40,dmg:0,spd:0,role:'static',lure:120,lureTag:'Umano',eat:1.5,bribe:220},
- poliziotto:{n:'Poliziotto',i:'👮',t:2,cost:4,tags:['Umano','Guardiano'],hp:56,dmg:5.5,spd:55,rng:92,cd:1,ranged:true,role:'guard',guardR:230,prio:{Ladro:4,Umano:1},bonus:{Ladro:1.35},bonusType:{ladro:1.4},arrest:true,missFly:.5,
-   d:"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.",beats:'Tutti i ladri visibili',loses:'Assassino, Ladro invisibile'},
+ poliziotto:{n:'Poliziotto',i:'👮',t:2,cost:4,tags:['Umano','Guardiano'],hp:56,dmg:5.5,spd:55,rng:85,cd:1,ranged:true,role:'guard',guardR:230,prio:{Ladro:4,Umano:1},bonus:{Ladro:1.35},bonusType:{ladro:1.4},arrest:true,missFly:.5,
+   d:"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 33% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.",beats:'Tutti i ladri visibili',loses:'Assassino, Ladro invisibile'},
  bracconiere:{n:'Bracconiere',i:'🧔',t:2,cost:2,tags:['Umano','Trappole'],hp:38,dmg:5,spd:50,rng:18,cd:1,role:'guard',guardR:200,traps:3,trapEvery:5,stunEvery:4,stunT:.5,
    d:"Pattuglia attorno al punto in cui lo piazzi e si mette sulla strada dei ladri. Piazza una trappola ogni 5 s (4 s se ★★), fino a 3 attive (4 se ★★): bloccano 2,5 s e fanno 15 danni, ma non prendono chi vola o scava. Ogni 4 s il suo colpo stordisce per mezzo secondo. Se la tua squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Ladro, Cane, Assassino',loses:'Corvo, Talpa'},
  assassino:{n:'Assassino',i:'🥷',t:3,cost:5,tags:['Umano','Killer'],hp:36,dmg:7,spd:88,rng:18,cd:.8,role:'hunter',advance:true,prio:{Umano:5},bonus:{Umano:3.5},
@@ -1996,7 +1996,7 @@ function attack(u,t,S){
   else u.lunge=.12;
   if(u.def.missFly&&t.def.flying&&S.rng()<u.def.missFly){fx(S,t.x,t.y-24,'mancato!','#fff6c4');return}
   if(!u.def.ranged&&t.def.dodge&&S.rng()<t.def.dodge){fx(S,t.x,t.y-18,'schivata','#fff6c4');return}
-  if(u.def.arrest&&t.carrying!==null&&!t.def.unstoppable&&S.rng()<(u.def.arrestChance||(t.type==='ladro'?.6:u.star===2?.55:.4))){t.stun=u.def.arrestStun||1.5;t.cuffT=S.t+t.stun;fx(S,t.x,t.y-22,'ARRESTO!','#fff6c4');log(S,`${nm(u)} arresta ${nm(t)}: l'uovo cade`);dropEgg(t,S)}
+  if(u.def.arrest&&t.carrying!==null&&!t.def.unstoppable&&S.rng()<(u.def.arrestChance||(t.type==='ladro'?.6:u.star===2?.55:.33))){t.stun=u.def.arrestStun||1.5;t.cuffT=S.t+t.stun;fx(S,t.x,t.y-22,'ARRESTO!','#fff6c4');log(S,`${nm(u)} arresta ${nm(t)}: l'uovo cade`);dropEgg(t,S)}
   if(u.def.stunHit) t.stun=Math.max(t.stun,u.def.stunHit);
   if(u.def.stunEvery&&!(u.stunCd>0)&&!t.def.unstoppable){t.stun=Math.max(t.stun,u.def.stunT);u.stunCd=u.def.stunEvery;fx(S,t.x,t.y-22,'stordito!','#fff6c4')}
   damage(t,dmg,S,u);

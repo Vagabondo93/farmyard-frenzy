@@ -192,7 +192,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Germoglio": "Pousse",
 "Monete": "Pièces",
 "Poliziotto": "Policier",
-"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.": "Tire à moyenne distance et traque les voleurs : +35 % de dégâts contre tous les voleurs et presque le double contre le Voleur. Rate un tir sur deux contre ceux qui volent. Arrestation : quand il touche le porteur de l'œuf, dans 40 % des cas (55 % en ★★, 60 % contre le Voleur) il l'étourdit 1,5 s et lui fait lâcher l'œuf.",
+"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 33% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.": "Tire à moyenne distance et traque les voleurs : +35 % de dégâts contre tous les voleurs et presque le double contre le Voleur. Rate un tir sur deux contre ceux qui volent. Arrestation : quand il touche le porteur de l'œuf, dans 33 % des cas (55 % en ★★, 60 % contre le Voleur) il l'étourdit 1,5 s et lui fait lâcher l'œuf.",
 "Tutti i ladri visibili": "Tous les voleurs visibles",
 "Assassino, Ladro invisibile": "Assassin, Voleur invisible",
 "Bracconiere": "Braconnier",

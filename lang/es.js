@@ -192,7 +192,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.es={
 "Germoglio": "Brote",
 "Monete": "Monedas",
 "Poliziotto": "Policía",
-"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.": "Dispara a media distancia y persigue a los ladrones: +35% de daño contra todos los ladrones y casi el doble contra el Ladrón. Contra quien vuela falla uno de cada dos disparos. Arresto: cuando alcanza a quien lleva el huevo, el 40% de las veces (55% con ★★, 60% contra el Ladrón) lo aturde 1,5 s y le hace soltar el huevo.",
+"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 33% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.": "Dispara a media distancia y persigue a los ladrones: +35% de daño contra todos los ladrones y casi el doble contra el Ladrón. Contra quien vuela falla uno de cada dos disparos. Arresto: cuando alcanza a quien lleva el huevo, el 33% de las veces (55% con ★★, 60% contra el Ladrón) lo aturde 1,5 s y le hace soltar el huevo.",
 "Tutti i ladri visibili": "Todos los ladrones visibles",
 "Assassino, Ladro invisibile": "Asesino, Ladrón invisible",
 "Bracconiere": "Furtivo",

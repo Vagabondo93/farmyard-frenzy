@@ -192,7 +192,7 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.en={
 "Germoglio": "Sprout",
 "Monete": "Coins",
 "Poliziotto": "Police Officer",
-"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 40% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.": "Shoots at medium range and hunts thieves: +35% damage against all thieves and almost double against the Thief. Misses one shot in two against flyers. Arrest: when it hits the egg carrier, 40% of the time (55% at ★★, 60% against the Thief) it stuns them for 1.5 s and makes them drop the egg.",
+"Spara a distanza media e dà la caccia ai ladri: +35% di danno su tutti i ladri e quasi il doppio sul Ladro. Contro chi vola sbaglia un colpo su due. Arresto: quando colpisce chi porta l'uovo, nel 33% dei casi (55% se ★★, 60% sul Ladro) lo stordisce per 1,5 s e gli fa cadere l'uovo.": "Shoots at medium range and hunts thieves: +35% damage against all thieves and almost double against the Thief. Misses one shot in two against flyers. Arrest: when it hits the egg carrier, 33% of the time (55% at ★★, 60% against the Thief) it stuns them for 1.5 s and makes them drop the egg.",
 "Tutti i ladri visibili": "All visible thieves",
 "Assassino, Ladro invisibile": "Assassin, invisible Thief",
 "Bracconiere": "Poacher",
