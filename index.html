@@ -1521,6 +1521,8 @@ const ANIM={
   avicoltore:{h:42,stride:7,walk:{n:4,fw:98,fh:130,ax:.5},alarm:{n:4,fw:140,fh:118,ax:.487},atk:{n:4,fw:140,fh:118,ax:.487}},
   coltivatore:{h:42,stride:6,walk:{n:4,fw:100,fh:129,ax:.5},spawn:{n:4,fw:103,fh:127,ax:.498}},
   postina:{h:46,stride:10,walk:{n:4,fw:96,fh:129,ax:.5},carry:{n:4,fw:97,fh:124,ax:.5}},
+  carpentiera:{h:42,stride:7,walk:{n:4,fw:98,fh:130,ax:.5},spawn:{n:4,fw:118,fh:132,ax:.508}},
+  chioccia:{h:40,fps:2.5,hitT:.16,idle:{n:4,fw:116,fh:130,ax:.5},hit:{n:4,fw:139,fh:145,ax:.525}},
   falco:{h:40,fly:{n:4,fw:191,fh:216,ax:.542},atk:{n:4,fw:212,fh:207,ax:.515}},
   gazza:{h:34,fly:{n:4,fw:186,fh:193,ax:.994,ox:78},carry:{n:4,fw:184,fh:192,ax:.994,ox:78}},
 };
@@ -2243,7 +2245,12 @@ function drawField(){
 }
 // staccionata della carpentiera: un tratto verticale con paletti quadrati e due traverse
 const FENCE_W=6,FENCE_L=1.6;
+const FENCEIMG=new Image();FENCEIMG.src='icons/anim/staccionata-st.webp';// 3 stati: intera, rovinata, a pezzi
 function drawWall(x,y,hh,life,col){
+  if(FENCEIMG.complete&&FENCEIMG.naturalWidth){const fw=FENCEIMG.naturalWidth/3,fh=FENCEIMG.naturalHeight,f=life>.66?0:life>.33?1:2,L=hh*2+10,T=L*fh/fw;
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/2);ctx.drawImage(FENCEIMG,f*fw,0,fw,fh,-L/2,-T/2,L,T);ctx.restore();
+    if(col){ctx.fillStyle=col;for(const s of [-1,1]){ctx.beginPath();ctx.arc(x,y+s*(hh+2),2.6,0,7);ctx.fill()}}
+    return}
   ctx.save();ctx.lineCap='butt';
   ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(x-FENCE_W+3,y-hh+4,FENCE_W*2,hh*2);
   for(const dx of [-3,3]){ctx.strokeStyle='#5a3a1a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+dx,y-hh);ctx.lineTo(x+dx,y+hh);ctx.stroke();
@@ -2308,7 +2315,7 @@ function drawToken1(x,y,side,type,star,order,o={}){
   let yy=y; if(d.flying){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y+10,11,4,0,0,7);ctx.fill();yy=y-12}
   const lx=o.lunge>0?o.face*5:0;
   ctx.globalAlpha=o.invis?.38:o.disguised?.6:1;
-  const A=ANIM[type],ld=a=>a&&a.im.complete&&a.im.naturalWidth,base=A&&(ld(A.walk)?A.walk:ld(A.fly)?A.fly:ld(A.st)?A.st:ld(A.hit)?A.hit:ld(A.idle)?A.idle:null),sp=!!base;
+  const A=ANIM[type],ld=a=>a&&a.im.complete&&a.im.naturalWidth,base=A&&(ld(A.walk)?A.walk:ld(A.fly)?A.fly:ld(A.st)?A.st:ld(A.idle)?A.idle:ld(A.hit)?A.hit:null),sp=!!base;
   if(sp){// personaggio animato: anello ovale del colore della squadra ai piedi, poi il fotogramma giusto
     const fy=y+13,ring=o.col||SIDE[side].col,now=performance.now()/1000;
     if(d.flying){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(x,y+10,13,4.5,0,0,7);ctx.fill()}
@@ -2325,10 +2332,10 @@ function drawToken1(x,y,side,type,star,order,o={}){
     else if(ld(A.spawn)&&o.spAge!=null&&o.spAge<A.spawn.n*.14){sh=A.spawn;f=Math.floor(o.spAge/.14)}// lascia qualcosa in campo (monete, arnia…)
     else if(ld(A.trap)&&o.trAge!=null&&o.trAge<A.trap.n*.14){sh=A.trap;f=Math.floor(o.trAge/.14)}// piazza una trappola (Bracconiere)
     else if(ld(A.alarm)&&o.alAge!=null&&o.alAge<A.alarm.n*.15){sh=A.alarm;f=Math.floor(o.alAge/.15)}// grido d'allarme (Oca)
-    else if(ld(A.hit)&&o.hitAge!=null&&o.hitAge<A.hit.n*.09){sh=A.hit;f=Math.floor(o.hitAge/.09)}// colpito: animazione di danno
+    else if(ld(A.hit)&&o.hitAge!=null&&o.hitAge<A.hit.n*(A.hitT||.09)){sh=A.hit;f=Math.floor(o.hitAge/(A.hitT||.09))}// colpito: animazione di danno
     else if(sh===A.hit){f=0}
     else if(sh===A.sleep||sh===A.sleepc){f=Math.floor(now*2.5)%sh.n}
-    else if(sh===A.idle){f=Math.floor(now*6)%sh.n}// oggetti animati da fermi (arnia con le api)
+    else if(sh===A.idle){f=Math.floor(now*(A.fps||6))%sh.n}// oggetti animati da fermi (arnia con le api)
     else if(sh===A.st){const h=o.hpf??1;f=h>.75?0:h>.5?1:h>.25?2:3}// oggetti fermi: lo stato dipende dalla vita (il Mais perde pannocchie)
     else if(sh===A.fly||(sh===A.carry&&base===A.fly)){f=Math.floor(now*9)%sh.n;bob=Math.sin(now*4)*1.5}
     else if(o.moving){const ph=(o.walk||0)/A.stride;f=Math.floor(ph)%sh.n;bob=-Math.abs(Math.sin(ph*Math.PI))*1.6}
