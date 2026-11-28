@@ -1519,7 +1519,8 @@ const ANIM={
   gallico:{h:35,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:152,fh:130,ax:.507}},
   gufo:{h:46,fly:{n:4,fw:174,fh:170,ax:.546},atk:{n:4,fw:174,fh:182,ax:.495}},
   avicoltore:{h:42,stride:7,walk:{n:4,fw:98,fh:130,ax:.5},alarm:{n:4,fw:140,fh:118,ax:.487},atk:{n:4,fw:140,fh:118,ax:.487}},
-  coltivatore:{h:42,stride:6,walk:{n:4,fw:100,fh:129,ax:.5},spawn:{n:4,fw:103,fh:127,ax:.498}},
+  coltivatore:{h:42,stride:6,walk:{n:4,fw:100,fh:129,ax:.5},spawn:{n:4,fw:103,fh:127,ax:.498},atk:{n:4,fw:139,fh:116,ax:.566}},
+  procione:{h:32,stride:8,walk:{n:4,fw:193,fh:133,ax:.5},carry:{n:4,fw:190,fh:150,ax:.5},alarm:{n:4,fw:234,fh:158,ax:.471}},
   postina:{h:46,stride:10,walk:{n:4,fw:96,fh:129,ax:.5},carry:{n:4,fw:97,fh:124,ax:.5}},
   carpentiera:{h:42,stride:7,walk:{n:4,fw:98,fh:130,ax:.5},spawn:{n:4,fw:118,fh:132,ax:.508}},
   chioccia:{h:40,fps:2.5,hitT:.16,idle:{n:4,fw:116,fh:130,ax:.5},hit:{n:4,fw:139,fh:145,ax:.525}},
@@ -1997,8 +1998,8 @@ function thief(u,S,dt){
   if(u.carrying!==null){
     if(u.def.pass&&(u.passes||0)<(u.def.passes||1)){
       const a=S.units.find(x=>x.alive&&x.side===u.side&&x!==u&&canCarry(x)&&x.carrying===null&&!x.fake&&!x.underground&&x.stun<=0&&dist(u,x)<u.def.pass&&dist(x,home)<dist(u,home)-60);
-      if(a){const e=S.eggs[u.carrying];a.carrying=u.carrying;e.carrier=a.id;u.carrying=null;u.passes=(u.passes||0)+1;
-        S.tracers.push({x1:u.x,y1:u.y-12,x2:a.x,y2:a.y-12,t:.35,col:'#ffe680'});fx(S,a.x,a.y-26,'PASSAGGIO!','#ffe680');log(S,`${nm(u)} lancia l'uovo a ${nm(a)}`);return}
+      if(a){const e=S.eggs[u.carrying];a.carrying=u.carrying;e.carrier=a.id;u.carrying=null;u.passes=(u.passes||0)+1;u.thrown=(u.thrown||0)+1;
+        S.tracers.push({x1:u.x,y1:u.y-12,x2:a.x,y2:a.y-12,t:.45,T:.45,egg:true,col:'#ffe680'});fx(S,a.x,a.y-26,'PASSAGGIO!','#ffe680');log(S,`${nm(u)} lancia l'uovo a ${nm(a)}`);return}
     }
     if(u.order==='fianco'&&!u.flankBack){const wp={x:W/2,y:u.sy<H/2?36:H-36};if(dist(u,wp)<30)u.flankBack=true;else return moveTo(u,wp.x,wp.y,dt,S)}
     return moveTo(u,home.x,home.y,dt,S);
@@ -2245,10 +2246,11 @@ function drawField(){
 }
 // staccionata della carpentiera: un tratto verticale con paletti quadrati e due traverse
 const FENCE_W=6,FENCE_L=1.6;
+const EGGFLY=new Image();EGGFLY.src='icons/anim/uovo-fly.webp';// uovo lanciato (passaggio del Procione)
 const FENCEIMG=new Image();FENCEIMG.src='icons/anim/staccionata-st.webp';// 3 stati: intera, rovinata, a pezzi
-function drawWall(x,y,hh,life,col){
+function drawWall(x,y,hh,life,col,faceR){
   if(FENCEIMG.complete&&FENCEIMG.naturalWidth){const fw=FENCEIMG.naturalWidth/3,fh=FENCEIMG.naturalHeight,f=life>.66?0:life>.33?1:2,L=hh*2+10,T=L*fh/fw;
-    ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/2);ctx.drawImage(FENCEIMG,f*fw,0,fw,fh,-L/2,-T/2,L,T);ctx.restore();
+    ctx.save();ctx.translate(x,y);ctx.rotate(faceR?-Math.PI/2:Math.PI/2);ctx.drawImage(FENCEIMG,f*fw,0,fw,fh,-L/2,-T/2,L,T);ctx.restore();
     if(col){ctx.fillStyle=col;for(const s of [-1,1]){ctx.beginPath();ctx.arc(x,y+s*(hh+2),2.6,0,7);ctx.fill()}}
     return}
   ctx.save();ctx.lineCap='butt';
@@ -2477,18 +2479,21 @@ function render(){
   for(const c of S.clouds){ctx.save();ctx.globalAlpha=Math.min(1,c.t)*.35;ctx.fillStyle='#9bbf3a';ctx.beginPath();ctx.arc(X(c.x),c.y,c.r,0,7);ctx.fill();
     if(CLOUDIMG.complete&&CLOUDIMG.naturalWidth){ctx.globalAlpha=Math.min(1,c.t)*.75;const z=c.r*1.6;ctx.drawImage(CLOUDIMG,X(c.x)-z/2,c.y-z/2,z,z);ctx.restore();continue}
     ctx.globalAlpha=Math.min(1,c.t)*.5;ctx.fillStyle='#c9e07a';for(let k=0;k<5;k++){const a=k*1.26+S.t*.6;ctx.beginPath();ctx.arc(X(c.x)+Math.cos(a)*c.r*.5,c.y+Math.sin(a)*c.r*.4,c.r*.28,0,7);ctx.fill()}ctx.restore()}
-  for(const w of S.units) if(w.alive&&w.def.wall) drawWall(X(w.x),w.y,w.def.wall*FENCE_L,w.hp/w.maxHp,SIDE[C(w.side)].col);
+  for(const w of S.units) if(w.alive&&w.def.wall) drawWall(X(w.x),w.y,w.def.wall*FENCE_L,w.hp/w.maxHp,SIDE[C(w.side)].col,X(S.eggs[w.side].home.x)<X(w.x));
   const us=S.units.filter(u=>u.alive).sort((a,b)=>(a.def.flying-b.def.flying)||(a.y-b.y));
   for(const u of us){
     if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
-    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0;if(u.def.bugle&&(u.bugleT||0)>(u._pbt??1)+.5)u._alT=performance.now();u._pbt=u.bugleT??1;if(u.def.lane&&performance.now()-(u._alT||0)>2500&&S.units.some(e=>e.alive&&e.side===u.side&&e.def.flying&&Math.hypot(e.x-u.x,e.y-u.y)<60))u._alT=performance.now();if(u.def.heal&&performance.now()-(u._alT||0)>2000&&S.units.some(e=>e.alive&&e.side===u.side&&e!==u&&e.hp<e.maxHp&&Math.hypot(e.x-u.x,e.y-u.y)<(u.def.healR||90)&&(e.def.tags.includes('Animale')||u.def.healAll)))u._alT=performance.now()}
+    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();if((u.thrown||0)>(u._pth||0))u._alT=performance.now();u._pth=u.thrown||0;u._pac=u.alarmCd||0;if(u.def.bugle&&(u.bugleT||0)>(u._pbt??1)+.5)u._alT=performance.now();u._pbt=u.bugleT??1;if(u.def.lane&&performance.now()-(u._alT||0)>2500&&S.units.some(e=>e.alive&&e.side===u.side&&e.def.flying&&Math.hypot(e.x-u.x,e.y-u.y)<60))u._alT=performance.now();if(u.def.heal&&performance.now()-(u._alT||0)>2000&&S.units.some(e=>e.alive&&e.side===u.side&&e!==u&&e.hp<e.maxHp&&Math.hypot(e.x-u.x,e.y-u.y)<(u.def.healR||90)&&(e.def.tags.includes('Animale')||u.def.healAll)))u._alT=performance.now()}
     drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{st:statusOf(u,S),carry:u.carrying!==null,sleep:u.sleep>0,emAge:u._emT?(performance.now()-u._emT)/1000:null,buAge:u._buT?(performance.now()-u._buT)/1000:null,trAge:u._trT?(performance.now()-u._trT)/1000:null,spAge:u._spT?(performance.now()-u._spT)/1000:null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null&&!(ANIM[u.type]&&ANIM[u.type].carry&&ANIM[u.type].carry.im.naturalWidth)) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.lb>0){ctx.font='11px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.fillText('💨',X(u.x)-(F?-1:1)*u.face*18,u.y-22)}
   }
-  for(const t of S.tracers){ctx.globalAlpha=Math.min(1,t.t*7);ctx.strokeStyle=t.col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(t.x1),t.y1);ctx.lineTo(X(t.x2),t.y2);ctx.stroke();ctx.globalAlpha=1}
+  for(const t of S.tracers)if(t.egg){const p=1-t.t/t.T,x=X(t.x1+(t.x2-t.x1)*p),y=t.y1+(t.y2-t.y1)*p-Math.sin(p*Math.PI)*Math.min(60,Math.hypot(t.x2-t.x1,t.y2-t.y1)*.3);
+    if(EGGFLY.complete&&EGGFLY.naturalWidth){const fw=EGGFLY.naturalWidth/4,fh=EGGFLY.naturalHeight,f=Math.floor(p*10)%4,z=22;ctx.drawImage(EGGFLY,f*fw,0,fw,fh,x-z*fw/fh/2,y-z/2,z*fw/fh,z)}
+    else{ctx.fillStyle='#ffd23a';ctx.beginPath();ctx.ellipse(x,y,6,8,p*9,0,7);ctx.fill()}}
+  for(const t of S.tracers)if(!t.egg){ctx.globalAlpha=Math.min(1,t.t*7);ctx.strokeStyle=t.col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(t.x1),t.y1);ctx.lineTo(X(t.x2),t.y2);ctx.stroke();ctx.globalAlpha=1}
   ctx.textAlign='center';ctx.textBaseline='middle';
   for(const f of S.fx){ctx.globalAlpha=Math.min(1,f.t*2);ctx.font='bold 13px Nunito,sans-serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';
     const y=f.y-(1.1-f.t)*24;ctx.strokeText(f.text,X(f.x),y);ctx.fillStyle=f.col;ctx.fillText(f.text,X(f.x),y);ctx.globalAlpha=1}
