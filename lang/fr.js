@@ -969,5 +969,8 @@ window.FF_I18N=window.FF_I18N||{};window.FF_I18N.fr={
 "Stai giocando contro il bot: la partita va persa, ma l'Elo non cambia.": "Tu joues contre le bot : la partie est perdue, mais ton Elo ne change pas.",
 "L'avversario vince la partita e tu perdi punti Elo, come in una sconfitta.": "Ton adversaire gagne la partie et tu perds des points Elo, comme pour une défaite.",
 "La tua squadra prosegue senza di te: i tuoi posti restano vuoti.": "Ton équipe continue sans toi : tes places restent vides.",
-"Concedi la vittoria all'avversario. È un'amichevole: l'Elo non cambia.": "Tu concèdes la victoire à ton adversaire. C’est une amicale : ton Elo ne change pas."
+"Concedi la vittoria all'avversario. È un'amichevole: l'Elo non cambia.": "Tu concèdes la victoire à ton adversaire. C’est une amicale : ton Elo ne change pas.",
+"La partita sta per iniziare": "La partie va commencer",
+"🚫 Bannati": "🚫 Bannis",
+"📌 Scelti: di sicuro in partita": "📌 Choisis : forcément dans la partie"
 };

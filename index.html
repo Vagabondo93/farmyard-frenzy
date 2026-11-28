@@ -321,6 +321,14 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .tpow.on{border-style:solid;border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--ink)}
 .qn-roster{display:none!important}
 .popx{display:none}
+.countov{position:fixed;inset:0;z-index:150;display:grid;place-items:center;padding:16px;background:rgba(12,18,8,.9);color:#fff;text-align:center}
+.countov.hidden{display:none}
+.cobox{display:grid;gap:10px;justify-items:center;max-width:min(760px,100%);max-height:100%;overflow:auto}
+.cot{margin:0;font-size:18px;font-weight:800;opacity:.9}.conum{font-family:var(--f-title,inherit);font-size:clamp(56px,14vh,110px);line-height:1;color:#ffd75e;text-shadow:0 4px 0 rgba(0,0,0,.35);animation:copop 1s ease-out infinite}
+@keyframes copop{0%{transform:scale(1.35);opacity:.4}25%{transform:scale(1);opacity:1}}@media (prefers-reduced-motion:reduce){.conum{animation:none}}
+.corow{display:grid;gap:6px;justify-items:center}.corow h3{margin:0;font-size:15px;opacity:.85}.cochips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.cochip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:999px;padding:3px 10px 3px 4px;font-weight:700;font-size:14px}
+.cochip .uimg{width:28px;height:28px}.cochip.ban{text-decoration:line-through;opacity:.75}.cochip.ban .uimg{filter:grayscale(1)}
 .qni{width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 .rbox{width:100%;max-width:760px;max-height:100%;overflow:auto;background:var(--panel);border-radius:18px;padding:12px;display:grid;gap:10px}
 .rcols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rcols section{background:var(--chip);border-radius:14px;padding:8px}
@@ -754,6 +762,9 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
     </div>
   </div>
 
+  <div class="countov hidden" id="countOv" role="dialog" aria-modal="true" aria-labelledby="coT">
+    <div class="cobox"><p class="cot" id="coT">La partita sta per iniziare</p><div class="conum" id="coNum" aria-live="assertive">5</div><div id="coRecap"></div></div>
+  </div>
   <div class="modal hidden" id="leaveModal" role="alertdialog" aria-modal="true" aria-labelledby="leaveH">
     <div class="mbox" style="max-width:420px;display:grid;gap:12px;text-align:left">
       <h2 id="leaveH" style="margin:0">⚠️ Attenzione</h2>
@@ -1543,7 +1554,15 @@ function newMatch(o={}){
   G.tel=G.tutorial?null:{of:{},bo:{},fi:{},dw:{},dl:{},oc:{},ot:{}};G.players[G.me].isMe=true;
   $('log').innerHTML='<div class="empty">Gli eventi della battaglia appariranno qui.</div>';
   showGame(true);startShop();
+  if(!G.tutorial)startCountdown();
 }
+
+// conto alla rovescia di 5 s prima della partita; se ci sono stati ban e scelte, li riassume
+function startCountdown(){if(window.FF_NOCOUNT)return;const ov=$('countOv'),chip=(k,c)=>UNITS[k]?`<span class="cochip ${c}">${IC(UNITS[k])}${UNITS[k].n}</span>`:'';
+  let h='';if(G.bans&&G.bans.length)h+=`<div class="corow"><h3>🚫 Bannati</h3><div class="cochips">${G.bans.map(k=>chip(k,'ban')).join('')}</div></div>`;
+  if(G.picks&&G.picks.length)h+=`<div class="corow"><h3>📌 Scelti: di sicuro in partita</h3><div class="cochips">${G.picks.map(k=>chip(k,'pick')).join('')}</div></div>`;
+  $('coRecap').innerHTML=h;let n=5;$('coNum').textContent=n;ov.classList.remove('hidden');clearInterval(startCountdown.t);
+  startCountdown.t=setInterval(()=>{n--;if(n<=0||!G){clearInterval(startCountdown.t);ov.classList.add('hidden');return}$('coNum').textContent=n},1000)}
 
 // Ogni partita usa solo una selezione di personaggi: così le copie per le ★★ si trovano davvero.
 const COUNTERS=[{if:['asino'],need:['lupo','toro']},{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},

@@ -19,3 +19,6 @@ function collRef(path,f=[],ob=null,lim=1000){
 const uid=new URLSearchParams(location.search).get('u')||'u1';
 window.claude={use:async n=>n==='db'?{doc:docRef,collection:p=>collRef(p)}:n==='user'?{id:async()=>uid,can:async()=>true}:null};
 })();
+
+// i test non aspettano il conto alla rovescia di inizio partita
+window.FF_NOCOUNT=window.FF_NOCOUNT??1;
