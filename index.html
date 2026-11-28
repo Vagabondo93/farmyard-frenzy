@@ -1376,8 +1376,8 @@ const UNITS={
    d:"Segue l'animale alleato più vicino e cura tutti gli animali alleati entro 100: 13 vita al secondo, 19 se ★★.",beats:'Assassino, Cacciatrice',loses:'Lupo, Assassino se resta solo'},
  avicoltore:{n:'Avicoltore',i:'🪺',t:2,cost:2,minRound:2,tags:['Umano'],hp:70,dmg:5,rng:18,cd:1,spd:62,role:'escort',guardR:130,followFly:true,lane:2.5,
    d:"Corrente d'aria: i tuoi volanti che volano verso di lui vanno 2,5 volte più veloci (3 se ★★), da qualunque distanza, e fanno da soli il giro passando da lui quando così arrivano prima. Resta nella tua metà campo e si difende con il bastone solo da chi gli arriva vicino.",beats:'Squadre lente a difendere contro gazze e falchi',loses:'Chi lo raggiunge, squadre senza volanti'},
- gufo:{n:'Gufo',i:'🦉',t:2,tags:['Animale','Volante'],hp:40,dmg:5,spd:70,rng:20,cd:.9,flying:true,role:'center',guardR:200,reveal:130,owlEye:true,prio:{Piccolo:5},bonus:{Piccolo:1.6},
-   d:"Vola sopra il centro del campo: scopre gli invisibili entro 130 e caccia gli animali piccoli. In Nebbia vede attraverso il bosco per tutta la squadra.",beats:'Volpe, Ladro, Topi, Lepre',loses:'Falco, Cacciatrice, Poliziotto'},
+ gufo:{n:'Gufo',i:'🦉',t:2,tags:['Animale','Volante'],hp:40,dmg:5,spd:70,rng:20,cd:.9,flying:true,role:'center',guardR:200,reveal:130,owlEye:true,invis:999,ambush:2.5,prio:{Piccolo:5},bonus:{Piccolo:1.6},
+   d:"Vola sopra il centro del campo, invisibile finché non attacca: il primo attacco fa 2,5 volte il danno. Scopre gli invisibili entro 130 e caccia gli animali piccoli. In Nebbia vede attraverso il bosco per tutta la squadra.",beats:'Volpe, Ladro, Topi, Lepre',loses:'Falco, Cacciatrice, Poliziotto'},
  puzzola:{n:'Puzzola',i:'🦨',t:2,tags:['Animale','Piccolo'],hp:68,dmg:0,spd:60,role:'guard',guardR:160,wander:[200,380],stink:{every:4,max:2,r:65,dps:8,t:6},
    d:"Gira a metà campo e lascia una nube puzzolente ogni 4 s (fino a 2): i nemici dentro perdono 8 vita al secondo, per 6 s.",beats:'Topi, Faina, Ladro, Postina',loses:'Cacciatrice, Falco, Gatto'},
  carpentiera:{n:'Carpentiera',i:'🪚',t:2,cost:2,minRound:3,classicOnly:true,tags:['Umano'],hp:60,dmg:4,spd:55,rng:18,cd:1,role:'guard',guardR:170,wander:[200,380],spawns:{type:'staccionata',every:3,max:3},
@@ -1480,7 +1480,7 @@ const STI={};for(const k in STN){STI[k]=new Image();STI[k].src=`icons/st/${k}.we
 const ABIL={tacchino:['calamita','lumaca'],gallico:['calamita','lumaca','stordito'],mucca:['spinta','lumaca'],asino:['spinta','calamita','corazza','grido'],
   cane:['sacco'],spazzino:['sacco'],trombettiere:['stivale','sacco'],oca:['grido','stivale'],avicoltore:['stivale'],toro:['stivale'],
   spaventa:['calamita','lumaca'],mais:['pannocchia'],coltivatore:['pannocchia'],benefattore:['moneta'],ladro:['fantasma'],volpe:['maschera'],
-  cacciatore:['mirino'],poliziotto:['mirino','manette'],bracconiere:['trappola','stordito','sacco'],corvo:['ali','occhio'],gufo:['ali','occhio'],gazza:['ali'],falco:['ali'],
+  cacciatore:['mirino'],poliziotto:['mirino','manette'],bracconiere:['trappola','stordito','sacco'],corvo:['ali','occhio'],gufo:['fantasma','ali','occhio'],gazza:['ali'],falco:['ali'],
   gatto:['occhio'],talpa:['pala'],carpentiera:['staccionata'],castoro:['staccionata'],chioccia:['uovofinto'],veterinario:['croce'],puzzola:['nube'],
   apicoltore:['ape','lumaca'],lepre:['zzz'],tartaruga:['corazza']};
 const abilRow=k=>(ABIL[k]||[]).length?`<span class="tabil">${ABIL[k].map(a=>`<img src="icons/st/${a}.webp" alt="${STN[a]}" title="${STN[a]}">`).join('')}</span>`:'';
@@ -1491,7 +1491,7 @@ const ANIM={
   mucca:{h:44,stride:6,walk:{n:4,fw:175,fh:134,ax:.5},atk:{n:4,fw:204,fh:139,ax:.519}},
   tacchino:{h:37,stride:5,walk:{n:4,fw:127,fh:130,ax:.5},atk:{n:4,fw:160,fh:137,ax:.46}},
   lupo:{h:33,stride:9,walk:{n:4,fw:199,fh:158,ax:.5},atk:{n:4,fw:227,fh:143,ax:.472}},
-  cane:{h:31,stride:8,walk:{n:4,fw:185,fh:137,ax:.5},atk:{n:4,fw:199,fh:145,ax:.504}},
+  cane:{h:31,stride:8,walk:{n:4,fw:185,fh:137,ax:.5},carry:{n:4,fw:185,fh:141,ax:.5},atk:{n:4,fw:199,fh:145,ax:.504}},
   gatto:{h:26,stride:6,walk:{n:4,fw:145,fh:133,ax:.5},atk:{n:4,fw:177,fh:138,ax:.459}},
   topi:{h:20,stride:5,walk:{n:4,fw:223,fh:137,ax:.5},carry:{n:4,fw:208,fh:225,ax:.5}},
   assassino:{h:38,stride:7,walk:{n:4,fw:136,fh:135,ax:.5},atk:{n:4,fw:167,fh:117,ax:.441}},
@@ -1516,6 +1516,8 @@ const ANIM={
   toro:{h:44,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},atk:{n:4,fw:167,fh:136,ax:0.456}},
   cacciatore:{h:42,stride:6,walk:{n:4,fw:97,fh:130,ax:.5},atk:{n:4,fw:135,fh:131,ax:.518}},
   gallico:{h:35,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:152,fh:130,ax:.507}},
+  gufo:{h:46,fly:{n:4,fw:174,fh:170,ax:.546},atk:{n:4,fw:174,fh:182,ax:.495}},
+  avicoltore:{h:42,stride:7,walk:{n:4,fw:98,fh:130,ax:.5},alarm:{n:4,fw:140,fh:118,ax:.487},atk:{n:4,fw:140,fh:118,ax:.487}},
   falco:{h:40,fly:{n:4,fw:191,fh:216,ax:.542},atk:{n:4,fw:212,fh:207,ax:.515}},
   gazza:{h:34,fly:{n:4,fw:186,fh:193,ax:.994,ox:78},carry:{n:4,fw:184,fh:192,ax:.994,ox:78}},
 };
@@ -1970,6 +1972,7 @@ function attack(u,t,S){
   u.cd=u.def.cd;
   let dmg=u.dmg; if(u.def.bonus) for(const tag of t.def.tags) if(u.def.bonus[tag]) dmg*=u.def.bonus[tag];
   if(u.def.bonusType&&u.def.bonusType[t.type]) dmg*=u.def.bonusType[t.type];
+  if(u.def.ambush&&!u.ambushed){u.ambushed=true;dmg*=u.def.ambush;u.invis=0;fx(S,t.x,t.y-26,'Agguato!','#fff6c4')}
   if(u.def.ranged) u.shots=(u.shots||0)+1;
   if(u.def.ranged) S.tracers.push({x1:u.x,y1:u.y-(u.def.flying?10:0),x2:t.x,y2:t.y-(t.def.flying?10:0),t:.16,col:u.def.smoke?'#cfc6b4':u.side?'#ffd2c8':'#d6e4ff'});
   else u.lunge=.12;
@@ -2469,7 +2472,7 @@ function render(){
   for(const u of us){
     if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
-    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0;if(u.def.bugle&&(u.bugleT||0)>(u._pbt??1)+.5)u._alT=performance.now();u._pbt=u.bugleT??1;if(u.def.heal&&performance.now()-(u._alT||0)>2000&&S.units.some(e=>e.alive&&e.side===u.side&&e!==u&&e.hp<e.maxHp&&Math.hypot(e.x-u.x,e.y-u.y)<(u.def.healR||90)&&(e.def.tags.includes('Animale')||u.def.healAll)))u._alT=performance.now()}
+    {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();u._pac=u.alarmCd||0;if(u.def.bugle&&(u.bugleT||0)>(u._pbt??1)+.5)u._alT=performance.now();u._pbt=u.bugleT??1;if(u.def.lane&&performance.now()-(u._alT||0)>2500&&S.units.some(e=>e.alive&&e.side===u.side&&e.def.flying&&Math.hypot(e.x-u.x,e.y-u.y)<60))u._alT=performance.now();if(u.def.heal&&performance.now()-(u._alT||0)>2000&&S.units.some(e=>e.alive&&e.side===u.side&&e!==u&&e.hp<e.maxHp&&Math.hypot(e.x-u.x,e.y-u.y)<(u.def.healR||90)&&(e.def.tags.includes('Animale')||u.def.healAll)))u._alT=performance.now()}
     drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{st:statusOf(u,S),carry:u.carrying!==null,sleep:u.sleep>0,emAge:u._emT?(performance.now()-u._emT)/1000:null,buAge:u._buT?(performance.now()-u._buT)/1000:null,trAge:u._trT?(performance.now()-u._trT)/1000:null,spAge:u._spT?(performance.now()-u._spT)/1000:null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null&&!(ANIM[u.type]&&ANIM[u.type].carry&&ANIM[u.type].carry.im.naturalWidth)) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);

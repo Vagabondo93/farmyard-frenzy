@@ -18,9 +18,11 @@ else:
     ink=~np.isin(lab,list(border))
 pl,pn=nd.label(ink);sz=nd.sum(ink,pl,range(1,pn+1));com=nd.center_of_mass(ink,pl,range(1,pn+1))
 big=max(sz);owner={}
+CUTS=[float(c) for c in os.environ['CUTS'].split(',')] if os.environ.get('CUTS') else None  # CUTS=x1,x2,x3: confini tra i fotogrammi quando i pezzi staccati (chicchi, scintille) finiscono nella cella accanto
 for k in range(pn):
     if sz[k]<max(40,big*.002): continue
-    owner.setdefault(min(N-1,int(com[k][1]/(W/N))),[]).append(k+1)
+    cx=com[k][1];i=sum(cx>c for c in CUTS) if CUTS else min(N-1,int(cx/(W/N)))
+    owner.setdefault(i,[]).append(k+1)
 frames=[];boxes=[]
 for i in range(N):
     m=np.isin(pl,owner.get(i,[]))
