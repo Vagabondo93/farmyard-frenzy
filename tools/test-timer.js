@@ -27,13 +27,14 @@ const toEnd=async ps=>{for(const p of ps){await p.bringToFront();await p.waitFor
   for(const p of P) await p.waitForSelector('#game:not(.hidden)');
   // round 1: nessun limite
   await buy(P[0]);await P[0].click('#readyBtn');await P[1].waitForTimeout(1500);
-  ok(await P[1].evaluate(()=>window.__g().deadline===null&&document.getElementById('timerPill').classList.contains('hidden')),'round 1: nessun conto alla rovescia');
+  {const d=await P[1].evaluate(()=>({dl:window.__g().deadline,pill:document.getElementById('timerPill').textContent}));
+  ok(d.dl&&Math.abs(d.dl-Date.now()-28500)<3500,`round 1: Bruno ha 30 s dal Pronto di Anna — "${d.pill}"`)}
   await buy(P[1]);await P[1].click('#readyBtn');await toEnd(P);
   for(const p of P) await p.click('#bBtn');
   // round 2: Anna pronta, Bruno no
   await buy(P[0]);const t0=Date.now();await P[0].click('#readyBtn');await P[1].bringToFront();await P[1].waitForTimeout(1500);
   const d=await P[1].evaluate(()=>({dl:window.__g().deadline,pill:document.getElementById('timerPill').textContent}));
-  ok(Math.abs(d.dl-t0-60000)<3000,`round 2: Bruno ha 60 s dal Pronto di Anna (${Math.round((d.dl-t0)/1000)} s) — "${d.pill}"`);
+  ok(Math.abs(d.dl-t0-35000)<3000,`round 2: Bruno ha 35 s dal Pronto di Anna (${Math.round((d.dl-t0)/1000)} s) — "${d.pill}"`);
   await P[1].evaluate(()=>{window.__g().deadline=Date.now()+1500});         // accorcia l'attesa del test
   await P[1].waitForFunction(()=>window.__g().phase!=='shop',null,{timeout:10000});
   ok(true,'tempo scaduto: la squadra di Bruno parte da sola');

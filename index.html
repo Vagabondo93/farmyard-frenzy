@@ -323,7 +323,12 @@ details.codex summary{cursor:pointer;font-family:var(--f-display);font-size:20px
 .popx{display:none}
 .countov{position:fixed;inset:0;z-index:150;display:grid;place-items:center;padding:16px;background:rgba(12,18,8,.9);color:#fff;text-align:center}
 .countov.hidden{display:none}
-.cobox{display:grid;gap:10px;justify-items:center;max-width:min(760px,100%);max-height:100%;overflow:auto}
+.cobox{display:grid;gap:clamp(4px,1.6vh,10px);justify-items:center;width:min(820px,100%);max-height:100%;overflow:hidden;scrollbar-width:none}
+.cobox::-webkit-scrollbar{display:none}
+.copool{display:flex;flex-wrap:wrap;gap:clamp(3px,.8vh,6px);justify-content:center;max-width:100%}.copool .uimg{width:clamp(26px,7vh,44px);height:clamp(26px,7vh,44px);padding:2px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid var(--rc,transparent)}
+.copool .uimg.pk{box-shadow:0 0 0 2px #ffd75e}
+
+@media (max-height:520px){.cobox .corow h3{font-size:13px}.cochip{font-size:12px;padding:1px 8px 1px 2px}.cochip .uimg{width:22px;height:22px}}
 .cot{margin:0;font-size:18px;font-weight:800;opacity:.9}.conum{font-family:var(--f-title,inherit);font-size:clamp(56px,14vh,110px);line-height:1;color:#ffd75e;text-shadow:0 4px 0 rgba(0,0,0,.35);animation:copop 1s ease-out infinite}
 @keyframes copop{0%{transform:scale(1.35);opacity:.4}25%{transform:scale(1);opacity:1}}@media (prefers-reduced-motion:reduce){.conum{animation:none}}
 .corow{display:grid;gap:6px;justify-items:center}.corow h3{margin:0;font-size:15px;opacity:.85}.cochips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
@@ -689,8 +694,9 @@ button.buylbl{border:0;font-family:inherit;cursor:pointer}
     </div>
     <div class="panel metapanel" id="metaPanel">
       <div class="row" style="align-items:center;flex-wrap:wrap;gap:8px"><h3 style="margin:0">📊 Meta dei giocatori</h3>
-        <div class="seg"><button class="on" data-mm="all">Tutte</button><button data-mm="classic">Classica</button><button data-mm="fog">🌫️ Nebbia</button><button data-mm="rumble">👑 Rumble</button><button data-mm="duo">👥 2v2</button></div></div>
-      <p class="empty" id="metaNote" style="margin:6px 0">Dalle scelte dei giocatori nelle partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.</p>
+        <div class="seg"><button class="on" data-mm="all">Tutte</button><button data-mm="classic">Classica</button><button data-mm="fog">🌫️ Nebbia</button><button data-mm="rumble">👑 Rumble</button><button data-mm="duo">👥 2v2</button></div>
+        <div class="seg"><button class="on" data-mk="all">Tutte</button><button data-mk="ranked">🏆 Classificate</button><button data-mk="friendly">🤝 Amichevoli</button><button data-mk="pve">🤖 Contro i bot</button></div></div>
+      <p class="empty" id="metaNote" style="margin:6px 0">Dalle scelte dei giocatori in tutte le partite, anche contro i bot (il tutorial no): quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.</p>
       <div class="scroll"><table class="metatab"><thead><tr><th>Personaggio</th><th>Preso quando compare</th><th>Round vinti in campo</th><th>Con un ordine</th><th>Ordine preferito</th></tr></thead><tbody id="metaBody"></tbody></table></div>
       <button class="linkbtn hidden" id="metaMore">Mostra tutti i personaggi</button>
     </div>
@@ -1355,7 +1361,7 @@ const UNITS={
  topi:{n:'Topi',i:'🐭',t:1,cost:1,tags:['Animale','Ladro','Piccolo'],hp:10,dmg:0,spd:85,carry:.7,role:'thief',pack:2,
    d:"Tre topolini per una carta: fragilissimi, ma basta che uno arrivi all'uovo.",beats:'Tacchino, Mucca, Poliziotto',loses:'Gatto, Cane, Apicoltore'},
  volpe:{n:'Volpe',i:'🦊',t:2,fogOnly:true,tags:['Animale','Ladro'],hp:55,dmg:0,spd:78,carry:.8,role:'thief',disguise:true,
-   d:"Si traveste da unità nemica: nessuno la attacca finché non tocca l'uovo o viene ferita. Il Cane la fiuta da vicino e il Corvo la smaschera.",beats:'Poliziotto, Galli-co, Tacchino',loses:'Cane, Corvo, Gatto'},
+   d:"Si traveste da unità nemica: nessuno la attacca finché non tocca l'uovo o viene ferita. Il travestimento non è invisibilità: la smascherano solo il Gufo e il Gatto da vicino.",beats:'Poliziotto, Galli-co, Tacchino, Corvo',loses:'Gufo, Gatto'},
  procione:{n:'Procione',i:'🦝',t:2,cost:4,fogOnly:true,minRound:3,tags:['Animale','Ladro'],hp:75,dmg:0,spd:78,carry:.9,role:'thief',pass:150,
    d:"Quando ha l'uovo lo lancia a un ladro alleato più vicino al tuo nido, entro 150. Rende al meglio con altri ladri in campo.",beats:'Cane, Galli-co, Mucca',loses:'Poliziotto, Lupo, Falco'},
  oca:{n:'Oca',i:'🪿',t:1,cost:3,tags:['Animale','Guardiano'],hp:60,dmg:4,spd:62,rng:18,cd:.9,role:'guard',guardR:150,alarm:170,hitAir:true,swim:true,
@@ -1395,8 +1401,8 @@ const UNITS={
    d:"Lento e corazzato, gira da solo vicino al centro e non prende ordini. Ha tanta vita, la corazza gli toglie il 30% dei danni e scalcia via chi gli sta addosso: gli Umani volano il doppio più lontano, gli Animali meno. Dopo i primi 4 s, quando un nemico gli arriva vicino raglia: per 2,5 s tutti i nemici entro 160 vanno da lui (chi è armato lo attacca, gli altri si distraggono), poi deve riprendere fiato per 5 s. Lupo e Toro sanno come trattarlo: con loro la corazza non conta. Non sopporta Apicoltore e Coltivatore: se l'avversario ne ha uno, lascia tutto e va ad aggredirlo.",
    beats:'Cacciatrice, Poliziotto, Assassino, Apicoltore, Coltivatore',loses:'Lupo, Toro, Gazza'},
  staccionata:{n:'Staccionata',i:'🪵',t:1,hidden:true,tags:['Oggetto'],hp:120,dmg:0,spd:0,role:'static',wall:22},
- apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:70,cd:1,ranged:true,smoke:true,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
-   d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore colpisce da vicino, fino a 70, anche chi vola (3 danni).",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
+ apicoltore:{n:'Apicoltore',i:'🐝',t:3,cost:5,minRound:3,tags:['Umano'],hp:55,dmg:3,spd:55,rng:38,cd:1,ranged:true,smoke:true,cone:.6,role:'guard',guardR:120,spawns:{type:'arnia',every:999,max:1},
+   d:"All'inizio piazza un'arnia: le api pungono (5 danni al secondo) e rallentano del 40% i nemici entro 85. Con l'affumicatore soffia un cono di fumo davanti a sé, fino a 38: fa 3 danni a tutti i nemici nel fumo, anche a chi vola.",beats:'Topi, Faina, Ladro',loses:'Spazzino, Gazza, Falco'},
  trombettiere:{n:'Trombettiere',i:'🎺',t:1,tags:['Umano'],hp:36,dmg:0,spd:50,role:'escort',guardR:130,follow:true,bugle:6,
    d:"Segue chi nella tua squadra ha il ruolo di ladro (Ladro, Faina, Gazza ladra, Topi…) restando qualche passo indietro, anche quando la Talpa è sottoterra. Dopo un secondo suona la carica: tutti gli alleati vanno il 35% più veloci per 6 s (8 s se ★★). Se la squadra resta senza ladri, va lui a rubare l'uovo.",beats:'Talpa, ladri lenti',loses:'Chi lo raggiunge'},
  arnia:{n:'Arnia',i:'🍯',t:1,hidden:true,tags:['Oggetto'],hp:60,dmg:0,spd:0,role:'static',aura:{r:85,dps:5,slow:.6}},
@@ -1572,12 +1578,16 @@ function newMatch(o={}){
 function startCountdown(){if(window.FF_NOCOUNT)return;const ov=$('countOv'),chip=(k,c)=>UNITS[k]?`<span class="cochip ${c}">${IC(UNITS[k])}${UNITS[k].n}</span>`:'';
   let h='';if(G.bans&&G.bans.length)h+=`<div class="corow"><h3>🚫 Bannati</h3><div class="cochips">${G.bans.map(k=>chip(k,'ban')).join('')}</div></div>`;
   if(G.picks&&G.picks.length)h+=`<div class="corow"><h3>📌 Scelti: di sicuro in partita</h3><div class="cochips">${G.picks.map(k=>chip(k,'pick')).join('')}</div></div>`;
+  const pool=(G.pool||[]).filter(k=>UNITS[k]&&!UNITS[k].hidden);
+  if(pool.length){const rc={thief:'var(--rthief)',def:'var(--rdef)',atk:'var(--ratk)',sup:'var(--rsup)',ctl:'var(--rctl)'},ord=['thief','def','atk','ctl','sup'];
+    h+=`<div class="corow"><h3>🧺 Personaggi in questa partita</h3><div class="copool">${[...pool].sort((a,b)=>ord.indexOf(roleOf(a))-ord.indexOf(roleOf(b))).map(k=>`<img class="uimg${(G.picks||[]).includes(k)?' pk':''}" src="${UNITS[k].img}" alt="${UNITS[k].n}" title="${UNITS[k].n}" style="--rc:${rc[roleOf(k)]||'transparent'}">`).join('')}</div></div>`}
   $('coRecap').innerHTML=h;let n=5;$('coNum').textContent=n;ov.classList.remove('hidden');clearInterval(startCountdown.t);
   startCountdown.t=setInterval(()=>{n--;if(n<=0||!G){clearInterval(startCountdown.t);ov.classList.add('hidden');return}$('coNum').textContent=n},1000)}
 
 // Ogni partita usa solo una selezione di personaggi: così le copie per le ★★ si trovano davvero.
-const COUNTERS=[{if:['asino'],need:['lupo','toro']},{if:['volpe'],need:['cane','corvo']},{if:['talpa'],need:['corvo','gatto']},
+const COUNTERS=[{if:['asino'],need:['lupo','toro']},{if:['volpe'],need:['gatto','gufo']},{if:['talpa'],need:['corvo','gatto']},
   {if:['gazza','corvo','falco'],need:['cacciatore','poliziotto','falco','oca']},{if:['ladro'],need:['corvo','poliziotto','assassino']},
+  {if:['coltivatore','benefattore'],need:['spazzino']},// lo Spazzino (se non è bannato) c'è sempre quando ci sono germogli o monete da ripulire
   ];
 const POOLQ={thief:3,def:3,atk:3,sup:3,ctl:2},POOLQR={thief:4,def:4,atk:4,sup:3,ctl:3};
 // ex: personaggi bannati (mai nel pool); force: personaggi scelti nella fase di scelta (sempre nel pool)
@@ -1656,7 +1666,7 @@ function sellUnit(p,uid){const b=p.board.find(x=>x.uid===uid);if(b&&G&&G.rmb&&!p
 // Tempo per il Pronto nelle partite con più giocatori: nessun limite al primo round, poi 60 s (+5 s per round, max 120)
 // che partono quando il primo giocatore preme Pronto.
 const isMP=()=>!!(G&&(G.mode==='pvp'||(G.rmb&&G.rmb.online)||(G.duo&&G.duo.online)));
-const turnLimit=r=>r<=1?null:Math.min(120,60+5*(r-2));
+const turnLimit=r=>Math.min(90,30+5*(Math.max(1,r)-1));
 function setDeadline(at){const T=turnLimit(G.round);if(T&&at&&(!G.deadline||at+T*1000<G.deadline))G.deadline=at+T*1000}
 function startShop(){
   G.phase='shop';G.deadline=null;G.oppDoc=null;G.myAt=null;G.afkSent=false;for(const p of G.players)p.ovr=null;
@@ -1977,7 +1987,7 @@ function damage(t,amt,S,src){
   }
 }
 function attack(u,t,S){
-  u.cd=u.def.cd;
+  u.cd=u.def.cd;if(Math.abs(t.x-u.x)>1)u.face=u.aimFace=t.x>u.x?1:-1;
   let dmg=u.dmg; if(u.def.bonus) for(const tag of t.def.tags) if(u.def.bonus[tag]) dmg*=u.def.bonus[tag];
   if(u.def.bonusType&&u.def.bonusType[t.type]) dmg*=u.def.bonusType[t.type];
   if(u.def.ambush&&!u.ambushed){u.ambushed=true;dmg*=u.def.ambush;u.invis=0;fx(S,t.x,t.y-26,'Agguato!','#fff6c4')}
@@ -1990,6 +2000,10 @@ function attack(u,t,S){
   if(u.def.stunHit) t.stun=Math.max(t.stun,u.def.stunHit);
   if(u.def.stunEvery&&!(u.stunCd>0)&&!t.def.unstoppable){t.stun=Math.max(t.stun,u.def.stunT);u.stunCd=u.def.stunEvery;fx(S,t.x,t.y-22,'stordito!','#fff6c4')}
   damage(t,dmg,S,u);
+  // cono di fumo (Apicoltore): colpisce anche gli altri nemici davanti a lui, entro la portata e nell'angolo del cono
+  if(u.def.cone){const ax=t.x-u.x,ay=t.y-u.y,al=Math.hypot(ax,ay)||1;
+    for(const e of S.units) if(e!==t&&e.alive&&e.side!==u.side&&e.role!=='static'&&!e.underground&&e.invis<=0){const bx=e.x-u.x,by=e.y-u.y,bl=Math.hypot(bx,by);
+      if(bl<=u.def.rng+10&&bl>0&&(ax*bx+ay*by)/(al*bl)>Math.cos(u.def.cone)){damage(e,u.dmg,S,u);S.tracers.push({x1:u.x,y1:u.y,x2:e.x,y2:e.y-(e.def.flying?10:0),t:.16,col:'#cfc6b4'})}}}
 }
 function thief(u,S,dt){
   const foe=S.eggs[1-u.side],home=S.eggs[u.side].home;
@@ -2036,7 +2050,7 @@ function idlePoint(u,S){
       return{x:own.x+(u.side?-1:1)*Math.cos(a)*r,y:clamp(own.y+Math.sin(a)*r*1.6,30,H-30)}}
       {const dx=u.sx-own.x,dy=u.sy-own.y,L=Math.hypot(dx,dy)||1,r=Math.min(L,u.leash*.55);return{x:own.x+dx/L*r,y:own.y+dy/L*r}}
     case 'scout':{const a=S.t*.9+u.id;return{x:own.x+u.face*0+(u.side?-110:110)+Math.cos(a)*55,y:own.y+Math.sin(a)*95}}
-    case 'hunter':if(u.def.sweeper){const a=allyThief(u,S);if(a)return{x:a.x-(u.side?-1:1)*30,y:a.y+(u.id%2?20:-20)};return{x:W/2+(u.side?60:-60),y:u.sy}}
+    case 'hunter':if(u.def.sweeper){const a=allyThief(u,S);if(a)return a.carrying!==null?{x:a.x+(u.side?-1:1)*18,y:clamp(a.y+(u.id%2?30:-30),20,H-20)}:{x:a.x-(u.side?-1:1)*30,y:a.y+(u.id%2?20:-20)};return{x:W/2+(u.side?60:-60),y:u.sy}}
       return u.def.advance?{x:foe.x-(u.side?-1:1)*140,y:u.sy}:{x:u.sx,y:u.sy};
     case 'center':return{x:W/2-(u.side?-1:1)*60,y:u.sy};
     case 'donkey':{const k=Math.floor(S.t/4)+u.id,a=Math.abs(Math.sin(k*12.9898)),b=Math.sin(k*78.233);
@@ -2051,7 +2065,7 @@ function idlePoint(u,S){
         const cf=S.units.find(x=>x.alive&&x.side===u.side&&x.def.flying&&x.carrying!==null),ref=cf||a;
         const tx=own.x+(u.side?-1:1)*240,ty=ref?clamp(ref.y,40,H-40):u.sy;
         return{x:u.side?Math.max(W-lim,tx):Math.min(lim,tx),y:ty}}
-      {const a=allyThief(u,S)||(u.def.follow&&frontAlly(u,S));if(a)return{x:a.x-(u.side?-1:1)*26,y:a.y+(u.id%2?20:-20)};return{x:own.x+(u.side?-90:90),y:u.sy}}
+      {const a=allyThief(u,S)||(u.def.follow&&frontAlly(u,S));if(a)return a.carrying!==null?{x:a.x+(u.side?-1:1)*18,y:clamp(a.y+(u.id%2?30:-30),20,H-20)}:{x:a.x-(u.side?-1:1)*26,y:a.y+(u.id%2?20:-20)};return{x:own.x+(u.side?-90:90),y:u.sy}}
   }
   return{x:u.x,y:u.y};
 }
@@ -2090,8 +2104,8 @@ function think(u,S,dt){
   const tg=u.dmg>0?pickTarget(u,S):null;
   if(tg&&u.def.charge&&u.chargeCd<=0){const d=dist(u,tg);
     if(d>40&&d<240){u.chargeT=.9;u.chargeCd=u.def.chargeCd||5;u.chargeHit={};u.chDir={x:(tg.x-u.x)/d,y:(tg.y-u.y)/d};fx(S,u.x,u.y-24,'CARICA!','#ffb0a0');return}}
-  if(tg){const reach=Math.max(u.def.rng+(u.def.ranged?0:14),u.def.push?pushR(u)+8:0);
-    if(dist(u,tg)<=reach){if(u.cd<=0)attack(u,tg,S)} else moveTo(u,tg.x,tg.y,dt,S); return}
+  if(tg){const hit=u.def.rng+(u.def.ranged?0:14),d=dist(u,tg);
+    if(d<=hit){if(u.cd<=0)attack(u,tg,S)} else moveTo(u,tg.x,tg.y,dt,S); return}// spinge da lontano, ma colpisce solo da vicino
   if(own.state==='dropped'&&dist(u,own)<320){moveTo(u,own.x,own.y,dt,S);return}
   const p=idlePoint(u,S); if(dist(u,p)>5) moveTo(u,p.x,p.y,dt,S);
 }
@@ -2104,7 +2118,8 @@ function step(S,dt){
     if(u.hit>0)u.hit-=dt;if(u.lunge>0)u.lunge-=dt;if(u.lb>0)u.lb-=dt}
   for(const u of live){ if(!(u.underground||u.invis>0||u.disguised)) continue;
     for(const e of live){ if(e.side===u.side) continue; const d=dist(u,e);
-      const rev=(e.def.reveal&&d<e.def.reveal)||(u.underground&&e.def.hearUnder&&d<e.def.hearUnder)||(u.disguised&&!u.underground&&e.def.sniff&&d<e.def.sniff);
+      // il travestimento (Volpe) non è invisibilità: lo scoprono solo il Gufo (entro la sua vista) e il Gatto (da vicino)
+      const rev=u.disguised&&!u.underground?(e.type==='gufo'&&d<e.def.reveal)||(e.type==='gatto'&&d<(e.def.hearUnder||75)):(e.def.reveal&&d<e.def.reveal)||(u.underground&&e.def.hearUnder&&d<e.def.hearUnder);
       if(!rev) continue;
       if(u.underground){u.underground=false;u.stun=1;fx(S,u.x,u.y-20,'Scovata!','#fff6c4');log(S,`${nm(e)} scova ${nm(u)} sottoterra`)}
       else if(u.disguised){u.disguised=false;fx(S,u.x,u.y-20,'Smascherata!','#fff6c4');log(S,`${nm(e)} smaschera ${nm(u)}`)}
@@ -2172,7 +2187,7 @@ function step(S,dt){
   const sep=S.units.filter(u=>u.alive&&!u.underground&&u.role!=='static'&&!u.def.flying);
   for(let i=0;i<sep.length;i++)for(let j=i+1;j<sep.length;j++){const a=sep[i],b=sep[j];if(a.side!==b.side)continue;
     const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;if(d<24){const k=Math.min((24-d)/2*Math.min(1,dt*15),90*dt),ca=a.carrying!==null,cb=b.carrying!==null;
-      const ka=ca?0:cb?2*k:k,kb=cb?0:ca?2*k:k;a.x-=dx/d*ka;a.y-=dy/d*ka;b.x+=dx/d*kb;b.y+=dy/d*kb}}
+      if(ca||cb){const o=ca?b:a,s=Math.sign(o.y-(ca?a:b).y)||(o.id%2?1:-1);o.y=clamp(o.y+s*2*k,16,H-16)}else{a.x-=dx/d*k;a.y-=dy/d*k;b.x+=dx/d*k;b.y+=dy/d*k}}}
   for(const tr of S.traps){ if(!tr.armed) continue;
     const sw=S.units.find(e=>e.alive&&e.side!==tr.side&&e.def.sweeper&&dist(e,tr)<(e.def.sweepR||30));
     if(sw){tr.armed=false;fx(S,tr.x,tr.y-16,'trappola smontata','#ffe6a8');log(S,`${nm(sw)} smonta una trappola`);continue}
@@ -2490,7 +2505,7 @@ function render(){
     if((S.fog||S.mist)&&u.side!==G.me&&!S.units.some(a=>a.alive&&a.side===G.me&&sees(a,u))) continue;
     if(u.def.wall){const hh=u.def.wall*FENCE_L,f=u.hp/u.maxHp;if(f<1){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(X(u.x)-14,u.y-hh-11,28,5);ctx.fillStyle=SIDE[C(u.side)].col;ctx.fillRect(X(u.x)-14,u.y-hh-11,28*f,5)}continue}
     {const dd=u._lx==null?0:Math.hypot(u.x-u._lx,u.y-u._ly);u._wd=(u._wd||0)+(dd<20?dd:0);u._mv=dd>.05&&dd<20?.12:Math.max(0,(u._mv||0)-1/60);u._lx=u.x;u._ly=u.y;if(u.def.spawns){const n=S.units.filter(x=>x.owner===u.id).length;if(n>(u._psc||0))u._spT=performance.now();u._psc=n}if(u.def.traps){const n=S.traps.filter(t=>t.owner===u.id).length;if(n>(u._ptc||0))u._trT=performance.now();u._ptc=n}if(u._pu&&!u.underground)u._emT=performance.now();if(u._pu===false&&u.underground)u._buT=performance.now();if((u.stT||0)>(u._pst||0)+.5)u._at=performance.now();u._pst=u.stT||0;u._pu=!!u.underground;if(u.lunge>(u._pl||0)+.001)u._at=performance.now();u._pl=u.lunge;if(u.hit>(u._ph||0)+.001)u._ht=performance.now();u._ph=u.hit;if((u.shots||0)!==(u._ps||0))u._at=performance.now();u._ps=u.shots||0;if((u.alarmCd||0)>(u._pac||0)+.5)u._alT=performance.now();if((u.thrown||0)>(u._pth||0))u._alT=performance.now();u._pth=u.thrown||0;if(u.def.fakeEgg){const n=S.fakes.filter(f=>f.owner===u.id&&f.state==='home').length;if(n<(u._pfk??n))u._ht=performance.now();u._pfk=n;u._eggs=n}if(u.def.bridge&&((u.buildT>0&&!u.built)||(u.built&&!u._pbu))&&performance.now()-(u._spT||0)>560)u._spT=performance.now();u._pbu=!!u.built;if(u.shellT>0){if(!u._shT)u._shT=performance.now()}else u._shT=0;u._pac=u.alarmCd||0;if(u.def.bugle&&(u.bugleT||0)>(u._pbt??1)+.5)u._alT=performance.now();u._pbt=u.bugleT??1;if(u.def.lane&&performance.now()-(u._alT||0)>2500&&S.units.some(e=>e.alive&&e.side===u.side&&e.def.flying&&Math.hypot(e.x-u.x,e.y-u.y)<60))u._alT=performance.now();if(u.def.heal&&performance.now()-(u._alT||0)>2000&&S.units.some(e=>e.alive&&e.side===u.side&&e!==u&&e.hp<e.maxHp&&Math.hypot(e.x-u.x,e.y-u.y)<(u.def.healR||90)&&(e.def.tags.includes('Animale')||u.def.healAll)))u._alT=performance.now()}
-    drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{eggs:u._eggs||0,shAge:u._shT?(performance.now()-u._shT)/1000:null,shellT:u.shellT||0,st:statusOf(u,S),carry:u.carrying!==null,sleep:u.sleep>0,emAge:u._emT?(performance.now()-u._emT)/1000:null,buAge:u._buT?(performance.now()-u._buT)/1000:null,trAge:u._trT?(performance.now()-u._trT)/1000:null,spAge:u._spT?(performance.now()-u._spT)/1000:null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:F?-u.face:u.face,wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
+    drawToken(X(u.x),u.y,C(u.side),u.type,u.star,u.order,{eggs:u._eggs||0,shAge:u._shT?(performance.now()-u._shT)/1000:null,shellT:u.shellT||0,st:statusOf(u,S),carry:u.carrying!==null,sleep:u.sleep>0,emAge:u._emT?(performance.now()-u._emT)/1000:null,buAge:u._buT?(performance.now()-u._buT)/1000:null,trAge:u._trT?(performance.now()-u._trT)/1000:null,spAge:u._spT?(performance.now()-u._spT)/1000:null,alAge:u._alT?(performance.now()-u._alT)/1000:null,hitAge:u._ht?(performance.now()-u._ht)/1000:null,walk:u._wd,moving:u._mv>0,atk:u._at?(performance.now()-u._at)/1000:null,col:G.duo&&duoOwner(u)!=null?duoColOf(duoOwner(u)):null,underground:u.underground,invis:u.invis>0,hpf:u.hp/u.maxHp,stun:u.stun,snare:u.snare,hit:u.hit,lunge:u.lunge,face:(F?-1:1)*(u.aimFace&&u._at&&performance.now()-u._at<450?u.aimFace:u.face),wait:u.wait,turned:u.turned,disguised:u.disguised,boost:u.boostT});
     if(u.fake) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.carrying!==null&&!(ANIM[u.type]&&ANIM[u.type].carry&&ANIM[u.type].carry.im.naturalWidth)) drawEgg(X(u.x),u.y-(u.def.flying?40:28),.7,false);
     if(u.lb>0){ctx.font='11px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.fillText('💨',X(u.x)-(F?-1:1)*u.face*18,u.y-22)}
@@ -2541,7 +2556,7 @@ function telRound(o){const T=G&&G.tel;if(!T||!o||!G.telField)return;const seen=n
     if(seen.has(u.t))continue;seen.add(u.t);telAdd(T.fi,u.t);if(o.winner!=null)telAdd(o.winner===G.me?T.dw:T.dl,u.t)}
   G.telField=null}
 function telSend(res){const T=G&&G.tel;if(!T||G.telSent||!DB||!UID||!Object.keys(T.of).length)return;G.telSent=true;
-  DB.doc(`telemetry/${Date.now()}_${Math.random().toString(36).slice(2,8)}`).set({at:Date.now(),mode:G.mode,variant:G.variant,ranked:!!G.ranked,rounds:G.round,res,...T}).then(()=>{METAT=0}).catch(()=>{})}
+  DB.doc(`telemetry/${Date.now()}_${Math.random().toString(36).slice(2,8)}`).set({at:Date.now(),mode:G.mode,variant:G.variant,ranked:!!G.ranked,online:isMP(),rounds:G.round,res,...T}).then(()=>{METAT=0}).catch(()=>{})}
 
 // ---------- flusso round ----------
 function startBattle(){
@@ -2922,12 +2937,15 @@ function startTipsTimer(){clearInterval(TIPT);TIPT=setInterval(()=>{if(!TIPHOVER
 $('tipBox').addEventListener('mouseenter',()=>TIPHOVER=true);$('tipBox').addEventListener('mouseleave',()=>TIPHOVER=false);
 startTipsTimer();setTimeout(buildFacts,0);
 // ---------- Meta dei giocatori: somma le ultime 500 partite salvate ----------
-let META=null,METAMODE='all',METAALL=false,METAT=0;
+let META=null,METAKIND='all',METAMODE='all',METAALL=false,METAT=0;
 async function loadMeta(){if(!DB||Date.now()-METAT<120000)return;METAT=Date.now();
   try{const sn=await DB.collection('telemetry').orderBy('at','desc').limit(500).get();META=sn.docs.map(d=>d.data()).filter(x=>x&&x.of);renderMeta()}catch(e){}}
 function renderMeta(){const body=$('metaBody');if(!body)return;
   for(const b of document.querySelectorAll('[data-mm]'))b.classList.toggle('on',b.dataset.mm===METAMODE);
-  const L=(META||[]).filter(x=>METAMODE==='all'||(METAMODE==='classic'?x.mode!=='rumble'&&x.mode!=='duo'&&x.variant!=='fog':METAMODE==='fog'?x.variant==='fog':x.mode===METAMODE));
+  for(const b of document.querySelectorAll('[data-mk]'))b.classList.toggle('on',b.dataset.mk===METAKIND);
+  // tipo di partita: online classificata, online amichevole, contro i bot (conta solo la squadra del giocatore)
+  const pve=x=>x.mode==='bot'||x.online===false;
+  const L=(META||[]).filter(x=>METAKIND==='all'||(METAKIND==='ranked'?x.ranked:METAKIND==='pve'?pve(x):!x.ranked&&!pve(x))).filter(x=>METAMODE==='all'||(METAMODE==='classic'?x.mode!=='rumble'&&x.mode!=='duo'&&x.variant!=='fog':METAMODE==='fog'?x.variant==='fog':x.mode===METAMODE));
   const S={};const g=k=>S[k]||(S[k]={of:0,bo:0,fi:0,dw:0,dl:0,oc:0,ot:{}});
   for(const x of L){for(const k in x.of)g(k).of+=+x.of[k]||0;for(const k in x.bo||{})g(k).bo+=+x.bo[k]||0;for(const k in x.fi||{})g(k).fi+=+x.fi[k]||0;
     for(const k in x.dw||{})g(k).dw+=+x.dw[k]||0;for(const k in x.dl||{})g(k).dl+=+x.dl[k]||0;for(const k in x.oc||{})g(k).oc+=+x.oc[k]||0;
@@ -2935,13 +2953,13 @@ function renderMeta(){const body=$('metaBody');if(!body)return;
   const rows=Object.entries(S).filter(([k,v])=>UNITS[k]&&!UNITS[k].hidden&&v.of>0).map(([k,v])=>({k,...v,pick:v.bo/v.of,wr:v.dw+v.dl?v.dw/(v.dw+v.dl):null,ord:v.fi?v.oc/v.fi:null,
     fav:Object.entries(v.ot).sort((a,b)=>b[1]-a[1])[0]})).sort((a,b)=>b.pick-a.pick);
   $('metaNote').textContent=L.length<5?`Servono più partite per una statistica affidabile: per ora ${L.length}. Le statistiche si riempiono man mano che si gioca.`:
-    `Ultime ${L.length} partite vere: quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.`;
+    `Ultime ${L.length} partite (tutte le modalità tranne il tutorial; contro i bot contano solo le scelte del giocatore): quanto viene preso ogni personaggio quando compare nel market, quanto vince quando scende in campo e quanto spesso riceve un ordine.`;
   const pc=v=>v==null?'<span class="na">—</span>':`${Math.round(v*100)}%<span class="bar" style="width:${Math.round(v*60)}px"></span>`;
   const show=METAALL?rows:rows.slice(0,12);
   body.innerHTML=show.length?show.map(r=>`<tr><td>${IC(UNITS[r.k])}${UNITS[r.k].n}</td><td>${pc(Math.min(1,r.pick))} <small class="na">${r.bo}/${r.of}</small></td><td>${r.dw+r.dl>=5?pc(r.wr):'<span class="na">—</span>'}</td><td>${r.fi>=5?pc(Math.min(1,r.ord)):'<span class="na">—</span>'}</td><td>${r.fav?OIC(ORDERS[r.fav[0]])+' '+ORDERS[r.fav[0]].n:'<span class="na">—</span>'}</td></tr>`).join('')
     :'<tr><td colspan="5" class="na">Ancora nessuna partita registrata.</td></tr>';
   $('metaMore').classList.toggle('hidden',METAALL||rows.length<=12)}
-document.addEventListener('click',e=>{const t=e.target.closest('[data-mm]');if(t){METAMODE=t.dataset.mm;renderMeta()}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-mm]');if(t){METAMODE=t.dataset.mm;renderMeta()}const k=e.target.closest('[data-mk]');if(k){METAKIND=k.dataset.mk;renderMeta()}});
 $('metaMore').onclick=()=>{METAALL=true;renderMeta()};
 // ---------- novità (file news.js): testo nelle quattro lingue, carte dei nuovi personaggi, mini-report dei win rate ----------
 let NEWSALL=false;
