@@ -1498,15 +1498,15 @@ const ANIM={
   talpa:{h:30,stride:5,walk:{n:4,fw:120,fh:130,ax:.5},emerge:{n:4,fw:153,fh:152,ax:.583},dig:{n:4,fw:120,fh:72,ax:.5},burrow:{n:4,fw:129,fh:118,ax:.572},carry:{n:4,fw:106,fh:137,ax:.5}},
   volpe:{h:31,stride:7,walk:{n:4,fw:222,fh:134,ax:.5},disg:{n:4,fw:211,fh:166,ax:.5},carry:{n:4,fw:209,fh:148,ax:.5}},
   asino:{h:50,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:130,fh:134,ax:.578},alarm:{n:4,fw:130,fh:134,ax:.578}},
-  veterinario:{h:42,stride:6,walk:{n:4,fw:106,fh:129,ax:.5},alarm:{n:4,fw:93,fh:133,ax:.488}},
-  bracconiere:{h:42,stride:6,walk:{n:4,fw:93,fh:130,ax:.5},carry:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:130,fh:125,ax:.483},trap:{n:4,fw:124,fh:136,ax:.5}},
-  benefattore:{h:42,stride:6,walk:{n:4,fw:99,fh:129,ax:.5},spawn:{n:4,fw:125,fh:132,ax:.488}},
+  veterinario:{h:41,stride:6,walk:{n:4,fw:106,fh:129,ax:.5},alarm:{n:4,fw:93,fh:133,ax:.488}},
+  bracconiere:{h:43,stride:6,walk:{n:4,fw:93,fh:130,ax:.5},carry:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:130,fh:125,ax:.483},trap:{n:4,fw:124,fh:136,ax:.5}},
+  benefattore:{h:46,stride:6,walk:{n:4,fw:99,fh:129,ax:.5},spawn:{n:4,fw:125,fh:132,ax:.488}},
   arnia:{h:36,idle:{n:4,fw:124,fh:130,ax:.5}},
-  trombettiere:{h:40,stride:6,walk:{n:4,fw:90,fh:129,ax:.5},alarm:{n:4,fw:116,fh:131,ax:.571},carry:{n:4,fw:86,fh:130,ax:.5}},
-  apicoltore:{h:42,stride:6,walk:{n:4,fw:109,fh:130,ax:.5},atk:{n:4,fw:164,fh:130,ax:.56},spawn:{n:4,fw:112,fh:126,ax:.532}},
+  trombettiere:{h:47,stride:6,walk:{n:4,fw:90,fh:129,ax:.5},alarm:{n:4,fw:116,fh:131,ax:.571},carry:{n:4,fw:86,fh:130,ax:.5}},
+  apicoltore:{h:40,stride:6,walk:{n:4,fw:109,fh:130,ax:.5},atk:{n:4,fw:164,fh:130,ax:.56},spawn:{n:4,fw:112,fh:126,ax:.532}},
   puzzola:{h:32,stride:6,walk:{n:4,fw:120,fh:130,ax:.5},atk:{n:4,fw:122,fh:119,ax:.544}},
   oca:{h:38,stride:5,walk:{n:4,fw:126,fh:130,ax:.5},atk:{n:4,fw:185,fh:132,ax:.501},alarm:{n:4,fw:135,fh:142,ax:.491}},
-  poliziotto:{h:42,stride:6,walk:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:99,fh:129,ax:.475}},
+  poliziotto:{h:43,stride:6,walk:{n:4,fw:95,fh:130,ax:.5},atk:{n:4,fw:99,fh:129,ax:.475}},
   ladro:{h:40,stride:6,walk:{n:4,fw:120,fh:130,ax:.5},carry:{n:4,fw:120,fh:134,ax:.5}},
   lepre:{h:30,stride:9,walk:{n:4,fw:173,fh:139,ax:.5},carry:{n:4,fw:178,fh:164,ax:.5},sleep:{n:4,fw:160,fh:138,ax:.5},sleepc:{n:4,fw:160,fh:138,ax:.5}},
   spazzino:{h:42,stride:7,walk:{n:4,fw:92,fh:132,ax:.5},carry:{n:4,fw:97,fh:131,ax:.5},atk:{n:4,fw:145,fh:134,ax:.453}},
@@ -1515,7 +1515,7 @@ const ANIM={
   spaventa:{h:44,hit:{n:4,fw:122,fh:143,ax:.514}},
   corvo:{h:36,fly:{n:4,fw:151,fh:179,ax:.994,ox:62},atk:{n:4,fw:172,fh:173,ax:.983,ox:62}},
   toro:{h:44,stride:7,walk:{n:4,fw:153,fh:131,ax:.5},atk:{n:4,fw:167,fh:136,ax:0.456}},
-  cacciatore:{h:42,stride:6,walk:{n:4,fw:97,fh:130,ax:.5},atk:{n:4,fw:135,fh:131,ax:.518}},
+  cacciatore:{h:45,stride:6,walk:{n:4,fw:97,fh:130,ax:.5},atk:{n:4,fw:135,fh:131,ax:.518}},
   gallico:{h:35,stride:5,walk:{n:4,fw:112,fh:130,ax:.5},atk:{n:4,fw:152,fh:130,ax:.507}},
   gufo:{h:46,fly:{n:4,fw:174,fh:170,ax:.546},atk:{n:4,fw:174,fh:182,ax:.495}},
   avicoltore:{h:42,stride:7,walk:{n:4,fw:98,fh:130,ax:.5},alarm:{n:4,fw:140,fh:118,ax:.487},atk:{n:4,fw:140,fh:118,ax:.487}},
@@ -2168,9 +2168,10 @@ function step(S,dt){
     u.trapT=u.def.trapEvery-(u.star===2?1:0);
   }
   if(S.fog) for(const u of S.units) if(u.alive&&!u.def.flying&&!u.def.swim&&u.role!=='static'&&Math.abs(u.x-RX)<RW&&!onBridge(u)) u.x=RX+(u.x<RX?-RW:RW);
+  // compagni troppo vicini: si scostano piano (al massimo 90 al secondo), così non si spingono a scatti
   const sep=S.units.filter(u=>u.alive&&!u.underground&&u.role!=='static'&&!u.def.flying);
   for(let i=0;i<sep.length;i++)for(let j=i+1;j<sep.length;j++){const a=sep[i],b=sep[j];if(a.side!==b.side)continue;
-    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;if(d<24){const k=(24-d)/2,ca=a.carrying!==null,cb=b.carrying!==null;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;if(d<24){const k=Math.min((24-d)/2*Math.min(1,dt*15),90*dt),ca=a.carrying!==null,cb=b.carrying!==null;
       const ka=ca?0:cb?2*k:k,kb=cb?0:ca?2*k:k;a.x-=dx/d*ka;a.y-=dy/d*ka;b.x+=dx/d*kb;b.y+=dy/d*kb}}
   for(const tr of S.traps){ if(!tr.armed) continue;
     const sw=S.units.find(e=>e.alive&&e.side!==tr.side&&e.def.sweeper&&dist(e,tr)<(e.def.sweepR||30));
